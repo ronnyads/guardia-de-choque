@@ -9,7 +9,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Guardiã de Choque | Aparelho de Defesa Pessoal — De R$129 por R$99",
+  title: "Guardiã de Choque | Aparelho de Defesa Pessoal — De R$129 por R$97,90",
   description:
     "Aparelho de choque 16cm recarregável com lanterna LED e trava de segurança. Coldre incluso. Legal no Brasil. Frete rápido. 4.7 estrelas, 194 avaliações.",
   keywords:
@@ -43,8 +43,8 @@ export default function RootLayout({
               brand: { "@type": "Brand", name: "Guardiã" },
               offers: {
                 "@type": "AggregateOffer",
-                lowPrice: "99.00",
-                highPrice: "249.00",
+                lowPrice: "97.90",
+                highPrice: "197.90",
                 priceCurrency: "BRL",
                 availability: "https://schema.org/InStock",
               },

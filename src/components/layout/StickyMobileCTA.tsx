@@ -33,7 +33,7 @@ export default function StickyMobileCTA() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs text-text-muted">A partir de</p>
-              <p className="text-lg font-bold text-accent">R$ 99,00</p>
+              <p className="text-lg font-bold text-accent">R$ 97,90</p>
             </div>
             <a
               href="#kits"
