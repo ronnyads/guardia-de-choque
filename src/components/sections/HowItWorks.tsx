@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { LockOpen, Zap, Shield } from "lucide-react";
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
@@ -43,6 +44,23 @@ export default function HowItWorks() {
           <p className="text-text-secondary text-lg">
             Três passos é tudo que separa você de estar protegido
           </p>
+        </motion.div>
+
+        {/* In-hand product image */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-lg rounded-2xl overflow-hidden border border-white/10"
+        >
+          <Image
+            src="/images/product/choque-in-hand.png"
+            alt="Guardiã de Choque sendo segurado"
+            width={800}
+            height={436}
+            className="w-full h-auto"
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full relative">

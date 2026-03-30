@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Zap, Truck, ShieldCheck, Award } from "lucide-react";
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
@@ -107,14 +108,14 @@ export default function HeroSection() {
           <div className="relative">
             <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl scale-75" />
             <div className="animate-float relative">
-              {/* Placeholder product visual */}
-              <div className="w-64 h-80 md:w-80 md:h-96 bg-gradient-to-b from-surface to-surface-light rounded-3xl border border-white/10 flex items-center justify-center">
-                <div className="text-center">
-                  <Zap className="w-20 h-20 text-accent mx-auto mb-4" />
-                  <p className="text-text-muted text-sm">Guardiã de Choque</p>
-                  <p className="text-text-muted/50 text-xs mt-1">16cm | Recarregável</p>
-                </div>
-              </div>
+              <Image
+                src="/images/product/hero-product.png"
+                alt="Guardiã de Choque - Aparelho de Defesa Pessoal"
+                width={600}
+                height={400}
+                priority
+                className="w-72 md:w-96 h-auto drop-shadow-[0_0_30px_rgba(245,158,11,0.2)]"
+              />
             </div>
           </div>
         </motion.div>

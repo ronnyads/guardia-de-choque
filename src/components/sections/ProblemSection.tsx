@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { AlertTriangle, Clock, ShieldOff } from "lucide-react";
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
@@ -48,7 +49,17 @@ export default function ProblemSection() {
   const { ref, isInView } = useInView(0.3);
 
   return (
-    <ScrollSnapSection className="relative">
+    <ScrollSnapSection className="relative overflow-hidden">
+      {/* Background lifestyle image */}
+      <div className="absolute inset-0 pointer-events-none">
+        <Image
+          src="/images/lifestyle/lifestyle-woman.png"
+          alt=""
+          fill
+          className="object-cover opacity-15"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
+      </div>
       {/* Red tinted overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-danger/5 via-transparent to-transparent pointer-events-none" />
 

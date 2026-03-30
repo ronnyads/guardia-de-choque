@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Zap,
@@ -63,11 +64,15 @@ export default function OfertaEspecial() {
           className="bg-surface border border-accent/20 rounded-2xl p-8 flex flex-col items-center gap-6 mb-10"
         >
           {/* Product visual */}
-          <div className="w-32 h-40 bg-surface-light rounded-2xl border border-white/10 flex items-center justify-center">
-            <div className="text-center">
-              <Zap className="w-12 h-12 text-accent mx-auto mb-2" />
-              <p className="text-text-muted text-xs">Mini Taser</p>
-            </div>
+          <div className="w-full max-w-sm rounded-2xl overflow-hidden">
+            <Image
+              src="/images/product/mini-taser.png"
+              alt="Mini Taser Defesa Pessoal - 10cm"
+              width={800}
+              height={436}
+              priority
+              className="w-full h-auto"
+            />
           </div>
 
           <h2 className="text-xl font-bold">{MINI_TASER.name}</h2>

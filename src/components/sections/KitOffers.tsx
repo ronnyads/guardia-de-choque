@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
 import KitCard from "@/components/ui/KitCard";
@@ -23,6 +24,23 @@ export default function KitOffers() {
           <p className="text-text-secondary text-lg">
             Proteja você e quem você ama. Quanto mais unidades, maior a economia.
           </p>
+        </motion.div>
+
+        {/* Kit image */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="w-full max-w-2xl mx-auto"
+        >
+          <Image
+            src="/images/product/kit-trio.png"
+            alt="Kit Guardiã de Choque - 3 unidades com coldre"
+            width={1200}
+            height={654}
+            className="w-full h-auto rounded-2xl"
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 w-full items-start">

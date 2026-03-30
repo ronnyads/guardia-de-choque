@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Zap,
@@ -35,19 +36,20 @@ export default function ProductShowcase() {
         >
           <div className="relative">
             <div className="absolute inset-0 bg-accent/5 rounded-3xl blur-2xl" />
-            <div className="relative bg-surface-light rounded-3xl border border-white/10 p-10 md:p-14">
-              <div className="flex flex-col items-center gap-6">
-                <Zap className="w-24 h-24 md:w-32 md:h-32 text-accent" />
-                <div className="text-center">
-                  <h3 className="text-xl font-bold">Guardiã de Choque</h3>
-                  <p className="text-text-muted text-sm mt-1">Profissional | 16cm</p>
-                </div>
-                {/* Specs quick view */}
-                <div className="grid grid-cols-2 gap-3 w-full">
+            <div className="relative rounded-3xl overflow-hidden border border-white/10">
+              <Image
+                src="/images/product/kit-completo.png"
+                alt="Guardiã de Choque - Kit completo com coldre e cabo"
+                width={800}
+                height={600}
+                className="w-full h-auto"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                <div className="grid grid-cols-2 gap-2">
                   {MAIN_PRODUCT.specs.slice(0, 4).map((spec) => (
                     <div
                       key={spec.label}
-                      className="bg-background/50 rounded-xl px-3 py-2 text-center"
+                      className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 text-center"
                     >
                       <p className="text-[10px] text-text-muted">{spec.label}</p>
                       <p className="text-xs font-semibold">{spec.value}</p>
