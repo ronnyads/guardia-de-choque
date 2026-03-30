@@ -7,7 +7,7 @@ import { FAQ_ITEMS } from "@/lib/constants";
 
 export default function FAQSection() {
   return (
-    <ScrollSnapSection className="bg-surface" noSnap>
+    <ScrollSnapSection noSnap>
       <div className="max-w-3xl mx-auto w-full flex flex-col items-center gap-8 py-20">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

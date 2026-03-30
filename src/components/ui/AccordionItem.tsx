@@ -13,12 +13,14 @@ export default function AccordionItem({ question, answer }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-white/5">
+    <div className="border-b border-white/10">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-5 text-left cursor-pointer group"
+        className={`w-full flex items-center justify-between py-5 text-left cursor-pointer group rounded-lg px-2 transition-colors ${
+          open ? "bg-white/5" : "hover:bg-white/5"
+        }`}
       >
-        <span className="text-sm md:text-base font-semibold pr-4 group-hover:text-accent transition-colors">
+        <span className="text-base font-semibold pr-4 group-hover:text-accent transition-colors">
           {question}
         </span>
         <ChevronDown
@@ -36,7 +38,7 @@ export default function AccordionItem({ question, answer }: Props) {
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <p className="text-text-secondary text-sm leading-relaxed pb-5">
+            <p className="text-text-body text-sm leading-relaxed pb-5 px-2">
               {answer}
             </p>
           </motion.div>

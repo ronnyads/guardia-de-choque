@@ -35,7 +35,7 @@ export default function HeroSection() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="flex flex-col gap-6 text-center lg:text-left order-2 lg:order-1"
+          className="flex flex-col gap-6 text-center lg:text-left order-1"
         >
           <motion.div variants={item}>
             <StarRating
@@ -103,7 +103,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="order-1 lg:order-2 flex justify-center"
+          className="order-2 flex justify-center"
         >
           <div className="relative">
             <div className="absolute inset-0 bg-accent/10 rounded-full blur-3xl scale-75" />
@@ -114,7 +114,7 @@ export default function HeroSection() {
                 width={600}
                 height={400}
                 priority
-                className="w-72 md:w-96 h-auto drop-shadow-[0_0_30px_rgba(245,158,11,0.2)]"
+                className="w-56 md:w-80 lg:w-96 h-auto drop-shadow-[0_0_30px_rgba(245,158,11,0.2)]"
               />
             </div>
           </div>

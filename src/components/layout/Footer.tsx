@@ -14,7 +14,7 @@ export default function Footer() {
             </span>
           </div>
 
-          <div className="flex items-center gap-6 text-text-muted text-xs">
+          <div className="flex items-center gap-6 text-gray-400 text-xs">
             <a href="#" className="hover:text-white transition-colors">
               Termos de Uso
             </a>
@@ -31,7 +31,7 @@ export default function Footer() {
           <p className="text-text-muted text-xs">
             © {new Date().getFullYear()} Guardiã de Choque. Todos os direitos reservados.
           </p>
-          <p className="text-text-muted/60 text-[10px] mt-2">
+          <p className="text-text-muted text-[10px] mt-2">
             Este produto não é classificado como arma de fogo. Uso permitido para civis conforme legislação brasileira.
           </p>
         </div>

@@ -13,7 +13,7 @@ const badges = [
 
 export default function TrustGuarantee() {
   return (
-    <ScrollSnapSection>
+    <ScrollSnapSection className="bg-surface">
       <div className="max-w-4xl mx-auto w-full flex flex-col items-center gap-10">
         {/* Guarantee seal */}
         <motion.div
@@ -46,7 +46,7 @@ export default function TrustGuarantee() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
-              className="bg-surface rounded-xl border border-white/5 p-5 flex flex-col items-center text-center gap-3"
+              className="bg-surface-elevated rounded-xl border border-white/10 p-5 flex flex-col items-center text-center gap-3 shadow-md shadow-black/20"
             >
               <badge.icon className={`w-8 h-8 ${badge.color}`} />
               <p className="text-sm font-semibold">{badge.label}</p>

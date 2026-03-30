@@ -12,7 +12,7 @@ export default function FinalCTA() {
     <ScrollSnapSection className="relative">
       {/* Background glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-96 h-96 bg-accent/10 rounded-full blur-[120px]" />
+        <div className="w-[500px] h-[500px] bg-accent/15 rounded-full blur-[150px]" />
       </div>
 
       <div className="max-w-3xl mx-auto w-full flex flex-col items-center gap-8 relative z-10 text-center">

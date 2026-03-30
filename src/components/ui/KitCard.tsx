@@ -18,8 +18,8 @@ export default function KitCard({ kit, index }: Props) {
       transition={{ duration: 0.5, delay: index * 0.15 }}
       className={`relative flex flex-col rounded-2xl border p-6 md:p-8 ${
         kit.highlighted
-          ? "border-accent/50 bg-surface shadow-[0_0_40px_rgba(245,158,11,0.15)] scale-[1.02] md:scale-105"
-          : "border-white/10 bg-surface"
+          ? "border-accent/50 bg-surface shadow-[0_0_50px_rgba(245,158,11,0.2)] scale-[1.02] md:scale-105"
+          : "border-white/10 bg-surface shadow-lg shadow-black/20"
       }`}
     >
       {/* Badge */}

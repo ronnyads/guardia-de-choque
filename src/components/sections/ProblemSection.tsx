@@ -39,7 +39,7 @@ function AnimatedCounter({ target, suffix, start }: { target: number; suffix: st
   const formatted = target >= 1000 ? count.toLocaleString("pt-BR") : count;
 
   return (
-    <span className="text-3xl md:text-4xl font-bold text-white tabular-nums">
+    <span className="text-3xl md:text-4xl font-bold text-white tabular-nums drop-shadow-md">
       {formatted}{suffix}
     </span>
   );
@@ -50,20 +50,18 @@ export default function ProblemSection() {
 
   return (
     <ScrollSnapSection className="relative overflow-hidden">
-      {/* Background lifestyle image */}
+      {/* Background lifestyle image — increased visibility */}
       <div className="absolute inset-0 pointer-events-none">
         <Image
           src="/images/lifestyle/lifestyle-woman.png"
           alt=""
           fill
-          className="object-cover opacity-15"
+          className="object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background/70" />
       </div>
-      {/* Red tinted overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-danger/5 via-transparent to-transparent pointer-events-none" />
 
-      <div ref={ref} className="max-w-5xl mx-auto w-full flex flex-col items-center gap-12">
+      <div ref={ref} className="max-w-5xl mx-auto w-full flex flex-col items-center gap-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -71,13 +69,13 @@ export default function ProblemSection() {
           transition={{ duration: 0.6 }}
           className="text-center max-w-2xl"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 drop-shadow-lg">
             Você Está Preparado Para{" "}
             <span className="text-danger">Se Defender?</span>
           </h2>
-          <p className="text-text-secondary text-lg">
+          <p className="text-white text-lg drop-shadow-sm">
             A violência não escolhe hora nem lugar. Estar preparado não é opção
-            — é <span className="text-white font-semibold">necessidade</span>.
+            — é <span className="text-accent font-semibold">necessidade</span>.
           </p>
         </motion.div>
 
@@ -91,13 +89,13 @@ export default function ProblemSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.2 }}
-                className="bg-surface border border-white/5 rounded-2xl p-8 flex flex-col items-center text-center gap-4"
+                className="bg-surface-elevated/90 backdrop-blur-sm border border-white/10 rounded-2xl p-8 flex flex-col items-center text-center gap-4 shadow-lg shadow-black/30"
               >
-                <div className="w-14 h-14 rounded-xl bg-danger/10 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-xl bg-danger/15 flex items-center justify-center">
                   <Icon className="w-7 h-7 text-danger" />
                 </div>
                 <AnimatedCounter target={stat.target} suffix={stat.suffix} start={isInView} />
-                <p className="text-text-secondary text-sm">{stat.label}</p>
+                <p className="text-text-body text-sm">{stat.label}</p>
               </motion.div>
             );
           })}

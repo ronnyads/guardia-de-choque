@@ -18,10 +18,10 @@ export default function SocialProof() {
           className="text-center flex flex-col items-center gap-3"
         >
           <div className="flex items-baseline gap-3">
-            <span className="text-6xl md:text-7xl font-bold text-accent">
+            <span className="text-6xl md:text-7xl font-bold text-accent bg-accent/10 px-5 py-2 rounded-2xl">
               {MAIN_PRODUCT.rating}
             </span>
-            <span className="text-2xl text-text-muted">/5</span>
+            <span className="text-2xl text-text-secondary">/5</span>
           </div>
           <StarRating rating={MAIN_PRODUCT.rating} size="lg" />
           <p className="text-text-secondary">
@@ -38,10 +38,10 @@ export default function SocialProof() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-background rounded-2xl border border-white/5 p-6 flex flex-col gap-4"
+              className="bg-surface-elevated rounded-2xl border border-white/10 p-6 flex flex-col gap-4 shadow-lg shadow-black/20"
             >
               <Quote className="w-6 h-6 text-accent/30" />
-              <p className="text-text-secondary text-sm leading-relaxed flex-1">
+              <p className="text-text-body text-sm leading-relaxed flex-1">
                 &ldquo;{review.text}&rdquo;
               </p>
               <div className="flex items-center justify-between">

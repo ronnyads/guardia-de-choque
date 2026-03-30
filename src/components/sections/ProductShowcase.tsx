@@ -88,7 +88,7 @@ export default function ProductShowcase() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.1 }}
-                  className="bg-background rounded-xl border border-white/5 p-5 flex gap-4 hover:border-accent/30 transition-colors"
+                  className="bg-background rounded-xl border border-white/10 p-5 flex gap-4 hover:border-accent/30 transition-colors"
                 >
                   <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
                     <Icon className="w-5 h-5 text-accent" />

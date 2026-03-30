@@ -28,7 +28,7 @@ export default function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="flex items-center justify-between px-6 md:px-12 lg:px-24 h-16">
+      <div className="flex items-center justify-center md:justify-between px-6 md:px-12 lg:px-24 h-16">
         <a href="#hero" className="flex items-center gap-2 group">
           <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
             <Zap className="w-5 h-5 text-black" />

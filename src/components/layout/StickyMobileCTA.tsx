@@ -28,7 +28,7 @@ export default function StickyMobileCTA() {
           animate={{ y: 0 }}
           exit={{ y: 100 }}
           transition={{ duration: 0.3 }}
-          className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/10 px-4 py-3"
+          className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/10 px-4 py-4"
         >
           <div className="flex items-center justify-between gap-3">
             <div>

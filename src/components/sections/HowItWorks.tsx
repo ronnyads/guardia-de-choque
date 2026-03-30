@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { LockOpen, Zap, Shield } from "lucide-react";
+// Zap is used for steps icon AND for the CTA button below
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
 
 const steps = [
@@ -85,12 +86,28 @@ export default function HowItWorks() {
                 </span>
               </div>
               <h3 className="text-xl font-bold">{step.title}</h3>
-              <p className="text-text-secondary text-sm max-w-xs">
+              <p className="text-text-body text-sm max-w-xs">
                 {step.description}
               </p>
             </motion.div>
           ))}
         </div>
+
+        {/* CTA intermediário */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <a
+            href="#kits"
+            className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold text-sm px-7 py-3.5 rounded-xl transition-colors animate-pulse-glow"
+          >
+            <Zap className="w-4 h-4" />
+            GARANTA O SEU AGORA
+          </a>
+        </motion.div>
       </div>
     </ScrollSnapSection>
   );
