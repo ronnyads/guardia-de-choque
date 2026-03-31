@@ -326,10 +326,10 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
             <div className="col-span-1 md:col-span-4 mt-2">
               <label className="block text-sm font-medium text-text-muted mb-1">Parcelas</label>
               <select className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent appearance-none">
-                <option>À vista com desconto extra</option>
-                <option>3x sem juros (Recomendado)</option>
-                <option>6x sem juros</option>
-                <option>12x no cartão</option>
+                <option className="bg-neutral-900 text-white">À vista com desconto extra</option>
+                <option className="bg-neutral-900 text-white">3x sem juros (Recomendado)</option>
+                <option className="bg-neutral-900 text-white">6x sem juros</option>
+                <option className="bg-neutral-900 text-white">12x no cartão</option>
               </select>
             </div>
           </div>
