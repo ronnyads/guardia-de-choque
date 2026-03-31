@@ -1,6 +1,66 @@
 import { useState } from "react";
 import { Lock, CreditCard, ShieldCheck } from "lucide-react";
 
+// --- VALIDATION HELPERS ---
+const validateCPF = (cpf: string) => {
+  cpf = cpf.replace(/[^\d]+/g, '');
+  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+  let soma = 0, resto;
+  for (let i = 1; i <= 9; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf.substring(9, 10)) ) return false;
+  soma = 0;
+  for (let i = 1; i <= 10; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (12 - i);
+  resto = (soma * 10) % 11;
+  if (resto === 10 || resto === 11) resto = 0;
+  if (resto !== parseInt(cpf.substring(10, 11) ) ) return false;
+  return true;
+};
+
+const validateCNPJ = (cnpj: string) => {
+  cnpj = cnpj.replace(/[^\d]+/g, '');
+  if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
+  let tamanho = cnpj.length - 2;
+  let numeros = cnpj.substring(0,tamanho);
+  const digitos = cnpj.substring(tamanho);
+  let soma = 0;
+  let pos = tamanho - 7;
+  for (let i = tamanho; i >= 1; i--) {
+    soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  if (resultado !== parseInt(digitos.charAt(0))) return false;
+  tamanho = tamanho + 1;
+  numeros = cnpj.substring(0,tamanho);
+  soma = 0;
+  pos = tamanho - 7;
+  for (let i = tamanho; i >= 1; i--) {
+    soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+  if (resultado !== parseInt(digitos.charAt(1))) return false;
+  return true;
+};
+
+const maskDocument = (value: string) => {
+  const v = value.replace(/\D/g, "");
+  if (v.length <= 11) {
+    return v.replace(/(\d{3})(\d)/, "$1.$2")
+            .replace(/(\d{3})(\d)/, "$1.$2")
+            .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  } else {
+    return v.substring(0, 14)
+            .replace(/^(\d{2})(\d)/, "$1.$2")
+            .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+            .replace(/\.(\d{3})(\d)/, ".$1/$2")
+            .replace(/(\d{4})(\d)/, "$1-$2");
+  }
+};
+// -------------------------
+
 interface Props {
   onFinish: () => void;
   hasOrderBump: boolean;
@@ -10,6 +70,26 @@ interface Props {
 
 export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, orderBumpPrice }: Props) {
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("cartao");
+
+  const [documentVal, setDocumentVal] = useState("");
+  const [docError, setDocError] = useState("");
+  const isCnpj = documentVal.replace(/\D/g, "").length > 11;
+
+  const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const masked = maskDocument(e.target.value);
+    setDocumentVal(masked);
+    if (docError) setDocError("");
+  };
+
+  const handleDocBlur = () => {
+    const digits = documentVal.replace(/\D/g, "");
+    if (digits.length === 0) return;
+    if (digits.length <= 11) {
+      if (!validateCPF(digits)) setDocError("CPF Inválido");
+    } else {
+      if (!validateCNPJ(digits)) setDocError("CNPJ Inválido");
+    }
+  };
 
   const [address, setAddress] = useState({
     cep: "",
@@ -54,21 +134,51 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const digits = documentVal.replace(/\D/g, "");
+    let valid = true;
+    if (digits.length <= 11) {
+      valid = validateCPF(digits);
+      if (!valid) setDocError("CPF Inválido");
+    } else {
+      valid = validateCNPJ(digits);
+      if (!valid) setDocError("CNPJ Inválido");
+    }
+    
+    if (!valid) return; // bloqueia envio
+
     onFinish(); // Aciona o Upsell ou a tela final
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-8">
       
-      {/* DADOS PESSOAIS */}
+      {/* IDENTIFICAÇÃO */}
       <section className="bg-surface border border-white/10 rounded-2xl p-6 lg:p-8">
         <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-          Dados Pessoais
+          {isCnpj ? "Dados da Empresa" : "Dados Pessoais"}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="col-span-1 md:col-span-2 relative">
+            <label className="block text-sm font-medium text-text-muted mb-1">
+              CPF ou CNPJ (Para Nota Fiscal)
+              {docError && <span className="text-red-400 text-xs ml-2 animate-pulse">{docError}</span>}
+            </label>
+            <input 
+              required 
+              type="text" 
+              value={documentVal}
+              onChange={handleDocumentChange}
+              onBlur={handleDocBlur}
+              placeholder="000.000.000-00 ou 00.000.000/0000-00" 
+              className={`w-full bg-body border rounded-xl px-4 py-3 text-text focus:outline-none focus:ring-1 transition-all ${docError ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500' : 'border-white/10 focus:border-accent focus:ring-accent'}`} 
+            />
+          </div>
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-medium text-text-muted mb-1">Nome Completo</label>
-            <input required type="text" placeholder="Digite seu nome completo" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
+            <label className="block text-sm font-medium text-text-muted mb-1">
+              {isCnpj ? "Razão Social / Nome Fantasia" : "Nome Completo"}
+            </label>
+            <input required type="text" placeholder={isCnpj ? "Nome da sua Empresa" : "Digite seu nome completo"} className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
           </div>
           <div>
             <label className="block text-sm font-medium text-text-muted mb-1">E-mail</label>
@@ -77,10 +187,6 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
           <div>
             <label className="block text-sm font-medium text-text-muted mb-1">Celular / WhatsApp</label>
             <input required type="tel" placeholder="(11) 99999-9999" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
-          </div>
-          <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-medium text-text-muted mb-1">CPF (Para Nota Fiscal e Garantia)</label>
-            <input required type="text" placeholder="000.000.000-00" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
           </div>
         </div>
       </section>
