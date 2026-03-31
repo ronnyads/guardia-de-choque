@@ -11,6 +11,47 @@ interface Props {
 export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, orderBumpPrice }: Props) {
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("cartao");
 
+  const [address, setAddress] = useState({
+    cep: "",
+    street: "",
+    number: "",
+    complement: "",
+    neighborhood: "",
+    city: "",
+    state: ""
+  });
+  const [loadingCep, setLoadingCep] = useState(false);
+
+  const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 5) {
+      value = value.replace(/^(\d{5})(\d)/, "$1-$2");
+    }
+    
+    setAddress(prev => ({ ...prev, cep: value }));
+
+    if (value.replace("-", "").length === 8) {
+      setLoadingCep(true);
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${value.replace("-", "")}/json/`);
+        const data = await res.json();
+        if (!data.erro) {
+          setAddress(prev => ({
+            ...prev,
+            street: data.logradouro || "",
+            neighborhood: data.bairro || "",
+            city: data.localidade || "",
+            state: data.uf || "",
+          }));
+        }
+      } catch (error) {
+        console.error("Erro ao buscar CEP", error);
+      } finally {
+        setLoadingCep(false);
+      }
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onFinish(); // Aciona o Upsell ou a tela final
@@ -49,20 +90,31 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
         <h2 className="text-xl font-bold mb-6">Endereço de Entrega</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="col-span-1 md:col-span-1">
-            <label className="block text-sm font-medium text-text-muted mb-1">CEP</label>
-            <input required type="text" placeholder="00000-000" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
+            <label className="block text-sm font-medium text-text-muted mb-1">CEP {loadingCep && <span className="text-accent text-xs ml-2 animate-pulse">Buscando...</span>}</label>
+            <input required type="text" maxLength={9} value={address.cep} onChange={handleCepChange} placeholder="00000-000" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-all" />
           </div>
           <div className="col-span-1 md:col-span-2">
             <label className="block text-sm font-medium text-text-muted mb-1">Rua / Avenida</label>
-            <input required type="text" placeholder="Nome da rua" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
+            <input required type="text" value={address.street} onChange={(e) => setAddress({...address, street: e.target.value})} placeholder="Nome da rua" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-all" />
           </div>
           <div>
             <label className="block text-sm font-medium text-text-muted mb-1">Número</label>
-            <input required type="text" placeholder="123" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
+            <input required type="text" value={address.number} onChange={(e) => setAddress({...address, number: e.target.value})} placeholder="123" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-all" />
           </div>
           <div className="col-span-1 md:col-span-2">
-            <label className="block text-sm font-medium text-text-muted mb-1">Complemento / Bairro</label>
-            <input type="text" placeholder="Apto, Bloco, Bairro" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
+            <label className="block text-sm font-medium text-text-muted mb-1">Complemento & Bairro</label>
+            <div className="flex gap-2">
+              <input type="text" value={address.complement} onChange={(e) => setAddress({...address, complement: e.target.value})} placeholder="Apto, Bloco" className="w-1/2 bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-all" />
+              <input required type="text" value={address.neighborhood} onChange={(e) => setAddress({...address, neighborhood: e.target.value})} placeholder="Bairro" className="w-1/2 bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-all" />
+            </div>
+          </div>
+          <div className="col-span-1 md:col-span-2">
+             <label className="block text-sm font-medium text-text-muted mb-1">Cidade</label>
+             <input required type="text" value={address.city} onChange={(e) => setAddress({...address, city: e.target.value})} placeholder="Sua Cidade" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-all" />
+          </div>
+          <div className="col-span-1 md:col-span-1">
+             <label className="block text-sm font-medium text-text-muted mb-1">Estado (UF)</label>
+             <input required type="text" value={address.state} onChange={(e) => setAddress({...address, state: e.target.value.toUpperCase()})} placeholder="SP" maxLength={2} className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent transition-all" />
           </div>
         </div>
       </section>
