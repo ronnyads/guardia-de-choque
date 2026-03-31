@@ -8,7 +8,7 @@ import { KITS } from "@/lib/constants";
 
 export default function KitOffers() {
   return (
-    <ScrollSnapSection id="kits" noSnap className="bg-gradient-to-b from-background via-surface/30 to-background">
+    <ScrollSnapSection id="kits" className="bg-gradient-to-b from-background via-surface/30 to-background">
       <div className="max-w-6xl mx-auto w-full flex flex-col items-center gap-10 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
