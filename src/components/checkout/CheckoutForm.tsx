@@ -73,6 +73,9 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
 
   const [documentVal, setDocumentVal] = useState("");
   const [docError, setDocError] = useState("");
+  const [loadingCnpj, setLoadingCnpj] = useState(false);
+  const [personalData, setPersonalData] = useState({ name: "", email: "", phone: "" });
+  
   const isCnpj = documentVal.replace(/\D/g, "").length > 11;
 
   const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,13 +84,43 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
     if (docError) setDocError("");
   };
 
-  const handleDocBlur = () => {
+  const handleDocBlur = async () => {
     const digits = documentVal.replace(/\D/g, "");
     if (digits.length === 0) return;
     if (digits.length <= 11) {
       if (!validateCPF(digits)) setDocError("CPF Inválido");
     } else {
-      if (!validateCNPJ(digits)) setDocError("CNPJ Inválido");
+      if (!validateCNPJ(digits)) {
+        setDocError("CNPJ Inválido");
+      } else {
+        // Valido, buscar CNPJ
+        setLoadingCnpj(true);
+        try {
+          const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${digits}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.razao_social) {
+              setPersonalData(prev => ({ ...prev, name: data.razao_social }));
+              if (data.cep) {
+                setAddress(prev => ({
+                  ...prev,
+                  cep: data.cep.replace(/(\d{5})(\d{3})/, "$1-$2"),
+                  street: data.logradouro || prev.street,
+                  number: data.numero || prev.number,
+                  complement: data.complemento || prev.complement,
+                  neighborhood: data.bairro || prev.neighborhood,
+                  city: data.municipio || prev.city,
+                  state: data.uf || prev.state
+                }));
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Erro ao buscar CNPJ", error);
+        } finally {
+          setLoadingCnpj(false);
+        }
+      }
     }
   };
 
@@ -163,6 +196,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
             <label className="block text-sm font-medium text-text-muted mb-1">
               CPF ou CNPJ (Para Nota Fiscal)
               {docError && <span className="text-red-400 text-xs ml-2 animate-pulse">{docError}</span>}
+              {loadingCnpj && <span className="text-accent text-xs ml-2 animate-pulse">Buscando dados da empresa...</span>}
             </label>
             <input 
               required 
@@ -178,15 +212,15 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
             <label className="block text-sm font-medium text-text-muted mb-1">
               {isCnpj ? "Razão Social / Nome Fantasia" : "Nome Completo"}
             </label>
-            <input required type="text" placeholder={isCnpj ? "Nome da sua Empresa" : "Digite seu nome completo"} className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
+            <input required type="text" value={personalData.name} onChange={(e) => setPersonalData({...personalData, name: e.target.value})} placeholder={isCnpj ? "Nome da sua Empresa" : "Digite seu nome completo"} className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
           </div>
           <div>
             <label className="block text-sm font-medium text-text-muted mb-1">E-mail</label>
-            <input required type="email" placeholder="seu@email.com" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
+            <input required type="email" value={personalData.email} onChange={(e) => setPersonalData({...personalData, email: e.target.value})} placeholder="seu@email.com" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
           </div>
           <div>
             <label className="block text-sm font-medium text-text-muted mb-1">Celular / WhatsApp</label>
-            <input required type="tel" placeholder="(11) 99999-9999" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
+            <input required type="tel" value={personalData.phone} onChange={(e) => setPersonalData({...personalData, phone: e.target.value})} placeholder="(11) 99999-9999" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all" />
           </div>
         </div>
       </section>
