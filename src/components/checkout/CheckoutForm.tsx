@@ -387,10 +387,31 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
       </button>
 
       {/* Trust footers under button */}
-      <div className="flex items-center justify-center flex-wrap gap-6 mt-1">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3.5 opacity-50 grayscale hover:grayscale-0 transition-all" />
-        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Pix_logo_%282021%29.svg" alt="Pix" className="h-5 opacity-50 grayscale hover:grayscale-0 transition-all" />
+      <div className="flex items-center justify-center flex-wrap gap-6 mt-1 text-white/50 hover:text-white/80 transition-all">
+        {/* Mastercard Inline SVG */}
+        <svg viewBox="0 0 1000 600" className="h-6 opacity-60 grayscale hover:grayscale-0 transition-all" aria-label="Mastercard">
+          <circle cx="350" cy="300" r="250" fill="#ea001b"/>
+          <circle cx="650" cy="300" r="250" fill="#ffa200"/>
+          <path d="M500,100 A250,250 0 0,0 500,500 A250,250 0 0,0 500,100 Z" fill="#ff5f00"/>
+        </svg>
+
+        {/* Visa Inline SVG */}
+        <svg viewBox="0 0 32 10" className="h-3.5 opacity-60 grayscale hover:grayscale-0 transition-all" aria-label="Visa">
+          <path fill="currentColor" d="M14.49 0l-1.95 9.77H9.55l3.05-9.77h2.89zm17.3 9.77h-3.05l-1.17-5.59-3.2 5.59h-2.92l4.49-9.77h3.05l2.22 8.35L30.12 0H33l-1.21 9.77zM10.15 0l-3.2 6.55L6.44 1.5A1.56 1.56 0 005 0H0v.48c1.33.27 2.8.84 3.73 1.4L6.96 9.77h3.05L13.16 0h-3zM23.6 5.37c0-2.31-3.23-2.43-3.23-3.48 0-.31.28-.65.98-.75.39-.06 1.48-.1 2.54.39L24.32.12c-.57-.25-1.42-.5-2.52-.5-2.88 0-4.91 1.54-4.93 3.75-.02 1.63 1.46 2.54 2.56 3.08 1.13.56 1.51.92 1.51 1.42 0 .77-.92 1.12-1.78 1.12-1.2 0-1.88-.17-2.88-.61L15.82 9.8c.62.29 1.77.55 2.97.55 3.05 0 5.06-1.5 5.06-3.83 0-1.28-.88-2.27-2.48-3.03l-.06-.02z"/>
+        </svg>
+
+        {/* Pix Inline SVG */}
+        <div className="flex items-center gap-1 opacity-60 grayscale hover:grayscale-0 transition-all text-[#32BCAD]">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="h-5">
+            <path d="M11.996 1.401L2.016 7.39V16.63L11.996 22.599L21.984 16.63V7.39L11.996 1.401ZM11.996 21.054L3.388 15.864V8.156L11.996 2.946L20.612 8.156V15.864L11.996 21.054Z" />
+            <path d="M7.788 11.233L10.596 8.425L11.996 9.825L9.188 12.633L7.788 11.233Z" />
+            <path d="M16.204 11.233L13.396 8.425L11.996 9.825L14.804 12.633L16.204 11.233Z" />
+            <path d="M11.996 14.033L14.804 11.225L13.404 9.825L10.596 12.633L11.996 14.033Z" />
+            <path d="M7.788 12.633L10.596 15.441L11.996 14.041L9.188 11.233L7.788 12.633Z" />
+            <path d="M16.204 12.633L13.396 15.441L11.996 14.041L14.804 11.233L16.204 12.633Z" />
+          </svg>
+          <span className="font-bold text-sm tracking-tighter">pix</span>
+        </div>
       </div>
 
     </form>
