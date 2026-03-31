@@ -53,7 +53,7 @@ export default function ClientCheckout() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative opacity-0 animate-fade-in">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
           {/* Progress Indicator (Cognitive Load Reduction) */}
           <div className="flex items-center justify-between text-xs font-semibold px-2 mb-2">
