@@ -278,8 +278,8 @@ export const STATS: Stat[] = [
 ];
 
 export const CHECKOUT_URLS = {
-  "kit-individual": "#checkout-individual",
-  "kit-dupla": "#checkout-dupla",
-  "kit-familia": "#checkout-familia",
-  "downsell": "#checkout-downsell",
+  "kit-individual": "/checkout?kit=kit-individual",
+  "kit-dupla": "/checkout?kit=kit-dupla",
+  "kit-familia": "/checkout?kit=kit-familia",
+  "downsell": "/checkout?kit=kit-individual",
 };
