@@ -387,10 +387,10 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
       </button>
 
       {/* Trust footers under button */}
-      <div className="flex justify-center flex-wrap gap-4 mt-[-10px]">
-        <img src="https://logospng.org/wp-content/uploads/mastercard.png" alt="Mastercard" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all" />
-        <img src="https://logospng.org/wp-content/uploads/visa.png" alt="Visa" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all" />
-        <img src="https://logospng.org/wp-content/uploads/pix.png" alt="Pix" className="h-5 opacity-50 grayscale hover:grayscale-0 transition-all mt-0.5" />
+      <div className="flex items-center justify-center flex-wrap gap-6 mt-1">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 opacity-50 grayscale hover:grayscale-0 transition-all" />
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3.5 opacity-50 grayscale hover:grayscale-0 transition-all" />
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Pix_logo_%282021%29.svg" alt="Pix" className="h-5 opacity-50 grayscale hover:grayscale-0 transition-all" />
       </div>
 
     </form>
