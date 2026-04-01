@@ -33,7 +33,7 @@ export default function ClientCheckout() {
   const [isProcessingFull, setIsProcessingFull] = useState(false);
   
   const [paymentData, setPaymentData] = useState<any>(null);
-  const [pixData, setPixData] = useState<{qrCodeBase64?: string, qrCode?: string} | null>(null);
+  const [pixData, setPixData] = useState<{qrCodeBase64?: string, qrCode?: string, paymentId?: string} | null>(null);
 
   // Calcula subtotais
   const itemsTotal = kit.promoPrice;
@@ -73,7 +73,11 @@ export default function ClientCheckout() {
 
       if (result.success) {
         if (paymentData.paymentMethod === 'pix') {
-          setPixData({ qrCodeBase64: result.qrCodeBase64, qrCode: result.qrCode });
+          setPixData({ 
+            qrCodeBase64: result.qrCodeBase64, 
+            qrCode: result.qrCode,
+            paymentId: result.paymentId
+          });
         }
         
         // Dispara o Píxel Final de Purchase!!!
@@ -105,6 +109,27 @@ export default function ClientCheckout() {
       </div>
     );
   }
+
+  // Efeito Mágico de Polling do PIX
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (checkoutComplete && pixData?.paymentId) {
+      intervalId = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/checkout/status?id=${pixData.paymentId}`);
+          const data = await res.json();
+          if (data.approved) {
+            setPixData(null); // Remove a tela do PIX para cair na tela de Sucesso padrão
+          }
+        } catch (e) {
+          console.error("Poller error", e);
+        }
+      }, 3000); // 3 em 3 segundos
+    }
+
+    return () => clearInterval(intervalId);
+  }, [checkoutComplete, pixData?.paymentId]);
 
   if (checkoutComplete) {
     if (pixData) {
