@@ -70,6 +70,16 @@ interface Props {
 
 export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, orderBumpPrice }: Props) {
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("cartao");
+  const [paymentTracked, setPaymentTracked] = useState(false);
+
+  const handlePaymentInteraction = () => {
+    if (!paymentTracked) {
+      if (typeof window !== "undefined" && window.fbq) {
+        window.fbq("track", "AddPaymentInfo");
+      }
+      setPaymentTracked(true);
+    }
+  };
 
   const [documentVal, setDocumentVal] = useState("");
   const [docError, setDocError] = useState("");
@@ -275,7 +285,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <button 
             type="button" 
-            onClick={() => setPaymentMethod("cartao")}
+            onClick={() => { setPaymentMethod("cartao"); handlePaymentInteraction(); }}
             className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${paymentMethod === 'cartao' ? 'border-accent bg-accent/5' : 'border-white/10 bg-white/5 hover:border-white/20'}`}
           >
             <CreditCard className={`w-6 h-6 mb-2 ${paymentMethod === 'cartao' ? 'text-accent' : 'text-text-muted'}`} />
@@ -284,7 +294,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
           
           <button 
             type="button" 
-            onClick={() => setPaymentMethod("pix")}
+            onClick={() => { setPaymentMethod("pix"); handlePaymentInteraction(); }}
             className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${paymentMethod === 'pix' ? 'border-green-400 bg-green-400/5' : 'border-white/10 bg-white/5 hover:border-white/20'}`}
           >
             <svg className={`w-6 h-6 mb-2 ${paymentMethod === 'pix' ? 'text-green-400' : 'text-text-muted'}`} viewBox="0 0 24 24" fill="currentColor">
@@ -304,7 +314,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
             <div className="col-span-1 md:col-span-4">
               <label className="block text-sm font-medium text-text-muted mb-1">Número do Cartão</label>
               <div className="relative">
-                <input required type="text" placeholder="0000 0000 0000 0000" className="w-full bg-body border border-white/10 rounded-xl pl-10 pr-4 py-3 text-text focus:outline-none focus:border-accent" />
+                <input required type="text" onFocus={handlePaymentInteraction} placeholder="0000 0000 0000 0000" className="w-full bg-body border border-white/10 rounded-xl pl-10 pr-4 py-3 text-text focus:outline-none focus:border-accent" />
                 <CreditCard className="w-5 h-5 absolute left-3 top-3.5 text-text-muted" />
               </div>
             </div>
