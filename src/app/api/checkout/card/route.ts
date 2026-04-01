@@ -8,7 +8,7 @@ const payment = new Payment(client);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, name, document, amount, token, installments, itemsDescription, brand } = body;
+    const { email, name, document, amount, token, installments, itemsDescription, brand, phone, address } = body;
 
     const cleanDoc = document.replace(/\D/g, "");
     const docType = cleanDoc.length > 11 ? "CNPJ" : "CPF";
@@ -32,7 +32,38 @@ export async function POST(request: Request) {
           identification: {
             type: docType,
             number: cleanDoc
+          },
+          address: {
+            zip_code: address?.cep?.replace(/\D/g, "") || "",
+            street_name: address?.street || "",
+            street_number: address?.number || "",
+            neighborhood: address?.neighborhood || "",
+            city: address?.city || "",
+            federal_unit: address?.state || ""
           }
+        },
+        additional_info: {
+          payer: {
+            first_name: firstName,
+            last_name: lastName,
+            phone: {
+              area_code: phone ? phone.replace(/\D/g, "").substring(0, 2) : "",
+              number: phone ? phone.replace(/\D/g, "").substring(2) : ""
+            },
+            address: {
+              zip_code: address?.cep?.replace(/\D/g, "") || "",
+              street_name: address?.street || "",
+              street_number: address?.number || ""
+            }
+          },
+          items: [
+            {
+              title: itemsDescription || "Compra Guardiã de Choque",
+              description: "Kit Defesa Pessoal",
+              quantity: 1,
+              unit_price: Number(amount)
+            }
+          ]
         }
       }
     });

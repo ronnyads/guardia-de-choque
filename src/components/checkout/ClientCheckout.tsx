@@ -86,7 +86,9 @@ export default function ClientCheckout() {
           installments: paymentData.cardData?.installments || 1, // para cartão
           email: paymentData.personalData.email,
           name: paymentData.personalData.name,
+          phone: paymentData.personalData.phone,
           document: paymentData.document,
+          address: paymentData.address,
           itemsDescription: `${kit.name}${hasOrderBump ? ' + Garantia Premium' : ''}${acceptedUpsell ? ' + Mini Taser 12.000KV' : ''}`
         })
       });
