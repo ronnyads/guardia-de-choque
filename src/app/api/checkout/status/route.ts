@@ -23,10 +23,11 @@ export async function GET(request: Request) {
       status: result.status,
       approved: result.status === 'approved'
     });
-  } catch (error: any) {
-    console.error("Erro MP Status:", error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Erro MP Status:", err);
     return NextResponse.json(
-      { error: error.message },
+      { error: err.message },
       { status: 500 }
     );
   }

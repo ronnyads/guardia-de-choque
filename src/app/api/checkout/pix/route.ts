@@ -57,10 +57,11 @@ export async function POST(request: Request) {
       { status: 400 }
     );
 
-  } catch (error: any) {
-    console.error("Erro MP Pix:", error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Erro MP Pix:", err);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: err.message },
       { status: 500 }
     );
   }

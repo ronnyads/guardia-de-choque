@@ -39,7 +39,28 @@ export default function ClientCheckout() {
   const itemsTotal = kit.promoPrice;
   const total = itemsTotal + (hasOrderBump ? orderBumpPrice : 0);
 
-  const handleFinishCheckout = (data: any) => {
+  // Efeito Mágico de Polling do PIX
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (checkoutComplete && pixData?.paymentId) {
+      intervalId = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/checkout/status?id=${pixData.paymentId}`);
+          const data = await res.json();
+          if (data.approved) {
+            setPixData(null); // Remove a tela do PIX para cair na tela de Sucesso padrão
+          }
+        } catch (e) {
+          console.error("Poller error", e);
+        }
+      }, 3000); // 3 em 3 segundos
+    }
+
+    return () => clearInterval(intervalId);
+  }, [checkoutComplete, pixData?.paymentId]);
+
+  const handleFinishCheckout = (data: unknown) => {
     setPaymentData(data);
     setShowUpsell(true);
   };
@@ -93,7 +114,8 @@ export default function ClientCheckout() {
       } else {
         alert("Erro no Pagamento: " + (result.error || "Operadora recusou a transação."));
       }
-    } catch (e: any) {
+    } catch (err: unknown) {
+      const e = err as Error;
       alert("Falha de conexão com os servidores do gateway: " + e.message);
     } finally {
       setIsProcessingFull(false);
@@ -110,26 +132,7 @@ export default function ClientCheckout() {
     );
   }
 
-  // Efeito Mágico de Polling do PIX
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
 
-    if (checkoutComplete && pixData?.paymentId) {
-      intervalId = setInterval(async () => {
-        try {
-          const res = await fetch(`/api/checkout/status?id=${pixData.paymentId}`);
-          const data = await res.json();
-          if (data.approved) {
-            setPixData(null); // Remove a tela do PIX para cair na tela de Sucesso padrão
-          }
-        } catch (e) {
-          console.error("Poller error", e);
-        }
-      }, 3000); // 3 em 3 segundos
-    }
-
-    return () => clearInterval(intervalId);
-  }, [checkoutComplete, pixData?.paymentId]);
 
   if (checkoutComplete) {
     if (pixData) {
@@ -144,6 +147,7 @@ export default function ClientCheckout() {
           </p>
           
           <div className="bg-white p-6 rounded-2xl mb-6 shadow-[0_0_50px_rgba(34,197,94,0.1)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`} alt="QR Code PIX" className="w-56 h-56 object-contain" />
           </div>
           

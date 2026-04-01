@@ -50,10 +50,11 @@ export async function POST(request: Request) {
       { status: 400 }
     );
 
-  } catch (error: any) {
-    console.error("Erro MP Cartão:", error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("Erro MP Cartão:", err);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: err.message },
       { status: 500 }
     );
   }

@@ -9,7 +9,7 @@ export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "10620800603
 // Declare fbq globally for TS
 declare global {
   interface Window {
-    fbq: any;
+    fbq: (...args: unknown[]) => void;
   }
 }
 

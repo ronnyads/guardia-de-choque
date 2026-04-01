@@ -62,7 +62,7 @@ const maskDocument = (value: string) => {
 // -------------------------
 
 interface Props {
-  onFinish: (paymentData: any) => void;
+  onFinish: (paymentData: unknown) => void;
   hasOrderBump: boolean;
   setHasOrderBump: (val: boolean) => void;
   orderBumpPrice: number;
@@ -241,8 +241,9 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
         } else {
           throw new Error("Dados do cartão recusados pela operadora.");
         }
-      } catch (err: any) {
-        setPaymentError(err.message || "Erro de segurança ao processar cartão.");
+      } catch (err: unknown) {
+        const e = err as Error;
+        setPaymentError(e.message || "Erro de segurança ao processar cartão.");
         setIsProcessing(false);
         return;
       }
