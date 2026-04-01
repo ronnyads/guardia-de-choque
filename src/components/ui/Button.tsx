@@ -19,11 +19,11 @@ export default function Button({
   className = "",
   onClick,
 }: Props) {
-  const base = "inline-flex items-center justify-center gap-2 font-bold tracking-wide transition-all duration-200 rounded-xl cursor-pointer";
+  const base = "inline-flex items-center justify-center gap-2 font-bold tracking-wide transition-all duration-300 rounded-xl cursor-pointer hover:scale-[1.03] active:scale-[0.98]";
 
   const variants = {
-    primary: "bg-accent hover:bg-accent-hover text-black",
-    secondary: "border-2 border-white/20 hover:border-accent text-white hover:text-accent",
+    primary: "bg-accent hover:bg-accent-hover text-black shadow-lg shadow-accent/20 border-b-4 border-black/10 active:border-b-0 translate-y-[-2px] active:translate-y-[0px] hover:translate-y-[-4px]",
+    secondary: "bg-white/5 border-2 border-white/10 hover:bg-white/15 hover:border-accent hover:text-accent text-white shadow-xl translate-y-[-2px] hover:translate-y-[-4px]",
   };
 
   const sizes = {

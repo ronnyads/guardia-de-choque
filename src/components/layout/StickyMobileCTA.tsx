@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Zap } from "lucide-react";
+import Button from "@/components/ui/Button";
 
 export default function StickyMobileCTA() {
   const [visible, setVisible] = useState(false);
@@ -35,13 +36,16 @@ export default function StickyMobileCTA() {
               <p className="text-xs text-text-muted">A partir de</p>
               <p className="text-lg font-bold text-accent">R$ 97,90</p>
             </div>
-            <a
+            <Button
               href="#kits"
-              className="flex items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold text-sm px-6 py-3 rounded-xl transition-colors"
+              variant="primary"
+              size="md"
+              pulse={true}
+              className="px-8"
             >
               <Zap className="w-4 h-4" />
-              COMPRAR
-            </a>
+              COMPRAR AGORA
+            </Button>
           </div>
         </motion.div>
       )}

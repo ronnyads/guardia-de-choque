@@ -98,9 +98,9 @@ export default function KitCard({ kit, index }: Props) {
             }
           }}
           variant={kit.highlighted ? "primary" : "secondary"}
-          size="md"
-          pulse={kit.highlighted}
-          className="w-full mt-2"
+          size="lg"
+          pulse={true}
+          className="w-full mt-2 py-4"
         >
           <Zap className="w-4 h-4" />
           {kit.highlighted ? "GARANTIR KIT DUPLA" : `COMPRAR ${kit.name.toUpperCase()}`}
