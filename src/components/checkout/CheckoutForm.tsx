@@ -62,7 +62,7 @@ const maskDocument = (value: string) => {
 // -------------------------
 
 interface Props {
-  onFinish: () => void;
+  onFinish: (paymentData: any) => void;
   hasOrderBump: boolean;
   setHasOrderBump: (val: boolean) => void;
   orderBumpPrice: number;
@@ -85,6 +85,17 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
   const [docError, setDocError] = useState("");
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [personalData, setPersonalData] = useState({ name: "", email: "", phone: "" });
+  
+  const [cardData, setCardData] = useState({ number: "", name: "", expiry: "", cvv: "", installments: "1" });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
+
+  const formatCardNumber = (val: string) => val.replace(/\D/g, "").substring(0, 16).replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+  const formatExpiry = (val: string) => {
+    let raw = val.replace(/\D/g, "").substring(0, 4);
+    if (raw.length > 2) return `${raw.substring(0, 2)}/${raw.substring(2, 4)}`;
+    return raw;
+  };
   
   const isCnpj = documentVal.replace(/\D/g, "").length > 11;
 
@@ -188,9 +199,57 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
       if (!valid) setDocError("CNPJ Inválido");
     }
     
-    if (!valid) return; // bloqueia envio
+    if (!valid) return;
 
-    onFinish(); // Aciona o Upsell ou a tela final
+    setPaymentError("");
+    setIsProcessing(true);
+
+    let finalToken = null;
+
+    if (paymentMethod === "cartao") {
+      try {
+        const [month, year] = cardData.expiry.split("/");
+        if (!month || !year || year.length !== 2) throw new Error("Validade inválida. Use o formato MM/AA.");
+
+        const fullYear = `20${year}`;
+        const cleanCard = cardData.number.replace(/\D/g, "");
+        if (cleanCard.length < 13) throw new Error("Número do cartão inválido.");
+
+        // Tokenização Frontend Blindada
+        const res = await fetch(`https://api.mercadopago.com/v1/card_tokens?public_key=${process.env.NEXT_PUBLIC_MP_PUBLIC_KEY}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            card_number: cleanCard,
+            security_code: cardData.cvv,
+            expiration_month: parseInt(month, 10),
+            expiration_year: parseInt(fullYear, 10),
+            cardholder: {
+              name: cardData.name || personalData.name,
+              identification: {
+                type: digits.length > 11 ? "CNPJ" : "CPF",
+                number: digits
+              }
+            }
+          })
+        });
+        
+        const data = await res.json();
+        
+        if (data.id) {
+          finalToken = data.id;
+        } else {
+          throw new Error("Dados do cartão recusados pela operadora.");
+        }
+      } catch (err: any) {
+        setPaymentError(err.message || "Erro de segurança ao processar cartão.");
+        setIsProcessing(false);
+        return;
+      }
+    }
+
+    setIsProcessing(false);
+    onFinish({ paymentMethod, token: finalToken, cardData, personalData, document: digits, address });
   };
 
   return (
@@ -314,34 +373,39 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
             <div className="col-span-1 md:col-span-4">
               <label className="block text-sm font-medium text-text-muted mb-1">Número do Cartão</label>
               <div className="relative">
-                <input required type="text" onFocus={handlePaymentInteraction} placeholder="0000 0000 0000 0000" className="w-full bg-body border border-white/10 rounded-xl pl-10 pr-4 py-3 text-text focus:outline-none focus:border-accent" />
+                <input required type="text" value={cardData.number} onChange={(e) => setCardData({...cardData, number: formatCardNumber(e.target.value)})} onFocus={handlePaymentInteraction} placeholder="0000 0000 0000 0000" className="w-full bg-body border border-white/10 rounded-xl pl-10 pr-4 py-3 text-text focus:outline-none focus:border-accent" />
                 <CreditCard className="w-5 h-5 absolute left-3 top-3.5 text-text-muted" />
               </div>
             </div>
             <div className="col-span-1 md:col-span-2">
               <label className="block text-sm font-medium text-text-muted mb-1">Nome no Cartão</label>
-              <input required type="text" placeholder="Como impresso no cartão" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
+              <input required type="text" value={cardData.name} onChange={(e) => setCardData({...cardData, name: e.target.value.toUpperCase()})} placeholder="Como impresso no cartão" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
             </div>
             <div className="col-span-1 md:col-span-1">
               <label className="block text-sm font-medium text-text-muted mb-1">Validade (MM/YY)</label>
-              <input required type="text" placeholder="MM/AA" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
+              <input required type="text" value={cardData.expiry} onChange={(e) => setCardData({...cardData, expiry: formatExpiry(e.target.value)})} placeholder="MM/AA" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
             </div>
             <div className="col-span-1 md:col-span-1">
               <label className="block text-sm font-medium text-text-muted mb-1">CVV</label>
               <div className="relative">
-                <input required type="text" placeholder="123" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
+                <input required type="text" maxLength={4} value={cardData.cvv} onChange={(e) => setCardData({...cardData, cvv: e.target.value.replace(/\D/g, "")})} placeholder="123" className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent" />
                 <Lock className="w-4 h-4 absolute right-3 top-3.5 text-text-muted opacity-50" />
               </div>
             </div>
             <div className="col-span-1 md:col-span-4 mt-2">
               <label className="block text-sm font-medium text-text-muted mb-1">Parcelas</label>
-              <select className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent appearance-none">
-                <option className="bg-neutral-900 text-white">À vista com desconto extra</option>
-                <option className="bg-neutral-900 text-white">3x sem juros (Recomendado)</option>
-                <option className="bg-neutral-900 text-white">6x sem juros</option>
-                <option className="bg-neutral-900 text-white">12x no cartão</option>
+              <select value={cardData.installments} onChange={(e) => setCardData({...cardData, installments: e.target.value})} className="w-full bg-body border border-white/10 rounded-xl px-4 py-3 text-text focus:outline-none focus:border-accent appearance-none">
+                <option value="1" className="bg-neutral-900 text-white">À vista com desconto extra</option>
+                <option value="3" className="bg-neutral-900 text-white">3x sem juros (Recomendado)</option>
+                <option value="6" className="bg-neutral-900 text-white">6x sem juros</option>
+                <option value="12" className="bg-neutral-900 text-white">12x no cartão</option>
               </select>
             </div>
+            {paymentError && (
+              <div className="col-span-1 md:col-span-4 mt-2 bg-red-500/10 border border-red-500/50 rounded-xl p-3 text-red-500 text-sm font-bold text-center">
+                {paymentError}
+              </div>
+            )}
           </div>
         )}
 
@@ -389,11 +453,12 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
 
       {/* SUBMIT */}
       <button 
-        type="submit" 
-        className="w-full bg-accent hover:bg-accent-hover text-black font-black text-xl py-6 rounded-2xl flex justify-center items-center gap-2 shadow-[0_0_40px_rgba(251,191,36,0.2)] hover:shadow-[0_0_60px_rgba(251,191,36,0.4)] transition-all transform hover:scale-[1.01]"
+        type="submit"
+        disabled={isProcessing}
+        className={`w-full bg-accent hover:bg-accent-hover text-black font-black text-xl py-6 rounded-2xl flex justify-center items-center gap-2 shadow-[0_0_40px_rgba(251,191,36,0.2)] transition-all ${isProcessing ? 'opacity-80 cursor-wait' : 'hover:shadow-[0_0_60px_rgba(251,191,36,0.4)] hover:scale-[1.01]'}`}
       >
         <Lock className="w-5 h-5" />
-        FINALIZAR COMPRA SEGURA
+        {isProcessing ? "PROCESSANDO SEGURANÇA..." : "FINALIZAR COMPRA SEGURA"}
       </button>
 
       {/* Trust footers under button */}
