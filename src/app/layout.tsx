@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import MetaPixel from "@/components/analytics/MetaPixel";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -58,6 +59,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${montserrat.className} min-h-full flex flex-col`}>
+        <MetaPixel />
         {children}
       </body>
     </html>

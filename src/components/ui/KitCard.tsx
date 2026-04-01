@@ -88,6 +88,15 @@ export default function KitCard({ kit, index }: Props) {
         {/* CTA */}
         <Button
           href={getCheckoutUrl(kit.slug)}
+          onClick={() => {
+            if (typeof window !== "undefined" && window.fbq) {
+              window.fbq("track", "InitiateCheckout", {
+                content_name: kit.name,
+                currency: "BRL",
+                value: kit.promoPrice,
+              });
+            }
+          }}
           variant={kit.highlighted ? "primary" : "secondary"}
           size="md"
           pulse={kit.highlighted}
