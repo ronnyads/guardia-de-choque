@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { KITS } from "@/lib/constants";
 import OrderSummary from "./OrderSummary";
 import CheckoutForm from "./CheckoutForm";
@@ -12,6 +12,17 @@ export default function ClientCheckout() {
   const kitId = searchParams.get("kit") || "kit-dupla"; // default fallback
   
   const kit = KITS.find((k) => k.id === kitId) || KITS[1];
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.fbq) {
+      // O Meta prefere disparar o checkout no momento que a página de pagamento carrega
+      window.fbq("track", "InitiateCheckout", {
+        content_name: kit.name,
+        currency: "BRL",
+        value: kit.promoPrice,
+      });
+    }
+  }, [kit.name, kit.promoPrice]);
 
   const [hasOrderBump, setHasOrderBump] = useState(false);
   const orderBumpPrice = 29.90; // Preço da Garantia Estendida
