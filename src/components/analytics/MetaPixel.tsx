@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
 export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1062080060323171";
 
@@ -25,7 +25,7 @@ export const trackEvent = (name: string, options = {}) => {
   }
 };
 
-export default function MetaPixel() {
+function MetaPixelContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -55,5 +55,13 @@ export default function MetaPixel() {
         `,
       }}
     />
+  );
+}
+
+export default function MetaPixel() {
+  return (
+    <Suspense fallback={null}>
+      <MetaPixelContent />
+    </Suspense>
   );
 }
