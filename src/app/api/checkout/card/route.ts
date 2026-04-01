@@ -58,6 +58,7 @@ export async function POST(request: Request) {
           },
           items: [
             {
+              id: "gd-choque-1",
               title: itemsDescription || "Compra Guardiã de Choque",
               description: "Kit Defesa Pessoal",
               quantity: 1,
