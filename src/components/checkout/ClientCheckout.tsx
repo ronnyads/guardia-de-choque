@@ -82,6 +82,7 @@ export default function ClientCheckout() {
         body: JSON.stringify({
           amount: amountWithDiscount,
           token: paymentData.token, // para cartão
+          brand: paymentData.cardData?.brand || "visa",
           installments: paymentData.cardData?.installments || 1, // para cartão
           email: paymentData.personalData.email,
           name: paymentData.personalData.name,

@@ -8,7 +8,7 @@ const payment = new Payment(client);
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, name, document, amount, token, installments, itemsDescription } = body;
+    const { email, name, document, amount, token, installments, itemsDescription, brand } = body;
 
     const cleanDoc = document.replace(/\D/g, "");
     const docType = cleanDoc.length > 11 ? "CNPJ" : "CPF";
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
         token: token,
         description: itemsDescription || "Compra Guardiã de Choque",
         installments: Number(installments) || 1,
-        payment_method_id: "visa", // MP normally infers this from the token, but you can pass logic to detect it if strictly needed.
+        payment_method_id: brand || "visa",
         payer: {
           email: email,
           first_name: firstName,

@@ -250,7 +250,24 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
     }
 
     setIsProcessing(false);
-    onFinish({ paymentMethod, token: finalToken, cardData, personalData, document: digits, address });
+    
+    let detectedBrand = "visa";
+    if (cardData.number) {
+       const cleanCard = cardData.number.replace(/\D/g, "");
+       if (cleanCard.startsWith("5") || cleanCard.startsWith("2")) detectedBrand = "master";
+       if (cleanCard.startsWith("3")) detectedBrand = "amex";
+       if (cleanCard.startsWith("4")) detectedBrand = "visa";
+       if (cleanCard.startsWith("6")) detectedBrand = "elo";
+    }
+
+    onFinish({ 
+      paymentMethod, 
+      token: finalToken, 
+      cardData: { ...cardData, brand: detectedBrand }, 
+      personalData, 
+      document: digits, 
+      address 
+    });
   };
 
   return (
