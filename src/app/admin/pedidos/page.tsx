@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 
 // Força a página a sempre buscar dados novos do MP na hora de carregar (Não usa cache antigo da Vercel)
@@ -5,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function AdminPedidos() {
   const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || "";
-  let payments = [];
+  let payments: any[] = [];
   let errorMsg = "";
 
   try {
