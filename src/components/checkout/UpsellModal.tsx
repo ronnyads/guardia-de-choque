@@ -18,23 +18,23 @@ export default function UpsellModal({ upsellPrice, onDecision }: Props) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
-      <div className="bg-surface border border-accent/30 rounded-3xl max-w-xl w-full p-1 overflow-hidden animate-fade-in shadow-[0_0_100px_rgba(251,191,36,0.15)]">
+      <div className="bg-surface border border-accent/30 rounded-3xl max-w-xl w-full flex flex-col max-h-[95vh] p-1 overflow-hidden animate-fade-in shadow-[0_0_100px_rgba(251,191,36,0.15)]">
         
         {/* Progress bar fake indicando que a compra tá em 80% */}
         <div className="h-2 w-full bg-white/5 rounded-t-3xl overflow-hidden relative">
            <div className="absolute top-0 left-0 bottom-0 bg-accent w-[85%] animate-[shimmer_2s_infinite]"></div>
         </div>
 
-        <div className="p-6 md:p-8 relative">
+        <div className="p-4 md:p-6 lg:p-8 relative overflow-y-auto flex-1 custom-scrollbar">
           
           <div className="flex items-center justify-center gap-2 text-accent font-bold uppercase tracking-widest text-xs mb-4">
             <AlertCircle className="w-4 h-4 animate-pulse" />
             <span className="text-center">Atenção! Seu pedido não está completo</span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-black text-white text-center mb-6 leading-tight">
+          <h2 className="text-2xl md:text-4xl font-black text-white text-center mb-6 leading-tight">
             NÃO FECHE ESSA PÁGINA <br/> 
-            <span className="text-xl md:text-2xl font-normal text-text-muted mt-2 block">
+            <span className="text-lg md:text-2xl font-normal text-text-muted mt-2 block">
               Leia essa mensagem com muita atenção.
             </span>
           </h2>
