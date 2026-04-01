@@ -186,7 +186,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const digits = documentVal.replace(/\D/g, "");
