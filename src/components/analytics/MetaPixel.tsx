@@ -4,7 +4,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { useEffect } from "react";
 
-export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1062080060323171";
 
 // Declare fbq globally for TS
 declare global {
