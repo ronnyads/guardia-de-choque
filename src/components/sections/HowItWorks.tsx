@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { LockOpen, Zap, Shield } from "lucide-react";
 // Zap is used for steps icon AND for the CTA button below
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
+import Button from "@/components/ui/Button";
 
 const steps = [
   {
@@ -100,13 +101,15 @@ export default function HowItWorks() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          <a
+          <Button
             href="#kits"
-            className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold text-sm px-7 py-3.5 rounded-xl transition-colors animate-pulse-glow"
+            variant="primary"
+            size="md"
+            pulse={true}
           >
             <Zap className="w-4 h-4" />
             GARANTA O SEU AGORA
-          </a>
+          </Button>
         </motion.div>
       </div>
     </ScrollSnapSection>

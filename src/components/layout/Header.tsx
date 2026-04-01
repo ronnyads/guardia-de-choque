@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Button from "@/components/ui/Button";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -40,17 +41,16 @@ export default function Header() {
 
         <AnimatePresence>
           {scrolled && (
-            <motion.a
+            <Button
               href="#kits"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="hidden md:flex items-center gap-2 bg-accent hover:bg-accent-hover text-black font-bold text-sm px-5 py-2.5 rounded-xl transition-colors"
+              variant="primary"
+              size="sm"
+              pulse={true}
+              className="hidden md:flex"
             >
               <Zap className="w-4 h-4" />
               COMPRAR AGORA
-            </motion.a>
+            </Button>
           )}
         </AnimatePresence>
       </div>
