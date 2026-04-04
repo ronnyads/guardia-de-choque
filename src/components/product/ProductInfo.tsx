@@ -205,7 +205,11 @@ export default function ProductInfo({ product, onAdd }: Props) {
 
       {/* Buy now */}
       <Link
-        href={`/checkout?produto=${product.slug}&qty=${qty}`}
+        href={`/checkout?kit=${
+          product.slug === "guardia-de-choque" ? "kit-individual" :
+          product.slug === "kit-dupla"         ? "kit-dupla"      :
+          product.slug === "kit-familia"       ? "kit-familia"    : "kit-individual"
+        }`}
         className="flex items-center justify-center gap-2 border border-[#0F172A] text-[#0F172A] hover:bg-[#0F172A] hover:text-white font-semibold py-3.5 rounded-xl transition-all duration-200 text-[13px] tracking-wide active:scale-[0.98]"
       >
         <Zap className="w-4 h-4" aria-hidden />

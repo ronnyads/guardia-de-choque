@@ -9,9 +9,19 @@ import UpsellModal from "./UpsellModal";
 
 export default function ClientCheckout() {
   const searchParams = useSearchParams();
-  const kitId = searchParams.get("kit") || "kit-dupla"; // default fallback
-  
-  const kit = KITS.find((k) => k.id === kitId) || KITS[1];
+
+  // Suporta ?kit=kit-dupla (checkout direto) e ?produto=guardia-de-choque (vindo da PDP)
+  const slugToKit: Record<string, string> = {
+    "guardia-de-choque": "kit-individual",
+    "kit-dupla":         "kit-dupla",
+    "kit-familia":       "kit-familia",
+    "mini-taser":        "kit-individual",
+  };
+  const rawKit     = searchParams.get("kit");
+  const rawProduto = searchParams.get("produto");
+  const kitId      = rawKit || (rawProduto ? slugToKit[rawProduto] : null) || "kit-individual";
+
+  const kit = KITS.find((k) => k.id === kitId) ?? KITS[0];
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.fbq) {
