@@ -14,8 +14,8 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      {/* pt-[104px] = 40px announcement strip + 56px navbar */}
-      <main className="pt-[104px]">
+      {/* Navbar is sticky (not fixed) — no padding offset needed */}
+      <main>
         <HeroSection />
         <AnnouncementBar />
         <ProductScroll title="Mais Vendidos" subtitle="Os favoritos da família Oliveira" />

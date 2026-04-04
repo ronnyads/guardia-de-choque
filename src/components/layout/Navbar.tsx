@@ -17,7 +17,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const pathname   = usePathname();
+  const pathname = usePathname();
   const [scrolled, setScrolled]     = useState(false);
   const [menuOpen, setMenuOpen]     = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -34,47 +34,46 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Announcement strip */}
+      <div className="bg-[#0F172A] text-white text-[11px] font-medium text-center py-2 tracking-widest uppercase">
+        Frete grátis acima de R$ 199 &nbsp;·&nbsp; 5% OFF no PIX &nbsp;·&nbsp; Parcele em até 6x sem juros
+      </div>
+
       <header
         className={[
-          "fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-200",
-          scrolled ? "shadow-sm" : "border-b border-gray-100",
+          "sticky top-0 z-50 bg-white transition-shadow duration-200",
+          scrolled ? "shadow-[0_1px_0_0_#E2E8F0]" : "border-b border-[#F1F5F9]",
         ].join(" ")}
       >
-        {/* Top strip — announcement */}
-        <div className="bg-[#111111] text-white text-[11px] font-medium text-center py-2 tracking-wide">
-          🚚 Frete grátis acima de R$ 199 · 5% OFF no PIX · Parcele em até 6x sem juros
-        </div>
-
-        {/* Main bar */}
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex items-center gap-4">
 
           {/* Logo */}
-          <Link href="/" className="shrink-0 flex items-center gap-2" aria-label="Os Oliveiras — início">
-            <span
-              className="text-xl font-bold text-[#111111] tracking-tight"
-              style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic" }}
-            >
+          <Link href="/" className="shrink-0" aria-label="Os Oliveiras — início">
+            <span className="font-playfair italic text-[20px] font-bold text-[#0F172A] tracking-tight">
               Os Oliveiras
             </span>
           </Link>
 
           {/* Nav — desktop */}
-          <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center" aria-label="Navegação principal">
-            {navLinks.map((link) => {
-              const active = pathname === link.href;
+          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center" aria-label="Navegação">
+            {navLinks.map(({ href, label }) => {
+              const active = pathname === href;
               return (
                 <Link
-                  key={link.href}
-                  href={link.href}
+                  key={href}
+                  href={href}
                   aria-current={active ? "page" : undefined}
                   className={[
-                    "px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-150",
+                    "px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors duration-150",
                     active
-                      ? "text-[#111111] underline underline-offset-4 decoration-2"
-                      : "text-gray-500 hover:text-[#111111]",
+                      ? "text-[#0F172A] font-semibold"
+                      : "text-[#64748B] hover:text-[#0F172A]",
                   ].join(" ")}
                 >
-                  {link.label}
+                  {label}
+                  {active && (
+                    <span className="block h-0.5 bg-[#0F172A] mt-0.5 rounded-full" />
+                  )}
                 </Link>
               );
             })}
@@ -84,27 +83,30 @@ export default function Navbar() {
           <div className="flex items-center gap-0.5 ml-auto">
             <button
               onClick={() => setSearchOpen(!searchOpen)}
-              className="w-10 h-10 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#111111] hover:bg-gray-50 transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
               aria-label="Buscar"
             >
-              {searchOpen ? <X className="w-4.5 h-4.5" /> : <Search className="w-[18px] h-[18px]" />}
+              {searchOpen ? <X className="w-[17px] h-[17px]" /> : <Search className="w-[17px] h-[17px]" />}
             </button>
 
             <button
-              className="hidden md:flex w-10 h-10 items-center justify-center rounded-lg text-gray-500 hover:text-[#111111] hover:bg-gray-50 transition-colors"
+              className="hidden md:flex w-9 h-9 items-center justify-center rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
               aria-label="Minha conta"
             >
-              <User className="w-[18px] h-[18px]" />
+              <User className="w-[17px] h-[17px]" />
             </button>
 
             <button
               onClick={openCart}
-              className="relative w-10 h-10 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#111111] hover:bg-gray-50 transition-colors"
-              aria-label={`Carrinho${count > 0 ? ` (${count})` : ""}`}
+              className="relative w-9 h-9 flex items-center justify-center rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
+              aria-label={`Carrinho${count > 0 ? ` (${count} ${count === 1 ? "item" : "itens"})` : ""}`}
             >
-              <ShoppingCart className="w-[18px] h-[18px]" />
+              <ShoppingCart className="w-[17px] h-[17px]" />
               {count > 0 && (
-                <span className="absolute top-1 right-1 min-w-[16px] h-4 bg-[#111111] text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1 tabular-nums">
+                <span
+                  className="absolute top-0.5 right-0.5 min-w-[16px] h-4 bg-[#0F172A] text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1 tabular-nums"
+                  aria-hidden
+                >
                   {count > 9 ? "9+" : count}
                 </span>
               )}
@@ -112,24 +114,24 @@ export default function Navbar() {
 
             <button
               onClick={() => setMenuOpen(true)}
-              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg text-gray-500 hover:text-[#111111] hover:bg-gray-50 transition-colors"
-              aria-label="Menu"
+              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
+              aria-label="Abrir menu"
             >
-              <Menu className="w-[18px] h-[18px]" />
+              <Menu className="w-[17px] h-[17px]" />
             </button>
           </div>
         </div>
 
-        {/* Search bar */}
+        {/* Search drawer */}
         {searchOpen && (
-          <div className="border-t border-gray-100 bg-white px-4 md:px-6 py-3">
-            <div className="max-w-2xl mx-auto relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <div className="border-t border-[#F1F5F9] bg-white px-4 md:px-6 py-3">
+            <div className="max-w-xl mx-auto relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] pointer-events-none" />
               <input
                 autoFocus
                 type="search"
                 placeholder="Buscar produtos..."
-                className="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 transition-colors bg-gray-50"
+                className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-2.5 text-[13px] text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0F172A] transition-colors"
               />
             </div>
           </div>

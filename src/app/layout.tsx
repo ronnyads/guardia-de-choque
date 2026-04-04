@@ -1,11 +1,22 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "@/components/analytics/MetaPixel";
 
-const montserrat = Montserrat({
+// UI/UX Pro Max: DM Sans — premium, modern, clean, sophisticated
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+// Headings: Playfair Display — tradição familiar brasileira
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
   display: "swap",
 });
 
@@ -30,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${montserrat.variable} h-full antialiased`}>
+    <html lang="pt-BR" className={`${dmSans.variable} ${playfair.variable} h-full antialiased`}>
       <head>
         <script
           type="application/ld+json"
@@ -45,7 +56,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${montserrat.className} min-h-full flex flex-col`}>
+      <body className={`${dmSans.className} min-h-full flex flex-col`}>
         <MetaPixel />
         {children}
       </body>
