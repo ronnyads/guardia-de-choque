@@ -1,59 +1,114 @@
-import { Star } from "lucide-react";
+import { Star, Check, Package } from "lucide-react";
 
 const reviews = [
   {
-    id: "1", name: "Mariana S.", city: "São Paulo, SP", rating: 5, initials: "MS",
-    text: "Chegou rapidíssimo e o produto é exatamente como descrito. Minha filha adorou. Me sinto muito mais tranquila.",
+    id: "1",
+    name: "Mariana Silva",
+    initials: "MS",
+    city: "São Paulo, SP",
+    date: "15/03/2025",
+    rating: 5,
+    product: "Guardiã Individual",
+    text: "Chegou rapidíssimo e o produto é exatamente como descrito. Minha filha adorou. Me sinto muito mais tranquila sabendo que ela está protegida.",
+    verified: true,
   },
   {
-    id: "2", name: "Carlos R.", city: "Curitiba, PR", rating: 5, initials: "CR",
-    text: "Comprei o Kit Dupla para mim e para minha esposa. Qualidade excelente, atendimento ótimo. Recomendo muito.",
+    id: "2",
+    name: "Carlos Eduardo",
+    initials: "CE",
+    city: "Curitiba, PR",
+    date: "12/03/2025",
+    rating: 5,
+    product: "Kit Dupla Proteção",
+    text: "Comprei o Kit Dupla para mim e para minha esposa. Qualidade excelente, atendimento ótimo. Os Oliveiras é diferente — parece que você está comprando de uma família de verdade.",
+    verified: true,
   },
   {
-    id: "3", name: "Fernanda L.", city: "Belo Horizonte, MG", rating: 5, initials: "FL",
-    text: "Os Oliveiras é diferente das outras lojas. Produto chegou embalado com cuidado. Parece presente de família.",
+    id: "3",
+    name: "Ana Beatriz",
+    initials: "AB",
+    city: "Belo Horizonte, MG",
+    date: "10/03/2025",
+    rating: 5,
+    product: "Kit Família",
+    text: "Produto chegou embalado com muito cuidado. Parece presente de família. O arco elétrico é potente e a lanterna é um bônus incrível.",
+    verified: true,
   },
 ];
 
 export default function Testimonials() {
   return (
-    <section className="bg-white border-t border-gray-100 py-12">
+    <section className="bg-[#F8FAFC] border-t border-[#E2E8F0] py-20">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="text-center mb-8">
-          <h2 className="text-xl md:text-2xl font-bold text-[#111111]">O que nossos clientes dizem</h2>
-          <div className="flex items-center justify-center gap-2 mt-3">
-            <div className="flex" aria-label="4.8 de 5 estrelas">
-              {[1,2,3,4,5].map((s) => (
-                <Star key={s} className="w-4 h-4 fill-[#F59E0B] text-[#F59E0B]" aria-hidden />
-              ))}
-            </div>
-            <span className="font-bold text-[#111111] text-sm">4.8</span>
-            <span className="text-gray-400 text-sm">· 424 avaliações</span>
+
+        {/* Section header */}
+        <div className="flex flex-col items-center text-center mb-14">
+          <div className="flex gap-1 mb-4" aria-label="5 estrelas">
+            {[1,2,3,4,5].map((s) => (
+              <Star key={s} className="w-6 h-6 fill-[#F59E0B] text-[#F59E0B]" aria-hidden />
+            ))}
           </div>
+          <h2 className="font-playfair text-[32px] md:text-[40px] text-[#0F172A] leading-tight mb-3">
+            O que a família diz
+          </h2>
+          <p className="text-[#94A3B8] text-[15px] max-w-md">
+            Mais de 2.000 pedidos entregues com 4.8 estrelas de avaliação
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {reviews.map((r) => (
-            <article key={r.id} className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col gap-4">
-              <div className="flex" aria-label={`${r.rating} estrelas`}>
-                {Array.from({ length: r.rating }).map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" aria-hidden />
-                ))}
-              </div>
-              <p className="text-gray-600 text-sm leading-relaxed flex-1">&ldquo;{r.text}&rdquo;</p>
-              <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
-                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center shrink-0" aria-hidden>
-                  <span className="text-[10px] font-bold text-gray-600">{r.initials}</span>
+            <article
+              key={r.id}
+              className="bg-white border border-[#E2E8F0] rounded-2xl p-8 flex flex-col gap-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+            >
+              {/* Header: avatar + name + date + stars */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  {/* Navy avatar */}
+                  <div
+                    className="w-12 h-12 bg-[#0F172A] rounded-full flex items-center justify-center shrink-0"
+                    aria-hidden
+                  >
+                    <span className="text-white text-[13px] font-bold">{r.initials}</span>
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5">
+                      {r.name}
+                      {r.verified && (
+                        <Check className="w-3.5 h-3.5 text-[#059669]" aria-label="Compra verificada" />
+                      )}
+                    </p>
+                    <p className="text-[11px] text-[#94A3B8] mt-0.5">{r.city} · {r.date}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold text-[#111111]">{r.name}</p>
-                  <p className="text-[11px] text-gray-400">{r.city}</p>
+                {/* Stars */}
+                <div className="flex gap-0.5 shrink-0" aria-label={`${r.rating} estrelas`}>
+                  {[1,2,3,4,5].map((s) => (
+                    <Star
+                      key={s}
+                      className={`w-3 h-3 ${s <= r.rating ? "fill-[#F59E0B] text-[#F59E0B]" : "fill-[#E2E8F0] text-[#E2E8F0]"}`}
+                      aria-hidden
+                    />
+                  ))}
                 </div>
-                <span className="ml-auto text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Verificado</span>
               </div>
+
+              {/* Product tag */}
+              <div className="flex items-center gap-1.5 text-[#475569] bg-[#F1F5F9] rounded-full px-3 py-1.5 w-fit">
+                <Package className="w-3 h-3 shrink-0" aria-hidden />
+                <span className="text-[11px] font-semibold">{r.product}</span>
+              </div>
+
+              {/* Review text */}
+              <p className="text-[#475569] text-[13px] leading-relaxed flex-1">
+                &ldquo;{r.text}&rdquo;
+              </p>
             </article>
           ))}
         </div>
+
       </div>
     </section>
   );

@@ -19,12 +19,15 @@ export default function ProductScroll({ title, subtitle }: Props) {
     <section className="bg-white py-10">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-[#111111]">{title}</h2>
-            {subtitle && <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>}
+        <div className="flex items-end justify-between mb-8">
+          <div className="flex flex-col gap-2">
+            <span className="inline-flex items-center bg-[#F1F5F9] text-[#475569] text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest w-fit">
+              {title}
+            </span>
+            <h2 className="font-playfair text-[22px] md:text-[28px] text-[#0F172A] leading-tight">{title}</h2>
+            {subtitle && <p className="text-[13px] text-[#94A3B8]">{subtitle}</p>}
           </div>
-          <Link href="/loja" className="text-xs font-semibold text-[#111111] border border-gray-200 px-4 py-2 rounded-full hover:border-gray-400 transition-colors hidden sm:block">
+          <Link href="/loja" className="text-[12px] font-semibold text-[#0F172A] border border-[#0F172A] px-5 py-2 rounded-full hover:bg-[#0F172A] hover:text-white transition-colors duration-200 hidden sm:block shrink-0">
             Ver Todos
           </Link>
         </div>
