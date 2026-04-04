@@ -127,10 +127,10 @@ export default function ClientCheckout() {
 
   if (isProcessingFull) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 animate-fade-in text-center h-[50vh]">
-        <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mb-6 mx-auto"></div>
-        <h2 className="text-2xl font-bold mb-2">Conectando Operadora Bancária...</h2>
-        <p className="text-text-muted max-w-sm">Os dados encriptados estão sendo validados. Por favor, não feche esta página.</p>
+      <div className="flex flex-col items-center justify-center py-32 text-center h-[50vh]">
+        <div className="w-12 h-12 border-2 border-[#0F172A] border-t-transparent rounded-full animate-spin mb-6 mx-auto" />
+        <h2 className="text-[20px] font-bold text-[#0F172A] mb-2">Conectando operadora bancária…</h2>
+        <p className="text-[#64748B] max-w-sm text-[14px]">Dados criptografados sendo validados. Não feche esta página.</p>
       </div>
     );
   }
@@ -140,62 +140,48 @@ export default function ClientCheckout() {
   if (checkoutComplete) {
     if (pixData) {
       return (
-        <div className="flex flex-col items-center justify-center py-16 animate-fade-in max-w-lg mx-auto w-full">
-          <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-6">
-            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+        <div className="flex flex-col items-center py-12 max-w-lg mx-auto w-full">
+          <div className="w-16 h-16 bg-[#F0FDF4] rounded-full flex items-center justify-center mb-5">
+            <svg className="w-8 h-8 text-[#16A34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h2 className="text-3xl font-black mb-2 tracking-tight text-white">Pedido Reservado!</h2>
-          <p className="text-text-muted text-center mb-8 px-2">
-            Pague via QR Code ou Copia-e-Cola abaixo e seu pedido será aprovado e faturado na hora.
+          <h2 className="font-playfair text-[28px] text-[#0F172A] mb-2">Pedido Reservado!</h2>
+          <p className="text-[14px] text-[#64748B] text-center mb-8 px-2">
+            Pague via QR Code ou Copia-e-Cola abaixo e seu pedido será aprovado na hora.
           </p>
-          
-          <div className="bg-white p-6 rounded-2xl mb-6 shadow-[0_0_50px_rgba(34,197,94,0.1)]">
+          <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 mb-5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`data:image/jpeg;base64,${pixData.qrCodeBase64}`} alt="QR Code PIX" className="w-56 h-56 object-contain" />
           </div>
-          
-          <div className="w-full bg-surface border border-white/10 p-4 rounded-xl text-center mb-4">
-            <p className="text-xs text-text-muted mb-2 font-bold uppercase tracking-wider">Pix Copia e Cola:</p>
-            <div className="flex bg-body rounded-lg overflow-hidden border border-white/5">
-              <input 
-                type="text" 
-                readOnly 
-                value={pixData.qrCode} 
-                className="w-full bg-transparent p-3 text-sm text-center text-text-muted outline-none"
-              />
-            </div>
-            <button 
-              onClick={() => {
-                navigator.clipboard.writeText(pixData.qrCode || "");
-                alert("Código Pix copiado!");
-              }}
-              className="mt-4 w-full bg-green-500 hover:bg-green-600 text-black font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-green-500/20"
+          <div className="w-full bg-white border border-[#E2E8F0] rounded-2xl p-5 text-center mb-4">
+            <p className="text-[11px] text-[#94A3B8] mb-2 font-bold uppercase tracking-wider">PIX Copia e Cola</p>
+            <input type="text" readOnly value={pixData.qrCode}
+              className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3 text-[13px] text-[#475569] text-center outline-none mb-3" />
+            <button
+              onClick={() => { navigator.clipboard.writeText(pixData.qrCode || ""); alert("Código Pix copiado!"); }}
+              className="w-full bg-[#059669] hover:bg-[#047857] text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all text-[14px]"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-              COPIAR CÓDIGO PIX
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+              Copiar Código PIX
             </button>
           </div>
-          
-          <p className="text-xs text-text-muted/60 text-center font-bold">
-            Aprovação instantânea em menos de 10 segundos.
-          </p>
+          <p className="text-[12px] text-[#94A3B8] text-center">Aprovação em menos de 10 segundos após o pagamento.</p>
         </div>
       );
     }
 
     return (
-      <div className="flex flex-col items-center justify-center py-32 animate-fade-in text-center px-4">
-        <div className="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-6">
-          <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="flex flex-col items-center justify-center py-24 text-center px-4">
+        <div className="w-20 h-20 bg-[#F0FDF4] rounded-full flex items-center justify-center mb-6">
+          <svg className="w-10 h-10 text-[#16A34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="text-4xl font-black mb-4 tracking-tight">Compra Aprovada!</h2>
-        <p className="text-text-muted text-center max-w-lg text-lg">
-          Seu pagamento via Cartão de Crédito foi autorizado e processado com segurança pela operadora.
+        <h2 className="font-playfair text-[32px] text-[#0F172A] mb-4">Compra Aprovada!</h2>
+        <p className="text-[#475569] max-w-md text-[15px] leading-relaxed">
+          Seu pagamento foi autorizado e processado com segurança.
         </p>
-        <p className="mt-4 text-sm text-text-secondary">
-          Você receberá o rastreio e a nota fiscal no seu e-mail (ou número de WhatsApp se preferir) nos próximos 15 minutos!
+        <p className="mt-3 text-[13px] text-[#94A3B8]">
+          Você receberá o rastreio e a nota fiscal no seu e-mail nos próximos 15 minutos.
         </p>
       </div>
     );
@@ -205,19 +191,19 @@ export default function ClientCheckout() {
     <>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6">
-          {/* Progress Indicator (Cognitive Load Reduction) */}
-          <div className="flex items-center justify-between text-xs font-semibold px-2 mb-2">
-            <span className="text-accent flex items-center gap-2">
-              <span className="w-6 h-6 rounded-full bg-accent text-black flex items-center justify-center">1</span> 
-              <span>Identificação</span>
-            </span>
-            <span className="h-[2px] flex-1 bg-white/10 mx-3 rounded-full overflow-hidden">
-               <span className="h-full bg-accent/30 w-1/2 block"></span>
-            </span>
-            <span className="text-text-muted flex items-center gap-2 mix-blend-screen opacity-60">
-              <span className="w-6 h-6 rounded-full bg-surface border border-white/20 text-white flex items-center justify-center">2</span> 
-              <span>Pagamento</span>
-            </span>
+          {/* Progress Indicator */}
+          <div className="flex items-center gap-3 mb-1">
+            {[
+              { n: "1", label: "Identificação", done: true },
+              { n: "2", label: "Entrega",       done: true },
+              { n: "3", label: "Pagamento",     done: true },
+            ].map((step, i, arr) => (
+              <div key={step.n} className="flex items-center gap-2 flex-1">
+                <span className="w-6 h-6 rounded-full bg-[#0F172A] text-white text-[11px] font-bold flex items-center justify-center shrink-0">{step.n}</span>
+                <span className="text-[12px] font-semibold text-[#0F172A] whitespace-nowrap">{step.label}</span>
+                {i < arr.length - 1 && <span className="flex-1 h-px bg-[#E2E8F0] ml-1" />}
+              </div>
+            ))}
           </div>
 
           <CheckoutForm 

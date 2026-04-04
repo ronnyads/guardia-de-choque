@@ -1,4 +1,7 @@
-import { ShieldCheck, Truck, Lock, Clock } from "lucide-react";
+"use client";
+
+import Image from "next/image";
+import { ShieldCheck, Truck, Lock, Clock, Star } from "lucide-react";
 import { Kit } from "@/types";
 import { useEffect, useState } from "react";
 
@@ -21,69 +24,115 @@ export default function OrderSummary({ kit, hasOrderBump, orderBumpPrice, total 
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
+  const fmt = (v: number) => v.toFixed(2).replace(".", ",");
+  const isUrgent = timeLeft < 5 * 60;
 
   return (
-    <div className="bg-surface border border-white/10 rounded-2xl p-6 flex flex-col gap-6 shadow-2xl">
-      {/* Urgency Trigger */}
-      <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 flex items-center gap-3">
-        <Clock className="w-5 h-5 text-red-500 animate-pulse" />
-        <p className="text-sm font-medium text-red-100">
-          Seu carrinho expira em: <strong className="text-red-400 text-base">{minutes.toString().padStart(2, "0")}:{seconds.toString().padStart(2, "0")}</strong>
+    <div className="flex flex-col gap-4">
+      {/* Urgency timer */}
+      <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${isUrgent ? "bg-[#FEF2F2] border-[#FCA5A5]" : "bg-[#FFF7ED] border-[#FED7AA]"}`}>
+        <Clock className={`w-4 h-4 shrink-0 ${isUrgent ? "text-[#DC2626]" : "text-[#EA580C]"} animate-pulse`} />
+        <p className="text-[13px] font-medium text-[#0F172A]">
+          Reserva expira em:{" "}
+          <strong className={`text-[15px] tabular-nums ${isUrgent ? "text-[#DC2626]" : "text-[#EA580C]"}`}>
+            {minutes.toString().padStart(2, "0")}:{seconds.toString().padStart(2, "0")}
+          </strong>
         </p>
       </div>
 
-      <h3 className="font-bold text-lg border-b border-white/10 pb-4">Resumo do Pedido</h3>
-      
-      {/* Kit Info */}
-      <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5 shadow-inner">
-        <div>
-          <p className="font-bold text-base">{kit.name}</p>
-          <p className="text-sm text-text-muted">{kit.quantity}x unidades completas</p>
+      {/* Order card */}
+      <div className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#F1F5F9]">
+          <p className="text-[12px] font-bold text-[#94A3B8] uppercase tracking-widest">Resumo do Pedido</p>
         </div>
-        <p className="font-bold text-lg">R$ {kit.promoPrice.toFixed(2).replace(".", ",")}</p>
-      </div>
 
-      {hasOrderBump && (
-        <div className="flex justify-between items-center bg-accent/10 border border-accent/20 p-4 rounded-xl text-accent animate-fade-in relative overflow-hidden">
-          <div className="absolute inset-0 bg-accent/5 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
-          <div>
-            <p className="font-bold text-sm flex items-center gap-1">+ Garantia Premium</p>
-            <p className="text-xs opacity-80">1 ano de blindagem total</p>
+        {/* Product row */}
+        <div className="px-5 py-4 flex items-center gap-4 border-b border-[#F1F5F9]">
+          <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#F8FAFC] border border-[#E2E8F0] shrink-0">
+            <Image
+              src="/images/product/hero-product.png"
+              alt={kit.name}
+              fill
+              className="object-contain p-2"
+            />
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#0F172A] text-white text-[10px] font-bold rounded-full flex items-center justify-center tabular-nums">
+              {kit.quantity}
+            </span>
           </div>
-          <p className="font-bold text-sm">R$ {orderBumpPrice.toFixed(2).replace(".", ",")}</p>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-[#0F172A] text-[14px] leading-snug">{kit.name}</p>
+            <p className="text-[12px] text-[#94A3B8]">{kit.quantity}x unidade{kit.quantity > 1 ? "s" : ""} completa{kit.quantity > 1 ? "s" : ""}</p>
+            {/* Alta procura badge */}
+            <span className="inline-flex items-center gap-1 mt-1 bg-[#FEF2F2] text-[#DC2626] text-[10px] font-bold px-2 py-0.5 rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse" />
+              Alta Procura
+            </span>
+          </div>
+          <p className="font-bold text-[#0F172A] text-[15px] tabular-nums shrink-0">R$ {fmt(kit.promoPrice)}</p>
         </div>
-      )}
 
-      {/* Totals */}
-      <div className="flex flex-col gap-3 pt-4 border-t border-white/10">
-        <div className="flex justify-between text-sm text-text-muted">
-          <span>Subtotal</span>
-          <span>R$ {total.toFixed(2).replace(".", ",")}</span>
-        </div>
-        <div className="flex justify-between text-sm text-green-400 font-medium">
-          <span className="flex items-center gap-2"><Truck className="w-4 h-4" /> Frete Expresso BR</span>
-          <span>GRÁTIS</span>
-        </div>
-        <div className="flex justify-between items-end mt-3 border-t border-white/5 pt-5">
-          <span className="font-bold text-lg text-text">Total</span>
-          <div className="text-right">
-            <span className="text-3xl font-black text-accent drop-shadow-md">R$ {total.toFixed(2).replace(".", ",")}</span>
+        {/* Order bump row */}
+        {hasOrderBump && (
+          <div className="px-5 py-3 flex items-center justify-between bg-[#F0FDF4] border-b border-[#BBF7D0]">
+            <div>
+              <p className="font-semibold text-[#15803D] text-[13px]">+ Garantia Premium 1 Ano</p>
+              <p className="text-[11px] text-[#86EFAC]">Blindagem total contra defeitos</p>
+            </div>
+            <p className="font-bold text-[#15803D] text-[13px] tabular-nums">R$ {fmt(orderBumpPrice)}</p>
+          </div>
+        )}
+
+        {/* Totals */}
+        <div className="px-5 py-4 flex flex-col gap-2.5">
+          <div className="flex justify-between text-[13px]">
+            <span className="text-[#64748B]">Subtotal</span>
+            <span className="text-[#0F172A] tabular-nums">R$ {fmt(total)}</span>
+          </div>
+          <div className="flex justify-between text-[13px]">
+            <span className="text-[#059669] font-medium flex items-center gap-1.5">
+              <Truck className="w-3.5 h-3.5" />
+              Frete Expresso BR
+            </span>
+            <span className="text-[#059669] font-bold">GRÁTIS</span>
+          </div>
+          <div className="flex justify-between items-center pt-3 border-t border-[#E2E8F0] mt-1">
+            <span className="font-bold text-[#0F172A] text-[15px]">Total</span>
+            <div className="text-right">
+              <p className="text-[26px] font-black text-[#0F172A] tabular-nums leading-none">R$ {fmt(total)}</p>
+              <p className="text-[11px] text-[#94A3B8]">em até {kit.installments?.count ?? 3}x no cartão</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Trust Badges */}
-      <div className="mt-4 p-4 bg-green-500/5 border border-green-500/20 rounded-xl flex gap-3 text-sm">
-        <ShieldCheck className="w-8 h-8 text-green-500 shrink-0" />
+      {/* Reviews mini */}
+      <div className="bg-white border border-[#E2E8F0] rounded-2xl px-5 py-4 flex items-center gap-3">
+        <div className="flex shrink-0">
+          {[1,2,3,4,5].map((s) => (
+            <Star key={s} className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+          ))}
+        </div>
         <div>
-          <p className="font-bold text-green-400">Risco Zero - Garantia de 30 Dias</p>
-          <p className="text-text-muted text-xs mt-1">Se não superar expectativas, devolvemos 100% do seu pagamento.</p>
+          <p className="text-[13px] font-semibold text-[#0F172A]">4.7 de 194 avaliações</p>
+          <p className="text-[11px] text-[#94A3B8]">Clientes satisfeitos em todo o Brasil</p>
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-2 text-xs text-text-muted mt-2 opacity-80">
+      {/* Guarantee */}
+      <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-2xl px-5 py-4 flex gap-3">
+        <ShieldCheck className="w-8 h-8 text-[#16A34A] shrink-0 mt-0.5" />
+        <div>
+          <p className="font-bold text-[#15803D] text-[13px]">Garantia de 30 Dias — Risco Zero</p>
+          <p className="text-[12px] text-[#4ADE80] mt-0.5 leading-relaxed" style={{ color: "#166534" }}>
+            Se não superar expectativas, devolvemos 100% do seu pagamento sem burocracia.
+          </p>
+        </div>
+      </div>
+
+      {/* SSL */}
+      <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#94A3B8]">
         <Lock className="w-3 h-3" />
-        <span>Checkout 100% seguro (criptografia SSL 256-bit)</span>
+        <span>Checkout 100% seguro — criptografia SSL 256-bit</span>
       </div>
     </div>
   );
