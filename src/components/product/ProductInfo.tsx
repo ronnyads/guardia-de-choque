@@ -6,6 +6,12 @@ import { ShoppingCart, Zap, ShieldCheck, Truck, Star, RefreshCw } from "lucide-r
 import { StoreProduct } from "@/types";
 import { useCartStore } from "@/lib/store";
 
+const KIT_VARIANTS = [
+  { slug: "guardia-de-choque", label: "Individual",       qty: "1 aparelho",  price: 97.90,  highlight: false },
+  { slug: "kit-dupla",         label: "Dupla Proteção",   qty: "2 aparelhos", price: 169.90, highlight: true  },
+  { slug: "kit-familia",       label: "Kit Família",      qty: "3 aparelhos", price: 227.90, highlight: false },
+];
+
 interface Props {
   product: StoreProduct;
   onAdd?: () => void;
@@ -42,6 +48,43 @@ export default function ProductInfo({ product, onAdd }: Props) {
         <span aria-hidden>/</span>
         <span className="text-[#475569]" aria-current="page">{product.name}</span>
       </nav>
+
+      {/* Kit variant selector */}
+      <div className="flex flex-col gap-2">
+        <p className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-widest">Escolha seu kit</p>
+        <div className="grid grid-cols-3 gap-2">
+          {KIT_VARIANTS.map((v) => {
+            const isActive = product.slug === v.slug;
+            return (
+              <Link
+                key={v.slug}
+                href={`/produto/${v.slug}`}
+                className={[
+                  "relative flex flex-col items-center gap-1 py-3 px-2 rounded-xl border-2 text-center transition-all",
+                  isActive
+                    ? "border-[#0F172A] bg-[#0F172A] text-white"
+                    : "border-[#E2E8F0] bg-white text-[#0F172A] hover:border-[#94A3B8]",
+                ].join(" ")}
+              >
+                {v.highlight && !isActive && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#DC2626] text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                    Mais Escolhido
+                  </span>
+                )}
+                <span className={`text-[12px] font-bold leading-tight ${isActive ? "text-white" : "text-[#0F172A]"}`}>
+                  {v.label}
+                </span>
+                <span className={`text-[10px] ${isActive ? "text-[#94A3B8]" : "text-[#94A3B8]"}`}>
+                  {v.qty}
+                </span>
+                <span className={`text-[11px] font-semibold tabular-nums ${isActive ? "text-white" : "text-[#475569]"}`}>
+                  R$ {v.price.toFixed(2).replace(".", ",")}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Badge + Title */}
       <div className="flex flex-col gap-2">
