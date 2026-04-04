@@ -3,16 +3,16 @@ import { StoreProduct } from "@/types";
 export const storeProducts: StoreProduct[] = [
   {
     id: "guardia-de-choque",
-    name: "Guardiã de Choque",
+    name: "Guardiã de Choque — Individual",
     slug: "guardia-de-choque",
     category: "defesa-pessoal",
     categoryName: "Defesa Pessoal",
     description: "Aparelho de defesa pessoal recarregável com arco elétrico potente, lanterna LED e trava de segurança. Coldre incluso.",
     longDescription: `A Guardiã de Choque é o equipamento de defesa pessoal mais completo do mercado. Com 16cm de comprimento, cabe na bolsa e no bolso com facilidade.\n\nO arco elétrico visível e o som intimidador neutralizam ameaças antes mesmo do contato. A trava dupla de segurança evita acionamentos acidentais, e a bateria recarregável via USB garante que você nunca fique sem proteção.\n\nLegal no Brasil para uso civil. Mais de 2.000 unidades vendidas com 4.7 estrelas de avaliação.`,
     images: [
-      "/images/product/hero-product.png",
+      "/images/product/kit-individual.png",
       "/images/product/guardia-1.png",
-      "/images/product/kit-completo.png",
+      "/images/product/hero-product.png",
       "/images/product/choque-in-hand.png",
     ],
     price: 97.90,
@@ -37,6 +37,76 @@ export const storeProducts: StoreProduct[] = [
       { label: "Cor", value: "Preto" },
       { label: "Conteúdo", value: "Aparelho + Coldre + Cabo USB" },
       { label: "Garantia", value: "3 meses" },
+    ],
+  },
+  {
+    id: "kit-dupla",
+    name: "Kit Dupla Proteção",
+    slug: "kit-dupla",
+    category: "defesa-pessoal",
+    categoryName: "Defesa Pessoal",
+    description: "Dois aparelhos Guardiã de Choque completos. Proteja você e quem você ama. Coldre duplo incluso.",
+    longDescription: `O Kit Dupla é a escolha de quem leva a segurança da família a sério. Dois aparelhos Guardiã de Choque completos, cada um com coldre e cabo USB.\n\nPague por dois e leve dois — com desconto especial de kit. Ideal para casais, mãe e filha, ou simplesmente ter um de reserva.\n\nR$ 84,95 por unidade. A melhor relação custo-benefício do catálogo.`,
+    images: [
+      "/images/product/kit-dupla-foto.png",
+      "/images/product/guardia-1.png",
+      "/images/product/kit-completo.png",
+    ],
+    price: 169.90,
+    originalPrice: 259.80,
+    pixPrice: 161.40,
+    installments: { count: 6, value: 28.32 },
+    rating: 4.8,
+    reviewCount: 143,
+    badge: "Kit",
+    inStock: true,
+    quantity: 2,
+    features: [
+      { icon: "users", title: "2 Aparelhos Completos", description: "Cada um com coldre e cabo USB inclusos" },
+      { icon: "tag", title: "R$ 84,95 por unidade", description: "Melhor custo-benefício do catálogo" },
+      { icon: "gift", title: "Presente Perfeito", description: "Ideal para presentear quem você ama" },
+      { icon: "shield", title: "Dupla Proteção", description: "Você e sua família protegidos" },
+    ],
+    specs: [
+      { label: "Conteúdo", value: "2x Guardiã de Choque + 2x Coldre + 2x Cabo USB" },
+      { label: "Comprimento", value: "16 cm cada" },
+      { label: "Bateria", value: "Recarregável USB" },
+      { label: "Garantia", value: "3 meses cada" },
+    ],
+  },
+  {
+    id: "kit-familia",
+    name: "Kit Família",
+    slug: "kit-familia",
+    category: "defesa-pessoal",
+    categoryName: "Defesa Pessoal",
+    description: "Três aparelhos Guardiã de Choque. Proteção completa para toda a família. O melhor custo-benefício do catálogo.",
+    longDescription: `O Kit Família foi criado para quem leva a segurança de todos a sério. Três aparelhos Guardiã de Choque completos, cada um com coldre e cabo USB.\n\nR$ 75,96 por unidade — o menor preço por aparelho do catálogo. Ideal para toda a família estar protegida.\n\nEnvio rápido para todo o Brasil. Frete grátis incluso.`,
+    images: [
+      "/images/product/kit-familia-foto.png",
+      "/images/product/guardia-1.png",
+      "/images/product/kit-trio.png",
+    ],
+    price: 227.90,
+    originalPrice: 389.70,
+    pixPrice: 216.50,
+    installments: { count: 6, value: 37.98 },
+    rating: 4.9,
+    reviewCount: 98,
+    badge: "Kit",
+    inStock: true,
+    quantity: 3,
+    features: [
+      { icon: "users", title: "3 Aparelhos Completos", description: "Cada um com coldre e cabo USB inclusos" },
+      { icon: "tag", title: "R$ 75,96 por unidade", description: "Menor preço por aparelho do catálogo" },
+      { icon: "shield", title: "Família Protegida", description: "Proteção total para toda a família" },
+      { icon: "gift", title: "Presente Ideal", description: "Surpreenda quem você ama com segurança" },
+    ],
+    specs: [
+      { label: "Conteúdo", value: "3x Guardiã de Choque + 3x Coldre + 3x Cabo USB" },
+      { label: "Comprimento", value: "16 cm cada" },
+      { label: "Bateria", value: "Recarregável USB" },
+      { label: "Garantia", value: "3 meses cada" },
     ],
   },
   {
@@ -75,40 +145,6 @@ export const storeProducts: StoreProduct[] = [
       { label: "Garantia", value: "3 meses" },
     ],
   },
-  {
-    id: "kit-dupla",
-    name: "Kit Dupla Guardiã",
-    slug: "kit-dupla",
-    category: "defesa-pessoal",
-    categoryName: "Defesa Pessoal",
-    description: "Dois aparelhos Guardiã de Choque completos. Proteja você e quem você ama. Coldre duplo incluso.",
-    longDescription: `O Kit Dupla é a escolha de quem leva a segurança da família a sério. Dois aparelhos Guardiã de Choque completos, cada um com coldre e cabo USB.\n\nPague por dois e leve dois — com desconto especial de kit. Ideal para casais, mãe e filha, ou simplesmente ter um de reserva.\n\nR$ 84,95 por unidade. A melhor relação custo-benefício do catálogo.`,
-    images: [
-      "/images/product/kit-trio.png",
-      "/images/product/kit-completo.png",
-    ],
-    price: 169.90,
-    originalPrice: 259.80,
-    pixPrice: 161.40,
-    installments: { count: 6, value: 28.32 },
-    rating: 4.8,
-    reviewCount: 143,
-    badge: "Kit",
-    inStock: true,
-    quantity: 2,
-    features: [
-      { icon: "users", title: "2 Aparelhos Completos", description: "Cada um com coldre e cabo USB inclusos" },
-      { icon: "tag", title: "Preço de Kit", description: "R$ 84,95 por unidade — melhor custo-benefício" },
-      { icon: "gift", title: "Presente Perfeito", description: "Ideal para presentear quem você ama" },
-      { icon: "shield", title: "Dupla Proteção", description: "Você e sua família protegidos" },
-    ],
-    specs: [
-      { label: "Conteúdo", value: "2x Guardiã de Choque + 2x Coldre + 2x Cabo USB" },
-      { label: "Comprimento", value: "16 cm cada" },
-      { label: "Bateria", value: "Recarregável USB" },
-      { label: "Garantia", value: "3 meses cada" },
-    ],
-  },
 ];
 
 export function getProductBySlug(slug: string): StoreProduct | undefined {
@@ -120,7 +156,7 @@ export function getProductsByCategory(categorySlug: string): StoreProduct[] {
 }
 
 export function getFeaturedProducts(): StoreProduct[] {
-  return storeProducts.filter((p) => p.badge === "Mais Vendido" || p.badge === "Kit");
+  return storeProducts.filter((p) => p.inStock);
 }
 
 export function getRelatedProducts(slug: string, limit = 3): StoreProduct[] {
