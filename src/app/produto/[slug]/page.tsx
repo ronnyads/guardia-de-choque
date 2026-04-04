@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 /* Map feature icon strings → Lucide components */
@@ -29,21 +29,21 @@ const featureIconMap: Record<string, React.ElementType> = {
   "gift":             Gift,
 };
 
-/* Static reviews per product (extends product.rating / reviewCount as source of truth) */
+/* Static reviews per product */
 const staticReviews: Record<string, Array<{ name: string; city: string; date: string; rating: number; text: string }>> = {
   "guardia-de-choque": [
-    { name: "Fernanda O.",  city: "São Paulo, SP",    date: "Mar 2025", rating: 5, text: "Chegou bem embalado, exatamente como descrito. O som do arco intimida de verdade, me sinto muito mais segura saindo à noite." },
+    { name: "Fernanda O.",  city: "São Paulo, SP",      date: "Mar 2025", rating: 5, text: "Chegou bem embalado, exatamente como descrito. O som do arco intimida de verdade, me sinto muito mais segura saindo à noite." },
     { name: "Marcos R.",    city: "Belo Horizonte, MG", date: "Fev 2025", rating: 5, text: "Comprei para minha esposa. A trava de segurança funciona bem e o coldre é de qualidade. Recomendo demais!" },
-    { name: "Juliana S.",   city: "Curitiba, PR",     date: "Jan 2025", rating: 4, text: "Produto ótimo. Só achei que poderia ter vindo com as instruções impressas, mas funcionou perfeitamente após ver o vídeo." },
+    { name: "Juliana S.",   city: "Curitiba, PR",       date: "Jan 2025", rating: 4, text: "Produto ótimo. Só achei que poderia ter vindo com as instruções impressas, mas funcionou perfeitamente após ver o vídeo." },
     { name: "Carlos M.",    city: "Rio de Janeiro, RJ", date: "Jan 2025", rating: 5, text: "Entrega super rápida, em 3 dias estava na minha porta. Produto conforme o anúncio, bateria carregou rápido." },
   ],
   "mini-taser": [
-    { name: "Ana P.",       city: "Campinas, SP",     date: "Mar 2025", rating: 5, text: "Minúsculo! Cabe no bolso do short. Arco elétrico forte para o tamanho. Muito bom." },
-    { name: "Roberto S.",   city: "Salvador, BA",     date: "Fev 2025", rating: 4, text: "Bom produto, veio bem embalado. O arco faz bastante barulho, o que é ótimo para intimidar." },
+    { name: "Ana P.",     city: "Campinas, SP",  date: "Mar 2025", rating: 5, text: "Minúsculo! Cabe no bolso do short. Arco elétrico forte para o tamanho. Muito bom." },
+    { name: "Roberto S.", city: "Salvador, BA",  date: "Fev 2025", rating: 4, text: "Bom produto, veio bem embalado. O arco faz bastante barulho, o que é ótimo para intimidar." },
   ],
   "kit-dupla": [
-    { name: "Patricia L.",  city: "Fortaleza, CE",    date: "Mar 2025", rating: 5, text: "Comprei para mim e para minha filha. Ambos chegaram perfeitos, com coldre e cabo. Vale cada centavo." },
-    { name: "Gustavo N.",   city: "Manaus, AM",       date: "Fev 2025", rating: 5, text: "Ótimo custo-benefício. Por esse preço, dois aparelhos de qualidade. Chegou em 4 dias." },
+    { name: "Patricia L.", city: "Fortaleza, CE", date: "Mar 2025", rating: 5, text: "Comprei para mim e para minha filha. Ambos chegaram perfeitos, com coldre e cabo. Vale cada centavo." },
+    { name: "Gustavo N.",  city: "Manaus, AM",    date: "Fev 2025", rating: 5, text: "Ótimo custo-benefício. Por esse preço, dois aparelhos de qualidade. Chegou em 4 dias." },
   ],
 };
 
@@ -52,7 +52,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const product = getProductBySlug(params.slug);
+  const { slug } = await params;
+  const product = getProductBySlug(slug);
   if (!product) return {};
   return {
     title: `${product.name} | Os Oliveiras`,
@@ -60,13 +61,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function ProdutoPage({ params }: Props) {
-  const product = getProductBySlug(params.slug);
+export default async function ProdutoPage({ params }: Props) {
+  const { slug } = await params;
+  const product = getProductBySlug(slug);
   if (!product) notFound();
 
-  const reviews    = staticReviews[params.slug] ?? [];
-  const fmt        = (v: number) => v.toFixed(2).replace(".", ",");
-  const lifestyleImages = product.images.slice(1); // skip first (shown in gallery)
+  const reviews          = staticReviews[slug] ?? [];
+  const fmt              = (v: number) => v.toFixed(2).replace(".", ",");
+  const lifestyleImages  = product.images.slice(1);
 
   return (
     <>
@@ -98,7 +100,9 @@ export default function ProdutoPage({ params }: Props) {
                     <div
                       key={i}
                       className={`relative rounded-2xl overflow-hidden bg-white border border-[#E2E8F0] ${
-                        i === 0 && lifestyleImages.length >= 3 ? "col-span-2 md:col-span-1 row-span-2 aspect-[3/4]" : "aspect-square"
+                        i === 0 && lifestyleImages.length >= 3
+                          ? "col-span-2 md:col-span-1 row-span-2 aspect-[3/4]"
+                          : "aspect-square"
                       }`}
                     >
                       <Image
@@ -119,7 +123,7 @@ export default function ProdutoPage({ params }: Props) {
         {product.features && product.features.length > 0 && (
           <section className="py-14">
             <div className="max-w-7xl mx-auto px-4 md:px-6">
-              <h2 className="font-playfair text-[26px] text-[#0F172A] mb-8">Por que escolher a Guardiã?</h2>
+              <h2 className="font-playfair text-[26px] text-[#0F172A] mb-8">Por que escolher?</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {product.features.map((f) => {
                   const Icon = featureIconMap[f.icon] ?? ShieldCheck;
@@ -236,7 +240,7 @@ export default function ProdutoPage({ params }: Props) {
         {/* ── Related products ── */}
         <section className="py-14">
           <div className="max-w-7xl mx-auto px-4 md:px-6">
-            <RelatedProducts currentSlug={params.slug} />
+            <RelatedProducts currentSlug={slug} />
           </div>
         </section>
       </main>
