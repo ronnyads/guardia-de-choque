@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Lock, CreditCard, ShieldCheck, User, MapPin, CreditCard as PayIcon } from "lucide-react";
 
 // --- VALIDATION HELPERS ---
@@ -535,16 +536,14 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
       {/* Payment badges */}
       <div className="flex items-center justify-center gap-3 flex-wrap mt-1">
         {[
-          { label: "PIX",    bg: "#ECFDF5", text: "#059669" },
-          { label: "Visa",   bg: "#EFF6FF", text: "#1D4ED8" },
-          { label: "Master", bg: "#FFF7ED", text: "#C2410C" },
-          { label: "Elo",    bg: "#F5F3FF", text: "#6D28D9" },
-          { label: "Boleto", bg: "#F8FAFC", text: "#475569" },
-        ].map(({ label, bg, text }) => (
-          <span key={label} className="text-[11px] font-bold px-2.5 py-1 rounded-lg border border-[#E2E8F0]"
-            style={{ backgroundColor: bg, color: text }}>
-            {label}
-          </span>
+          { src: "/images/product/bandeiras/pix.png",       alt: "PIX",        w: 32, h: 32 },
+          { src: "/images/product/bandeiras/visa.png",       alt: "Visa",       w: 44, h: 14 },
+          { src: "/images/product/bandeiras/mastercard.png", alt: "Mastercard", w: 30, h: 22 },
+          { src: "/images/product/bandeiras/elo.png",        alt: "Elo",        w: 32, h: 20 },
+        ].map(({ src, alt, w, h }) => (
+          <div key={alt} className="flex items-center justify-center bg-white border border-[#E2E8F0] rounded-lg px-2.5 py-1.5">
+            <Image src={src} alt={alt} width={w} height={h} className="object-contain" />
+          </div>
         ))}
         <span className="flex items-center gap-1 text-[11px] text-[#94A3B8]">
           <ShieldCheck className="w-3.5 h-3.5 text-[#059669]" />

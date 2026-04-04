@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ShieldCheck, Truck, CreditCard, Phone } from "lucide-react";
+import Image from "next/image";
+import { ShieldCheck, Phone } from "lucide-react";
 
 export default function StoreFooter() {
   return (
@@ -65,13 +66,15 @@ export default function StoreFooter() {
           <div>
             <p className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-4">Formas de Pagamento</p>
             <div className="flex flex-wrap gap-2">
-              {["PIX", "Visa", "Master", "Boleto", "Elo"].map((p) => (
-                <span
-                  key={p}
-                  className="bg-white/10 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg"
-                >
-                  {p}
-                </span>
+              {[
+                { src: "/images/product/bandeiras/pix.png",       alt: "PIX",        w: 36, h: 36 },
+                { src: "/images/product/bandeiras/visa.png",       alt: "Visa",       w: 48, h: 16 },
+                { src: "/images/product/bandeiras/mastercard.png", alt: "Mastercard", w: 34, h: 26 },
+                { src: "/images/product/bandeiras/elo.png",        alt: "Elo",        w: 36, h: 22 },
+              ].map(({ src, alt, w, h }) => (
+                <div key={alt} className="flex items-center justify-center bg-white rounded-lg px-2.5 py-1.5">
+                  <Image src={src} alt={alt} width={w} height={h} className="object-contain" />
+                </div>
               ))}
             </div>
             <div className="flex items-center gap-2 mt-5 p-3 bg-white/5 rounded-xl border border-white/10">
