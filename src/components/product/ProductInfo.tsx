@@ -1,10 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Zap, ShieldCheck, Truck, Star, RefreshCw } from "lucide-react";
 import { StoreProduct } from "@/types";
 import { useCartStore } from "@/lib/store";
+
+const PAYMENT_LOGOS = [
+  { src: "/images/product/bandeiras/pix.png",        alt: "PIX",        w: 40, h: 40 },
+  { src: "/images/product/bandeiras/visa.png",        alt: "Visa",       w: 52, h: 18 },
+  { src: "/images/product/bandeiras/mastercard.png",  alt: "Mastercard", w: 36, h: 28 },
+  { src: "/images/product/bandeiras/elo.png",         alt: "Elo",        w: 40, h: 24 },
+];
 
 const KIT_VARIANTS = [
   { slug: "guardia-de-choque", label: "Individual",       qty: "1 aparelho",  price: 97.90,  highlight: false },
@@ -138,21 +146,14 @@ export default function ProductInfo({ product, onAdd }: Props) {
       {/* Payment icons */}
       <div className="flex flex-col gap-2">
         <p className="text-[11px] text-[#94A3B8] font-medium uppercase tracking-wide">Pagamento 100% seguro</p>
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {[
-            { label: "PIX",        bg: "#ECFDF5", text: "#059669" },
-            { label: "Visa",       bg: "#EFF6FF", text: "#1D4ED8" },
-            { label: "Master",     bg: "#FFF7ED", text: "#C2410C" },
-            { label: "Elo",        bg: "#F5F3FF", text: "#6D28D9" },
-            { label: "Boleto",     bg: "#F8FAFC", text: "#475569" },
-          ].map(({ label, bg, text }) => (
-            <span
-              key={label}
-              className="text-[10px] font-bold px-2.5 py-1 rounded-lg border border-[#E2E8F0]"
-              style={{ backgroundColor: bg, color: text }}
+        <div className="flex items-center gap-3 flex-wrap">
+          {PAYMENT_LOGOS.map(({ src, alt, w, h }) => (
+            <div
+              key={alt}
+              className="flex items-center justify-center bg-white border border-[#E2E8F0] rounded-lg px-2.5 py-1.5"
             >
-              {label}
-            </span>
+              <Image src={src} alt={alt} width={w} height={h} className="object-contain" />
+            </div>
           ))}
         </div>
       </div>
