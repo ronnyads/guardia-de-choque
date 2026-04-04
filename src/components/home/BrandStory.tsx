@@ -4,31 +4,35 @@ import { ArrowRight } from "lucide-react";
 
 export default function BrandStory() {
   return (
-    <section className="bg-white border-t border-gray-100 py-12">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div className="relative aspect-[4/3] bg-gray-50 rounded-2xl overflow-hidden border border-gray-100">
-            <Image
-              src="/images/product/kit-completo.png"
-              alt="Produtos Os Oliveiras"
-              fill
-              className="object-contain p-8"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          </div>
-          <div className="flex flex-col gap-5">
-            <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Nossa História</span>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#111111] leading-snug">
+    <section className="bg-white border-t border-[#E2E8F0]">
+      <div className="relative w-full overflow-hidden">
+        {/* Banner image */}
+        <Image
+          src="/images/product/banner-historia.png"
+          alt="Família Os Oliveiras — qualidade e segurança para quem você ama"
+          width={1920}
+          height={480}
+          className="w-full h-auto object-cover"
+          sizes="100vw"
+        />
+
+        {/* Text overlay — right side */}
+        <div className="absolute inset-0 flex items-center justify-end">
+          <div className="w-full max-w-[420px] mr-8 md:mr-16 lg:mr-24 bg-white/80 backdrop-blur-sm rounded-2xl p-7 md:p-9 flex flex-col gap-4 shadow-lg">
+            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">
+              Nossa História
+            </span>
+            <h2 className="font-playfair text-[22px] md:text-[28px] text-[#0F172A] leading-snug">
               Qualidade não precisa custar uma fortuna.
             </h2>
-            <p className="text-gray-500 leading-relaxed text-sm">
-              A família Oliveira acredita que todo brasileiro merece produtos de qualidade, com
-              segurança garantida e atendimento humano. Cada item testado e aprovado antes de
-              chegar até você.
+            <p className="text-[#475569] text-[13px] leading-relaxed">
+              A família Oliveira acredita que todo brasileiro merece produtos de qualidade,
+              com segurança garantida e atendimento humano. Cada item testado e aprovado
+              antes de chegar até você.
             </p>
             <Link
               href="/sobre"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#111111] hover:gap-3 transition-all duration-150 w-fit border-b border-[#111111] pb-0.5"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#0F172A] hover:gap-3 transition-all duration-150 w-fit border-b border-[#0F172A] pb-0.5"
             >
               Conheça nossa história <ArrowRight className="w-3.5 h-3.5" aria-hidden />
             </Link>
