@@ -11,6 +11,7 @@ export const storeProducts: StoreProduct[] = [
     longDescription: `A Guardiã de Choque é o equipamento de defesa pessoal mais completo do mercado. Com 16cm de comprimento, cabe na bolsa e no bolso com facilidade.\n\nO arco elétrico visível e o som intimidador neutralizam ameaças antes mesmo do contato. A trava dupla de segurança evita acionamentos acidentais, e a bateria recarregável via USB garante que você nunca fique sem proteção.\n\nLegal no Brasil para uso civil. Mais de 2.000 unidades vendidas com 4.7 estrelas de avaliação.`,
     images: [
       "/images/product/hero-product.png",
+      "/images/product/guardia-1.png",
       "/images/product/kit-completo.png",
       "/images/product/choque-in-hand.png",
     ],
