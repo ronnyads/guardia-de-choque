@@ -1,38 +1,23 @@
-"use client";
+import Navbar from "@/components/layout/Navbar";
+import StoreFooter from "@/components/layout/StoreFooter";
+import HeroSection from "@/components/home/HeroSection";
+import CategoryGrid from "@/components/home/CategoryGrid";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
+import BrandStory from "@/components/home/BrandStory";
+import Testimonials from "@/components/home/Testimonials";
 
-import ScrollSnapContainer from "@/components/layout/ScrollSnapContainer";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import StickyMobileCTA from "@/components/layout/StickyMobileCTA";
-import HeroSection from "@/components/sections/HeroSection";
-import ProblemSection from "@/components/sections/ProblemSection";
-import ProductShowcase from "@/components/sections/ProductShowcase";
-import HowItWorks from "@/components/sections/HowItWorks";
-import SocialProof from "@/components/sections/SocialProof";
-import KitOffers from "@/components/sections/KitOffers";
-import TrustGuarantee from "@/components/sections/TrustGuarantee";
-import FAQSection from "@/components/sections/FAQSection";
-import FinalCTA from "@/components/sections/FinalCTA";
-import ExitIntentModal from "@/components/downsell/ExitIntentModal";
-
-export default function Home() {
+export default function HomePage() {
   return (
     <>
-      <Header />
-      <ScrollSnapContainer>
+      <Navbar />
+      <main className="pt-16">
         <HeroSection />
-        <ProblemSection />
-        <ProductShowcase />
-        <HowItWorks />
-        <SocialProof />
-        <KitOffers />
-        <TrustGuarantee />
-        <FAQSection />
-        <FinalCTA />
-        <Footer />
-      </ScrollSnapContainer>
-      <StickyMobileCTA />
-      <ExitIntentModal />
+        <CategoryGrid />
+        <FeaturedProducts />
+        <BrandStory />
+        <Testimonials />
+      </main>
+      <StoreFooter />
     </>
   );
 }

@@ -1,3 +1,56 @@
+/* ─── Store product types ─────────────────────────────────────────── */
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  productCount: number;
+}
+
+export interface StoreProduct {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;          // category slug
+  categoryName: string;
+  description: string;
+  longDescription: string;
+  images: string[];
+  price: number;             // promo price
+  originalPrice: number;
+  pixPrice: number;
+  installments: { count: number; value: number };
+  rating: number;
+  reviewCount: number;
+  badge?: "Mais Vendido" | "Oferta" | "Novo" | "Kit";
+  features: StoreFeature[];
+  specs: Spec[];
+  inStock: boolean;
+  quantity?: number;         // if kit — units included
+}
+
+export interface StoreFeature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface Spec {
+  label: string;
+  value: string;
+}
+
+/* ─── Cart ────────────────────────────────────────────────────────── */
+
+export interface CartItem {
+  product: StoreProduct;
+  qty: number;
+}
+
+/* ─── Legacy types (sales page — keep for /checkout, /admin) ────── */
+
 export interface Product {
   id: string;
   name: string;
@@ -16,11 +69,6 @@ export interface Feature {
   icon: string;
   title: string;
   description: string;
-}
-
-export interface Spec {
-  label: string;
-  value: string;
 }
 
 export interface Kit {

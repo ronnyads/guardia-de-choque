@@ -10,15 +10,15 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Guardiã de Choque | Aparelho de Defesa Pessoal — De R$129 por R$97,90",
+  title: "Os Oliveiras | Produtos de Qualidade para sua Família",
   description:
-    "Aparelho de choque 16cm recarregável com lanterna LED e trava de segurança. Coldre incluso. Legal no Brasil. Frete rápido. 4.7 estrelas, 194 avaliações.",
+    "A loja da família Oliveira. Produtos selecionados com qualidade garantida — defesa pessoal, tecnologia e mais. Frete rápido, pagamento seguro.",
   keywords:
-    "aparelho de choque, defesa pessoal, segurança pessoal, taser, choque elétrico, guardiã de choque",
+    "loja online, produtos qualidade, defesa pessoal, familia oliveira, comprar online brasil",
   openGraph: {
-    title: "Guardiã de Choque | Defesa Pessoal Profissional",
+    title: "Os Oliveiras | Qualidade que a família garante",
     description:
-      "O aparelho de defesa pessoal mais vendido do Brasil. Compacto, recarregável e legal.",
+      "Produtos selecionados com a confiança da família Oliveira. Qualidade garantida, entrega rápida.",
     type: "website",
     locale: "pt_BR",
   },
@@ -37,23 +37,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Product",
-              name: "Guardiã de Choque - Aparelho de Defesa Pessoal",
-              description:
-                "Aparelho de choque profissional recarregável 16cm com lanterna LED e trava de segurança.",
-              brand: { "@type": "Brand", name: "Guardiã" },
-              offers: {
-                "@type": "AggregateOffer",
-                lowPrice: "97.90",
-                highPrice: "227.90",
-                priceCurrency: "BRL",
-                availability: "https://schema.org/InStock",
-              },
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "4.7",
-                reviewCount: "194",
-              },
+              "@type": "Store",
+              name: "Os Oliveiras",
+              description: "Loja de produtos selecionados com qualidade garantida pela família Oliveira.",
+              url: "https://os-oliveiras.vercel.app",
             }),
           }}
         />
