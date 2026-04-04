@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { ShieldCheck, Cpu, Home, Heart, ArrowRight } from "lucide-react";
+import { ShieldCheck, Cpu, Home, Heart } from "lucide-react";
 import { categories } from "@/lib/categories";
 
-/* Map slug → Lucide icon component (NO EMOJI — rule: no-emoji-icons) */
 const categoryIcons: Record<string, React.ElementType> = {
   "defesa-pessoal": ShieldCheck,
   "tecnologia":     Cpu,
@@ -12,62 +11,31 @@ const categoryIcons: Record<string, React.ElementType> = {
 
 export default function CategoryGrid() {
   return (
-    <section className="bg-surface border-y border-border py-20">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+    <section className="bg-gray-50 border-y border-gray-100 py-10">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <h2 className="text-xl md:text-2xl font-bold text-[#111111] mb-6">Categorias</h2>
 
-        {/* Section header */}
-        <div className="flex items-end justify-between mb-12">
-          <div>
-            <span className="text-accent text-xs font-semibold tracking-widest uppercase">
-              Categorias
-            </span>
-            <h2 className="text-3xl md:text-4xl text-foreground mt-2">
-              Produtos para cada necessidade
-            </h2>
-          </div>
-        </div>
-
-        {/* Grid — 2 cols mobile, 4 desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((cat, i) => {
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {categories.map((cat) => {
             const Icon = categoryIcons[cat.slug] ?? ShieldCheck;
-            const hasProducts = cat.productCount > 0;
-
             return (
               <Link
                 key={cat.id}
                 href={`/categoria/${cat.slug}`}
-                className="group relative flex flex-col gap-4 bg-background border border-border rounded-2xl p-6 hover:border-accent transition-all duration-200 hover:shadow-lg hover:shadow-accent/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                style={{ animationDelay: `${i * 60}ms` }}
+                className="group flex flex-col gap-3 bg-white border border-gray-100 rounded-2xl p-5 hover:border-gray-300 hover:shadow-sm transition-all duration-200"
               >
-                {/* Icon */}
-                <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
-                  <Icon className="w-5 h-5 text-accent" aria-hidden />
+                <div className="w-10 h-10 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-center group-hover:bg-gray-100 transition-colors">
+                  <Icon className="w-5 h-5 text-[#111111]" aria-hidden />
                 </div>
-
-                {/* Text */}
-                <div className="flex flex-col gap-1 flex-1">
-                  <h3 className="font-bold text-foreground text-sm group-hover:text-accent transition-colors">
+                <div>
+                  <p className="font-semibold text-[#111111] text-sm group-hover:underline underline-offset-2">
                     {cat.name}
-                  </h3>
-                  <p className="text-text-muted text-xs leading-relaxed line-clamp-2">
-                    {cat.description}
                   </p>
-                </div>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between">
-                  {hasProducts ? (
-                    <span className="text-[11px] text-text-muted">
-                      {cat.productCount} produto{cat.productCount > 1 ? "s" : ""}
-                    </span>
+                  {cat.productCount > 0 ? (
+                    <p className="text-xs text-gray-400 mt-0.5">{cat.productCount} produto{cat.productCount > 1 ? "s" : ""}</p>
                   ) : (
-                    <span className="text-[11px] text-text-muted italic">Em breve</span>
+                    <p className="text-xs text-gray-300 mt-0.5">Em breve</p>
                   )}
-                  <ArrowRight
-                    className="w-3.5 h-3.5 text-text-muted group-hover:text-accent group-hover:translate-x-0.5 transition-all duration-150"
-                    aria-hidden
-                  />
                 </div>
               </Link>
             );

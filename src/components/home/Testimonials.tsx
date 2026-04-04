@@ -1,92 +1,55 @@
-import { Star, Quote } from "lucide-react";
+import { Star } from "lucide-react";
 
 const reviews = [
   {
-    id: "1",
-    name: "Mariana S.",
-    city: "São Paulo, SP",
-    rating: 5,
-    text: "Chegou rapidíssimo e o produto é exatamente como descrito. Minha filha adorou a Guardiã. Me sinto muito mais tranquila agora.",
-    initials: "MS",
+    id: "1", name: "Mariana S.", city: "São Paulo, SP", rating: 5, initials: "MS",
+    text: "Chegou rapidíssimo e o produto é exatamente como descrito. Minha filha adorou. Me sinto muito mais tranquila.",
   },
   {
-    id: "2",
-    name: "Carlos R.",
-    city: "Curitiba, PR",
-    rating: 5,
-    text: "Comprei o Kit Dupla para mim e para minha esposa. Qualidade excelente, atendimento ótimo. Vou indicar para todos os amigos.",
-    initials: "CR",
+    id: "2", name: "Carlos R.", city: "Curitiba, PR", rating: 5, initials: "CR",
+    text: "Comprei o Kit Dupla para mim e para minha esposa. Qualidade excelente, atendimento ótimo. Recomendo muito.",
   },
   {
-    id: "3",
-    name: "Fernanda L.",
-    city: "Belo Horizonte, MG",
-    rating: 5,
-    text: "Os Oliveiras é diferente das outras lojas. Produto chegou com cuidado e embalado direitinho. Parece presente de família mesmo.",
-    initials: "FL",
+    id: "3", name: "Fernanda L.", city: "Belo Horizonte, MG", rating: 5, initials: "FL",
+    text: "Os Oliveiras é diferente das outras lojas. Produto chegou embalado com cuidado. Parece presente de família.",
   },
 ];
 
 export default function Testimonials() {
   return (
-    <section className="bg-background py-20">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-
-        {/* Header */}
-        <div className="text-center mb-14">
-          <span className="text-accent text-xs font-semibold tracking-widest uppercase">
-            Avaliações
-          </span>
-          <h2 className="text-3xl md:text-4xl text-foreground mt-3">
-            O que as famílias dizem
-          </h2>
-
-          {/* Aggregate rating */}
-          <div className="flex items-center justify-center gap-3 mt-5">
-            <div className="flex" aria-label="4.8 de 5 estrelas" role="img">
+    <section className="bg-white border-t border-gray-100 py-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <div className="text-center mb-8">
+          <h2 className="text-xl md:text-2xl font-bold text-[#111111]">O que nossos clientes dizem</h2>
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <div className="flex" aria-label="4.8 de 5 estrelas">
               {[1,2,3,4,5].map((s) => (
-                <Star key={s} className="w-5 h-5 fill-accent text-accent" aria-hidden />
+                <Star key={s} className="w-4 h-4 fill-[#F59E0B] text-[#F59E0B]" aria-hidden />
               ))}
             </div>
-            <span className="font-bold text-foreground text-lg">4.8</span>
-            <span className="text-text-muted text-sm">· 424 avaliações verificadas</span>
+            <span className="font-bold text-[#111111] text-sm">4.8</span>
+            <span className="text-gray-400 text-sm">· 424 avaliações</span>
           </div>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {reviews.map((review) => (
-            <article
-              key={review.id}
-              className="flex flex-col gap-5 bg-surface border border-border rounded-2xl p-6 hover:border-accent/30 transition-colors"
-            >
-              {/* Quote icon */}
-              <Quote className="w-6 h-6 text-accent/40 shrink-0" aria-hidden />
-
-              {/* Text */}
-              <p className="text-text-body leading-relaxed text-sm flex-1">
-                &ldquo;{review.text}&rdquo;
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center gap-3 pt-2 border-t border-border">
-                {/* Avatar initials */}
-                <div
-                  className="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center shrink-0"
-                  aria-hidden
-                >
-                  <span className="text-xs font-bold text-accent">{review.initials}</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {reviews.map((r) => (
+            <article key={r.id} className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col gap-4">
+              <div className="flex" aria-label={`${r.rating} estrelas`}>
+                {Array.from({ length: r.rating }).map((_, i) => (
+                  <Star key={i} className="w-3.5 h-3.5 fill-[#F59E0B] text-[#F59E0B]" aria-hidden />
+                ))}
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed flex-1">&ldquo;{r.text}&rdquo;</p>
+              <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
+                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center shrink-0" aria-hidden>
+                  <span className="text-[10px] font-bold text-gray-600">{r.initials}</span>
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground text-sm">{review.name}</p>
-                  <p className="text-text-muted text-xs">{review.city}</p>
+                  <p className="text-xs font-semibold text-[#111111]">{r.name}</p>
+                  <p className="text-[11px] text-gray-400">{r.city}</p>
                 </div>
-                {/* Star rating */}
-                <div className="ml-auto flex" aria-label={`${review.rating} estrelas`}>
-                  {Array.from({ length: review.rating }).map((_, i) => (
-                    <Star key={i} className="w-3 h-3 fill-accent text-accent" aria-hidden />
-                  ))}
-                </div>
+                <span className="ml-auto text-[10px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Verificado</span>
               </div>
             </article>
           ))}

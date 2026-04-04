@@ -5,58 +5,29 @@ import { Trash2 } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { CartItem as CartItemType } from "@/types";
 
-interface Props {
-  item: CartItemType;
-}
+interface Props { item: CartItemType; }
 
 export default function CartItem({ item }: Props) {
   const removeItem = useCartStore((s) => s.removeItem);
-  const updateQty = useCartStore((s) => s.updateQty);
-
+  const updateQty  = useCartStore((s) => s.updateQty);
   const fmt = (v: number) => v.toFixed(2).replace(".", ",");
 
   return (
-    <div className="flex gap-4 bg-surface rounded-xl p-4">
-      <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-surface-elevated">
-        <Image
-          src={item.product.images[0]}
-          alt={item.product.name}
-          fill
-          className="object-cover"
-        />
+    <div className="flex gap-3 bg-gray-50 rounded-xl p-3">
+      <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-white border border-gray-100">
+        <Image src={item.product.images[0]} alt={item.product.name} fill className="object-contain p-1" />
       </div>
-
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-foreground text-sm leading-snug line-clamp-2">
-          {item.product.name}
-        </p>
-        <p className="text-accent font-bold mt-1">R$ {fmt(item.product.price)}</p>
-
+        <p className="font-semibold text-[#111111] text-xs leading-snug line-clamp-2">{item.product.name}</p>
+        <p className="text-[#111111] font-bold text-sm mt-1 tabular-nums">R$ {fmt(item.product.price)}</p>
         <div className="flex items-center justify-between mt-2">
-          {/* Qty selector */}
-          <div className="flex items-center border border-border rounded-lg overflow-hidden">
-            <button
-              onClick={() => updateQty(item.product.id, item.qty - 1)}
-              className="w-8 h-8 flex items-center justify-center text-text-secondary hover:bg-surface-elevated transition-colors text-lg leading-none"
-            >
-              −
-            </button>
-            <span className="w-8 text-center text-sm font-semibold text-foreground">
-              {item.qty}
-            </span>
-            <button
-              onClick={() => updateQty(item.product.id, item.qty + 1)}
-              className="w-8 h-8 flex items-center justify-center text-text-secondary hover:bg-surface-elevated transition-colors text-lg leading-none"
-            >
-              +
-            </button>
+          <div className="flex items-center border border-gray-200 rounded-lg bg-white overflow-hidden" role="group" aria-label="Quantidade">
+            <button onClick={() => updateQty(item.product.id, item.qty - 1)} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors text-base" aria-label="Diminuir">−</button>
+            <span className="w-7 text-center text-xs font-bold text-[#111111] tabular-nums" aria-live="polite">{item.qty}</span>
+            <button onClick={() => updateQty(item.product.id, item.qty + 1)} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors text-base" aria-label="Aumentar">+</button>
           </div>
-
-          <button
-            onClick={() => removeItem(item.product.id)}
-            className="w-8 h-8 flex items-center justify-center text-text-muted hover:text-danger transition-colors rounded-lg hover:bg-surface-elevated"
-          >
-            <Trash2 className="w-4 h-4" />
+          <button onClick={() => removeItem(item.product.id)} className="w-7 h-7 flex items-center justify-center text-gray-300 hover:text-[#E53E3E] transition-colors rounded-lg" aria-label={`Remover ${item.product.name}`}>
+            <Trash2 className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

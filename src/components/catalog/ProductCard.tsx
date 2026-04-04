@@ -13,106 +13,85 @@ interface Props {
 }
 
 const badgeStyle: Record<string, string> = {
-  "Mais Vendido": "bg-accent text-white",
-  "Oferta":       "bg-danger text-white",
-  "Novo":         "bg-success text-white",
-  "Kit":          "bg-surface-elevated text-foreground border border-border",
+  "Mais Vendido": "bg-[#111111] text-white",
+  "Oferta":       "bg-[#E53E3E] text-white",
+  "Novo":         "bg-[#059669] text-white",
+  "Kit":          "bg-gray-100 text-gray-700",
 };
 
 export default function ProductCard({ product, index = 0 }: Props) {
   const addItem = useCartStore((s) => s.addItem);
   const fmt = (v: number) => v.toFixed(2).replace(".", ",");
-  const savings = Math.round(
-    ((product.originalPrice - product.price) / product.originalPrice) * 100
-  );
+  const savings = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.35, delay: Math.min(index * 0.06, 0.3) }}
-      className="group flex flex-col bg-surface border border-border rounded-2xl overflow-hidden hover:border-accent/50 hover:shadow-xl hover:shadow-black/30 transition-all duration-250"
+      viewport={{ once: true, margin: "-30px" }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.25) }}
+      className="group flex flex-col bg-white border border-gray-100 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-200"
     >
-      {/* ── Image ─────────────────────────────────────────────── */}
+      {/* Image */}
       <Link
         href={`/produto/${product.slug}`}
-        className="relative aspect-square bg-surface-elevated overflow-hidden block"
+        className="relative aspect-square bg-gray-50 block overflow-hidden"
         aria-label={`Ver ${product.name}`}
-        tabIndex={0}
       >
         <Image
           src={product.images[0]}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-contain p-6 group-hover:scale-105 transition-transform duration-500 ease-out"
+          className="object-contain p-6 group-hover:scale-105 transition-transform duration-400 ease-out"
         />
-
-        {/* Badges */}
         {product.badge && (
-          <span
-            className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full ${badgeStyle[product.badge]}`}
-          >
+          <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-lg ${badgeStyle[product.badge]}`}>
             {product.badge}
           </span>
         )}
         {savings >= 5 && (
-          <span className="absolute top-3 right-3 text-[10px] font-bold bg-danger text-white px-2 py-1 rounded-full tabular-nums">
+          <span className="absolute top-3 right-3 text-[10px] font-bold bg-[#E53E3E] text-white px-2 py-0.5 rounded-lg tabular-nums">
             -{savings}%
           </span>
         )}
       </Link>
 
-      {/* ── Info ──────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-3 p-4 flex-1">
-        {/* Name */}
+      {/* Info */}
+      <div className="flex flex-col gap-2 p-4 flex-1">
         <Link href={`/produto/${product.slug}`} tabIndex={-1} aria-hidden>
-          <h3 className="font-semibold text-foreground text-sm leading-snug hover:text-accent transition-colors line-clamp-2">
+          <h3 className="text-sm font-semibold text-[#111111] leading-snug line-clamp-2 hover:underline underline-offset-2">
             {product.name}
           </h3>
         </Link>
 
         {/* Rating */}
-        <div className="flex items-center gap-1.5" aria-label={`${product.rating} de 5 estrelas, ${product.reviewCount} avaliações`}>
+        <div className="flex items-center gap-1.5" aria-label={`${product.rating} de 5 estrelas`}>
           <div className="flex" aria-hidden>
-            {[1, 2, 3, 4, 5].map((s) => (
-              <Star
-                key={s}
-                className={`w-3 h-3 ${
-                  s <= Math.round(product.rating)
-                    ? "fill-accent text-accent"
-                    : "fill-surface-elevated text-surface-elevated"
-                }`}
-              />
+            {[1,2,3,4,5].map((s) => (
+              <Star key={s} className={`w-3 h-3 ${s <= Math.round(product.rating) ? "fill-[#F59E0B] text-[#F59E0B]" : "fill-gray-100 text-gray-100"}`} />
             ))}
           </div>
-          <span className="text-[11px] text-text-muted tabular-nums">
-            ({product.reviewCount})
-          </span>
+          <span className="text-[11px] text-gray-400 tabular-nums">({product.reviewCount})</span>
         </div>
 
-        {/* Price — push to bottom */}
+        {/* Price */}
         <div className="mt-auto pt-1">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <span className="text-base font-bold text-foreground tabular-nums">
-              R$ {fmt(product.price)}
-            </span>
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <span className="text-base font-bold text-[#111111] tabular-nums">R$ {fmt(product.price)}</span>
             {product.originalPrice > product.price && (
-              <span className="text-[11px] text-text-muted line-through tabular-nums">
-                R$ {fmt(product.originalPrice)}
-              </span>
+              <span className="text-xs text-gray-400 line-through tabular-nums">R$ {fmt(product.originalPrice)}</span>
             )}
           </div>
-          <p className="text-[11px] text-text-muted mt-0.5 tabular-nums">
-            {product.installments.count}x R$ {fmt(product.installments.value)} s/juros
+          <p className="text-[11px] text-gray-400 tabular-nums mt-0.5">
+            em {product.installments.count}x R$ {fmt(product.installments.value)}
           </p>
         </div>
 
-        {/* Add to cart */}
+        {/* CTA */}
         <button
           onClick={() => addItem(product)}
-          className="flex items-center justify-center gap-2 w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-xl text-sm transition-all duration-200 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent mt-1"
+          className="mt-2 flex items-center justify-center gap-2 w-full bg-[#111111] hover:bg-[#333333] active:scale-[0.97] text-white font-semibold py-2.5 rounded-xl text-xs transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#111]"
           aria-label={`Adicionar ${product.name} ao carrinho`}
         >
           <ShoppingCart className="w-3.5 h-3.5" aria-hidden />
