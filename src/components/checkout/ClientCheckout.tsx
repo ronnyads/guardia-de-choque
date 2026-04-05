@@ -6,6 +6,7 @@ import { KITS } from "@/lib/constants";
 import OrderSummary from "./OrderSummary";
 import CheckoutForm from "./CheckoutForm";
 import UpsellModal from "./UpsellModal";
+import { kwaiPurchase, kwaiCheckout } from "@/components/analytics/KwaiPixel";
 
 export default function ClientCheckout() {
   const searchParams = useSearchParams();
@@ -25,13 +26,9 @@ export default function ClientCheckout() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.fbq) {
-      // O Meta prefere disparar o checkout no momento que a página de pagamento carrega
-      window.fbq("track", "InitiateCheckout", {
-        content_name: kit.name,
-        currency: "BRL",
-        value: kit.promoPrice,
-      });
+      window.fbq("track", "InitiateCheckout", { content_name: kit.name, currency: "BRL", value: kit.promoPrice });
     }
+    kwaiCheckout(kit.promoPrice);
   }, [kit.name, kit.promoPrice]);
 
   const [hasOrderBump, setHasOrderBump] = useState(false);
@@ -85,13 +82,12 @@ export default function ClientCheckout() {
     const amountWithDiscount = paymentData.paymentMethod === 'pix' ? finalItemsTotal * 0.95 : finalItemsTotal;
 
     const firePurchasePixel = (value: number) => {
+      // Meta Pixel
       if (typeof window !== "undefined" && window.fbq) {
-        window.fbq("track", "Purchase", {
-          value: value.toFixed(2),
-          currency: "BRL",
-          content_name: kit.name
-        });
+        window.fbq("track", "Purchase", { value: value.toFixed(2), currency: "BRL", content_name: kit.name });
       }
+      // Kwai Ads
+      kwaiPurchase(value);
     };
 
     const basePayload = {

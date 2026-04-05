@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "@/components/analytics/MetaPixel";
+import KwaiPixel from "@/components/analytics/KwaiPixel";
 import ToastProvider from "@/components/ui/ToastProvider";
 
 // UI/UX Pro Max: DM Sans — premium, modern, clean, sophisticated
@@ -65,6 +66,7 @@ export default function RootLayout({
       </head>
       <body className={`${dmSans.className} min-h-full flex flex-col`}>
         <MetaPixel />
+        <KwaiPixel />
         <ToastProvider />
         {children}
       </body>
