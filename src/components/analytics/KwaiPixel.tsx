@@ -12,6 +12,7 @@ declare global {
       load:     (pixelId: string, opts?: Record<string, unknown>) => void;
       page:     (params?: Record<string, unknown>) => void;
       track:    (event: string, params?: Record<string, unknown>) => void;
+      ready:    (callback: () => void) => void;
       instance: (pixelId: string) => {
         track: (event: string, params?: Record<string, unknown>) => void;
         page:  (params?: Record<string, unknown>) => void;
@@ -49,10 +50,14 @@ function KwaiPixelContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // SDK já inicializado no <head> — pode chamar direto
-    kwaiPageView();
-    kwaiTrack("EVENT_CONTENT_VIEW", {
-      page_url: typeof window !== "undefined" ? window.location.href : "",
+    if (typeof window === "undefined" || !window.kwaiq) return;
+
+    // Espera o SDK externo (events.js) estar pronto antes de disparar eventos
+    window.kwaiq.ready(function () {
+      window.kwaiq.page();
+      window.kwaiq.track("EVENT_CONTENT_VIEW", {
+        page_url: window.location.href,
+      });
     });
   }, [pathname, searchParams]);
 
