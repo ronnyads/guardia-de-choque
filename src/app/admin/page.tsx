@@ -32,7 +32,7 @@ export default function AdminDashboard() {
     <div className="flex flex-col gap-8">
       <div>
         <h1 className="text-2xl font-bold text-[#0F172A] mb-1">Visão Geral</h1>
-        <p className="text-[#64748B] text-sm">Acompanhe as métricas e o funil da Zuma Shop.</p>
+        <p className="text-[#64748B] text-sm">Acompanhe as métricas e o funil da da operação.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

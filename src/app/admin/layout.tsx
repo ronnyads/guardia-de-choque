@@ -16,7 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-64 bg-white border-r border-[#E2E8F0] hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-[#E2E8F0]">
           <span className="font-bold text-[18px] text-[#0F172A]" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Zuma Shop Admin
+            CommerceOS
           </span>
         </div>
         
@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {/* Mobile Header (simples) */}
         <header className="h-16 bg-white border-b border-[#E2E8F0] flex items-center px-6 md:hidden">
-          <span className="font-bold text-[18px]">Zuma Admin</span>
+          <span className="font-bold text-[18px]">CommerceOS</span>
         </header>
 
         {/* Dynamic content */}
