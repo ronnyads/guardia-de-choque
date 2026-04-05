@@ -39,7 +39,7 @@ export const useCartStore = create<CartStore>()(
           }
           return { items: [...state.items, { product, qty }], isOpen: true };
         });
-        // Kwai Ads — EVENT_ADD_TO_CART
+        // Kwai Ads — EVENT_ADD_TO_CART (via código - CSS selector nao captura eventos React)
         kwaiAddToCart(product.price * qty);
         // Meta Pixel — AddToCart
         if (typeof window !== "undefined" && window.fbq) {
