@@ -1,63 +1,96 @@
+"use client";
+
 import { Truck, ShieldCheck, RotateCcw, Headphones } from "lucide-react";
 
-const benefits = [
+const BENEFITS = [
   {
-    icon: Truck,
-    title: "Frete Rápido",
-    desc: "Enviamos para todo o Brasil. Entrega em até 12 dias úteis com código de rastreio.",
+    Icon: Truck,
+    title: "Frete para todo o Brasil",
+    desc: "Enviamos para qualquer estado com código de rastreio. Prazo de até 12 dias úteis.",
   },
   {
-    icon: ShieldCheck,
-    title: "Compra Segura",
-    desc: "Seus dados protegidos com criptografia SSL. Pagamento 100% seguro via Mercado Pago.",
+    Icon: ShieldCheck,
+    title: "Pagamento 100% Seguro",
+    desc: "Criptografia SSL e processamento via Mercado Pago. Seus dados protegidos.",
   },
   {
-    icon: RotateCcw,
-    title: "Garantia de 30 dias",
-    desc: "Não ficou satisfeito? Devolvemos o valor integral sem perguntas dentro de 30 dias.",
+    Icon: RotateCcw,
+    title: "30 dias de garantia",
+    desc: "Não ficou satisfeito? Devolvemos o valor integral sem burocracia.",
   },
   {
-    icon: Headphones,
-    title: "Suporte Humano",
-    desc: "Atendimento via WhatsApp de segunda a sábado. Respondemos em até 2 horas.",
+    Icon: Headphones,
+    title: "Suporte humano rápido",
+    desc: "Atendimento via WhatsApp de segunda a sábado. Resposta em até 2 horas.",
   },
 ];
 
 export default function TrustBar() {
   return (
-    <section className="bg-[#09090B] py-16">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
+    <section style={{ background: "#09090B" }}>
+      <div className="container-wide section-pad">
+
+        {/* Header */}
+        <div className="text-center mb-12">
+          <p
+            className="text-[11px] font-bold tracking-[0.12em] uppercase mb-3"
+            style={{ color: "rgba(255,255,255,0.35)" }}
+          >
+            Por que comprar conosco
+          </p>
+          <h2
+            className="font-bold"
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "clamp(26px, 3vw, 36px)",
+              color: "#FFFFFF",
+              lineHeight: 1.2,
+            }}
+          >
+            Feito para você confiar.
+          </h2>
+        </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 rounded-2xl overflow-hidden">
-          {benefits.map(({ icon: Icon, title, desc }, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {BENEFITS.map(({ Icon, title, desc }) => (
             <div
               key={title}
-              className={[
-                "bg-[#09090B] p-8 flex flex-col gap-4 hover:bg-white/[0.04] transition-colors duration-200",
-                i < benefits.length - 1 ? "" : "",
-              ].join(" ")}
+              className="flex flex-col gap-5 p-8 rounded-2xl transition-colors duration-200"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)";
+              }}
             >
               {/* Icon */}
               <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-white/10"
-                aria-hidden
+                className="w-12 h-12 flex items-center justify-center rounded-xl shrink-0"
+                style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.12)" }}
               >
-                <Icon className="w-5 h-5 text-white" />
+                <Icon className="w-5 h-5" style={{ color: "#FFFFFF" }} aria-hidden />
               </div>
 
+              {/* Text */}
               <div>
-                <p className="text-[15px] font-semibold text-white leading-snug mb-2">
+                <h3
+                  className="font-bold mb-2"
+                  style={{ color: "#FFFFFF", fontSize: "16px", lineHeight: 1.3, fontFamily: "var(--font-sans)" }}
+                >
                   {title}
-                </p>
-                <p className="text-[13px] text-white/50 leading-relaxed">
+                </h3>
+                <p className="text-[13px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
                   {desc}
                 </p>
               </div>
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

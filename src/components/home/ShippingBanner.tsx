@@ -1,33 +1,47 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Zap } from "lucide-react";
+import { Zap, ArrowRight } from "lucide-react";
 
 const PAYMENT_LOGOS = [
-  { src: "/images/product/bandeiras/pix.png",       alt: "PIX",        w: 36, h: 36 },
-  { src: "/images/product/bandeiras/visa.png",       alt: "Visa",       w: 48, h: 16 },
-  { src: "/images/product/bandeiras/mastercard.png", alt: "Mastercard", w: 34, h: 26 },
-  { src: "/images/product/bandeiras/elo.png",        alt: "Elo",        w: 36, h: 22 },
+  { src: "/images/product/bandeiras/pix.png",        alt: "PIX",        w: 36, h: 36 },
+  { src: "/images/product/bandeiras/visa.png",        alt: "Visa",       w: 48, h: 16 },
+  { src: "/images/product/bandeiras/mastercard.png",  alt: "Mastercard", w: 34, h: 26 },
+  { src: "/images/product/bandeiras/elo.png",         alt: "Elo",        w: 36, h: 22 },
 ];
 
 export default function ShippingBanner() {
   return (
-    <section className="bg-[#F8FAFC] border-t border-[#E2E8F0] py-20">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section style={{ background: "#F9FAFB", borderTop: "1px solid #E4E4E7" }}>
+      <div className="container-wide section-pad">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-          {/* Left — text */}
-          <div className="flex flex-col gap-6">
-            {/* Chip */}
-            <span className="inline-flex items-center bg-white border border-[#E2E8F0] rounded-full px-4 py-2 text-[11px] font-bold text-[#475569] uppercase tracking-widest w-fit">
+          {/* ── Left — Copy ─────────────────────────────────────── */}
+          <div className="flex flex-col gap-7">
+            {/* Eyebrow */}
+            <p
+              className="text-[11px] font-bold tracking-[0.12em] uppercase"
+              style={{ color: "#A1A1AA" }}
+            >
               Formas de Pagamento
-            </span>
+            </p>
 
-            <h2 className="font-playfair text-[28px] md:text-[36px] text-[#0F172A] leading-tight">
+            {/* Heading */}
+            <h2
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontSize: "clamp(28px, 3.5vw, 42px)",
+                color: "#09090B",
+                lineHeight: 1.15,
+                fontWeight: 700,
+              }}
+            >
               Pague do jeito<br />que preferir
             </h2>
 
-            <p className="text-[#475569] text-[15px] leading-relaxed max-w-sm">
-              Aceitamos PIX com 5% de desconto, cartão de crédito em até 6x sem juros e muito mais.
+            {/* Body */}
+            <p style={{ color: "#52525B", fontSize: "15px", lineHeight: 1.7, maxWidth: "380px" }}>
+              Aceitamos PIX com <strong style={{ color: "#09090B" }}>5% de desconto</strong>,
+              cartão de crédito em até <strong style={{ color: "#09090B" }}>6x sem juros</strong> e muito mais.
             </p>
 
             {/* Payment logos */}
@@ -35,49 +49,107 @@ export default function ShippingBanner() {
               {PAYMENT_LOGOS.map(({ src, alt, w, h }) => (
                 <div
                   key={alt}
-                  className="flex items-center justify-center bg-white border border-[#E2E8F0] rounded-lg px-3 py-2"
+                  className="flex items-center justify-center"
+                  style={{
+                    background: "#FFFFFF",
+                    border: "1px solid #E4E4E7",
+                    borderRadius: "10px",
+                    padding: "10px 14px",
+                    minWidth: "60px",
+                  }}
                 >
                   <Image src={src} alt={alt} width={w} height={h} className="object-contain" />
                 </div>
               ))}
             </div>
 
-            <Link
-              href="/loja"
-              className="inline-flex items-center gap-2 bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold px-7 py-3.5 rounded-full text-[13px] transition-colors duration-200 w-fit active:scale-[0.98] cursor-pointer"
-            >
-              Aproveitar Agora
-            </Link>
+            {/* CTA */}
+            <div>
+              <Link href="/loja" className="btn btn-primary" style={{ width: "fit-content" }}>
+                Aproveitar Agora
+                <ArrowRight className="w-4 h-4" aria-hidden />
+              </Link>
+            </div>
           </div>
 
-          {/* Right — navy PIX card */}
-          <div className="bg-[#0F172A] rounded-3xl p-10 text-white relative overflow-hidden">
-            {/* Decorative circles */}
-            <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/5 pointer-events-none" aria-hidden />
-            <div className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full bg-white/5 pointer-events-none" aria-hidden />
+          {/* ── Right — PIX card ───────────────────────────────── */}
+          <div
+            className="relative overflow-hidden"
+            style={{
+              background: "#09090B",
+              borderRadius: "24px",
+              padding: "44px",
+            }}
+          >
+            {/* Decorative orbs */}
+            <div
+              aria-hidden
+              className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none"
+              style={{ background: "rgba(255,255,255,0.04)" }}
+            />
+            <div
+              aria-hidden
+              className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full pointer-events-none"
+              style={{ background: "rgba(255,255,255,0.04)" }}
+            />
 
-            <div className="relative z-10 flex flex-col gap-5">
-              <p className="text-[11px] font-bold text-white/50 uppercase tracking-widest">
+            <div className="relative z-10 flex flex-col gap-6">
+              <p
+                className="text-[11px] font-bold tracking-[0.12em] uppercase"
+                style={{ color: "rgba(255,255,255,0.40)" }}
+              >
                 Pagamento via PIX
               </p>
+
               <div>
-                <p className="text-[56px] font-bold leading-none tabular-nums">5% OFF</p>
-                <p className="text-white/70 text-[15px] mt-2">Instantâneo e Seguro</p>
+                <p
+                  className="font-bold tabular-nums leading-none"
+                  style={{ color: "#FFFFFF", fontSize: "clamp(48px,7vw,64px)" }}
+                >
+                  5% OFF
+                </p>
+                <p
+                  className="mt-2"
+                  style={{ color: "rgba(255,255,255,0.60)", fontSize: "15px" }}
+                >
+                  Instantâneo e Seguro
+                </p>
               </div>
 
-              {/* Inner card */}
-              <div className="bg-white/10 rounded-2xl p-5 flex items-center gap-4 mt-2">
-                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0" aria-hidden>
-                  <Zap className="w-5 h-5 text-white" />
+              {/* Inner benefit card */}
+              <div
+                className="flex items-center gap-4"
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  borderRadius: "16px",
+                  padding: "20px",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                }}
+              >
+                <div
+                  className="flex items-center justify-center shrink-0"
+                  style={{
+                    width: "44px",
+                    height: "44px",
+                    background: "rgba(255,255,255,0.10)",
+                    borderRadius: "12px",
+                  }}
+                  aria-hidden
+                >
+                  <Zap className="w-5 h-5" style={{ color: "#FFFFFF" }} />
                 </div>
                 <div>
-                  <p className="text-[14px] font-semibold text-white">Aprovação Imediata</p>
-                  <p className="text-[12px] text-white/60">Seu pedido é processado na hora</p>
+                  <p className="font-semibold" style={{ color: "#FFFFFF", fontSize: "14px" }}>
+                    Aprovação Imediata
+                  </p>
+                  <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "12px" }}>
+                    Seu pedido é processado na hora
+                  </p>
                 </div>
               </div>
 
-              <p className="text-[12px] text-white/40">
-                Frete grátis em compras acima de R$ 199 · Entrega nacional
+              <p style={{ color: "rgba(255,255,255,0.30)", fontSize: "12px" }}>
+                Frete grátis acima de R$ 199 · Entrega nacional
               </p>
             </div>
           </div>

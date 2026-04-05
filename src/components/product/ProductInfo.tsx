@@ -64,7 +64,15 @@ export default function ProductInfo({ product, onAdd }: Props) {
             {product.badge}
           </span>
         )}
-        <h1 className="font-playfair text-[26px] md:text-[30px] text-[#0F172A] leading-tight">
+        <h1
+          style={{
+            fontFamily: "var(--font-playfair, 'Playfair Display', Georgia, serif)",
+            fontSize: "clamp(22px, 3vw, 30px)",
+            color: "#0F172A",
+            lineHeight: 1.2,
+            fontWeight: 700,
+          }}
+        >
           {product.name}
         </h1>
       </div>

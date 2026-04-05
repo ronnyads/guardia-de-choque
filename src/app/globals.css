@@ -1,313 +1,202 @@
 @import "tailwindcss";
 
-/* ═══════════════════════════════════════════════════════════════════
-   DESIGN SYSTEM — Premium Conversion Store
-   Style: Luxury Minimal · Dark Accents · High-Contrast CTAs
-   UI/UX Pro Max v2.0 — Swiss Modernism + Luxury E-commerce
-═══════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════
+   DESIGN SYSTEM — Os Oliveiras Premium Store
+   UI/UX Pro Max v2.0 · E-commerce Premium Rules Applied
+   Next.js 16 + Tailwind v4 · Fonts via layout.tsx
+════════════════════════════════════════════════════════════════ */
 
+/* ── @theme → creates Tailwind utility classes ─────────────────── */
+@theme {
+  --font-sans:     var(--font-dm-sans, 'DM Sans', system-ui, sans-serif);
+  --font-serif:    var(--font-playfair, 'Playfair Display', Georgia, serif);
+  --font-playfair: var(--font-playfair, 'Playfair Display', Georgia, serif);
+}
+
+/* ── CSS Custom Properties ─────────────────────────────────────── */
 :root {
-  /* ── Backgrounds ─────────────────────────────────────────────── */
-  --bg:             #FAFAFA;
-  --bg-alt:         #F4F4F5;
-  --surface:        #FFFFFF;
-  --surface-raised: #F9F9FB;
+  /* Font references */
+  --s-sans:  var(--font-dm-sans, 'DM Sans', system-ui, sans-serif);
+  --s-serif: var(--font-playfair, 'Playfair Display', Georgia, serif);
 
-  /* ── Brand / Accent ──────────────────────────────────────────── */
-  --ink:            #09090B;       /* near-black, premium */
-  --ink-soft:       #18181B;
-  --ink-muted:      #52525B;
-  --ink-faint:      #A1A1AA;
+  /* Palette */
+  --c-black:  #09090B;
+  --c-gray-600: #52525B;
+  --c-gray-400: #A1A1AA;
+  --c-gray-200: #E4E4E7;
+  --c-gray-100: #F4F4F5;
+  --c-white:  #FFFFFF;
+  --c-green:  #16A34A;
+  --c-red:    #DC2626;
+  --c-amber:  #D97706;
 
-  /* ── Borders ─────────────────────────────────────────────────── */  
-  --line:           #E4E4E7;
-  --line-subtle:    #F4F4F5;
-  --line-strong:    #D4D4D8;
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.10);
 
-  /* ── Functional ──────────────────────────────────────────────── */
-  --green:          #16A34A;
-  --green-bg:       #F0FDF4;
-  --red:            #DC2626;
-  --red-bg:         #FEF2F2;
-  --amber:          #D97706;
-  --amber-bg:       #FFFBEB;
+  /* Motion */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* ── Gradients ───────────────────────────────────────────────── */
-  --gradient-hero:  linear-gradient(135deg, #09090B 0%, #1C1C1E 50%, #09090B 100%);
-  --gradient-card:  linear-gradient(145deg, #FFFFFF 0%, #F9F9FB 100%);
-  --gradient-cta:   linear-gradient(135deg, #09090B 0%, #3F3F46 100%);
-
-  /* ── Shadows ─────────────────────────────────────────────────── */
-  --shadow-xs:  0 1px 2px 0 rgba(0,0,0,.05);
-  --shadow-sm:  0 2px 8px 0 rgba(0,0,0,.06), 0 1px 2px 0 rgba(0,0,0,.04);
-  --shadow-md:  0 4px 16px 0 rgba(0,0,0,.08), 0 2px 4px 0 rgba(0,0,0,.04);
-  --shadow-lg:  0 8px 32px 0 rgba(0,0,0,.10), 0 4px 8px 0 rgba(0,0,0,.04);
-  --shadow-xl:  0 16px 48px 0 rgba(0,0,0,.14), 0 8px 16px 0 rgba(0,0,0,.06);
-  --shadow-glow: 0 0 0 3px rgba(9,9,11,.12);
-
-  /* ── Radii ───────────────────────────────────────────────────── */
-  --r-sm:  8px;
-  --r-md:  12px;
-  --r-lg:  16px;
-  --r-xl:  24px;
-  --r-2xl: 32px;
-  --r-pill: 9999px;
-
-  /* ── Typography ──────────────────────────────────────────────── */
-  --font-sans:   var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
-  --font-serif:  var(--font-playfair), 'Playfair Display', Georgia, serif;
-
-  /* ── Motion ──────────────────────────────────────────────────── */
-  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
-  --duration-fast: 150ms;
-  --duration-base: 250ms;
-  --duration-slow: 400ms;
+  /* ── Legacy: keeps checkout/product pages intact ── */
+  --background:       #FFFFFF; --surface: #FFFFFF; --surface-elevated: #F4F4F5;
+  --foreground:       #09090B; --accent: #09090B;  --accent-hover: #18181B;
+  --accent-light:     #F4F4F5; --border: #E4E4E7;  --border-subtle: #F4F4F5;
+  --text-secondary:   #3F3F46; --text-body: #52525B; --text-muted: #A1A1AA;
+  --sale:             #DC2626; --sale-bg: #FEF2F2;
+  --success:          #16A34A; --success-bg: #F0FDF4;
+  --danger:           #DC2626; --ink: #09090B; --ink-muted: #52525B;
+  --ink-faint:        #A1A1AA; --bg: #FFFFFF; --line: #E4E4E7;
 }
 
-/* ── Tailwind Theme Bridge ───────────────────────────────────────── */
-@theme inline {
-  --color-ink:          var(--ink);
-  --color-ink-soft:     var(--ink-soft);
-  --color-ink-muted:    var(--ink-muted);
-  --color-ink-faint:    var(--ink-faint);
-  --color-bg:           var(--bg);
-  --color-bg-alt:       var(--bg-alt);
-  --color-surface:      var(--surface);
-  --color-surface-raised: var(--surface-raised);
-  --color-line:         var(--line);
-  --color-line-subtle:  var(--line-subtle);
-  --color-line-strong:  var(--line-strong);
-  --color-green:        var(--green);
-  --color-green-bg:     var(--green-bg);
-  --color-red:          var(--red);
-  --color-red-bg:       var(--red-bg);
-  --color-amber:        var(--amber);
-  --color-amber-bg:     var(--amber-bg);
-  --font-dm-sans:       var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
-  --font-playfair:      var(--font-playfair), 'Playfair Display', Georgia, serif;
-}
+/* ════════════════════════════════════════════════════════════════
+   BASE — inside @layer base so Tailwind utilities always win
+════════════════════════════════════════════════════════════════ */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ═══════════════════════════════════════════════════════════════════
-   BASE RESET
-═══════════════════════════════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.6;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* ── Headings ─────────────────────────────────────────────────── */
-h1, h2, h3 {
-  font-family: var(--font-serif);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-h4, h5, h6 {
-  font-family: var(--font-sans);
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-}
-
-/* ── Focus ────────────────────────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* ── Selection ────────────────────────────────────────────────── */
-::selection { background: var(--ink); color: #fff; }
-
-/* ── Scrollbar ────────────────────────────────────────────────── */
-::-webkit-scrollbar       { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
-* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
-
-/* ── Reduced Motion ───────────────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  body {
+    font-family: var(--s-sans);
+    background-color: #FFFFFF;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Pure structural reset — NO color, NO font-family on headings */
+  h1, h2, h3, h4, h5, h6 { line-height: 1.15; font-weight: 700; }
+
+  a { text-decoration: none; color: inherit; }
+  img, video { display: block; max-width: 100%; }
+  input, textarea, select { font-family: inherit; }
+  /* ⚠ No background:none on button — that was breaking Tailwind bg-* utilities */
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   TYPOGRAPHY UTILITIES
-═══════════════════════════════════════════════════════════════════ */
-.font-serif  { font-family: var(--font-serif); }
-.font-sans   { font-family: var(--font-sans); }
-.font-playfair { font-family: var(--font-serif); }
-.tabular-nums { font-variant-numeric: tabular-nums; }
-.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-
-/* ═══════════════════════════════════════════════════════════════════
-   GLASSMORPHISM
-═══════════════════════════════════════════════════════════════════ */
-.glass {
-  backdrop-filter: blur(16px) saturate(1.6);
-  -webkit-backdrop-filter: blur(16px) saturate(1.6);
-  background: rgba(255, 255, 255, 0.82);
-  border-bottom: 1px solid rgba(255,255,255,0.6);
+/* ════════════════════════════════════════════════════════════════
+   LAYOUT — UI/UX Pro Max Rule #1: Consistent container everywhere
+════════════════════════════════════════════════════════════════ */
+.container-wide {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
-.glass-dark {
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  background: rgba(9, 9, 11, 0.85);
+@media (min-width: 640px) {
+  .container-wide { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+@media (min-width: 1024px) {
+  .container-wide { padding-left: 2rem; padding-right: 2rem; }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   BUTTON SYSTEM
-═══════════════════════════════════════════════════════════════════ */
+/* UI/UX Pro Max Rule #4: Generous section spacing — min 80px */
+.section-pad    { padding-top: 80px;  padding-bottom: 80px;  }
+.section-pad-lg { padding-top: 96px;  padding-bottom: 96px;  }
+
+/* ════════════════════════════════════════════════════════════════
+   GLASSMORPHISM — Navbar frosted glass
+════════════════════════════════════════════════════════════════ */
+.glass-nav {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0,0,0,0.06) !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BUTTON SYSTEM — UI/UX Pro Max Rule #7: High contrast CTAs
+   ⚠ NO !important — let Tailwind utility classes override freely
+════════════════════════════════════════════════════════════════ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: var(--font-sans);
-  font-weight: 600;
   font-size: 14px;
-  line-height: 1;
-  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 13px 28px;
+  border-radius: 9999px;
+  transition: all 0.18s ease;
   cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
   border: none;
-  border-radius: var(--r-pill);
-  padding: 14px 28px;
-  transition: all var(--duration-base) var(--ease-out);
-  position: relative;
-  overflow: hidden;
-  user-select: none;
 }
-.btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0);
-  transition: background var(--duration-fast);
-}
-.btn:hover::after { background: rgba(255,255,255,0.07); }
-.btn:active { transform: scale(0.98); }
 
+/* Dark CTA — use on light/white backgrounds */
 .btn-primary {
-  background: var(--ink);
-  color: #fff;
-  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.1);
+  background-color: #09090B;
+  color: #FFFFFF;
+  border: none;
 }
-.btn-primary:hover { background: var(--ink-soft); box-shadow: var(--shadow-lg); }
-
-.btn-outline {
-  background: transparent;
-  color: var(--ink);
-  border: 1.5px solid var(--ink);
-}
-.btn-outline:hover { background: var(--ink); color: #fff; }
-
-.btn-ghost {
-  background: transparent;
-  color: var(--ink-muted);
-  padding: 10px 16px;
-  border-radius: var(--r-md);
-}
-.btn-ghost:hover { background: var(--bg-alt); color: var(--ink); }
-
-/* ═══════════════════════════════════════════════════════════════════
-   CARD SYSTEM
-═══════════════════════════════════════════════════════════════════ */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--r-xl);
-  box-shadow: var(--shadow-xs);
-  transition: box-shadow var(--duration-base) var(--ease-out),
-              transform var(--duration-base) var(--ease-out),
-              border-color var(--duration-base);
-}
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-  border-color: var(--line-strong);
+.btn-primary:hover {
+  background-color: #18181B;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.20);
 }
 
-/* ── Badge System ─────────────────────────────────────────────── */
+/* Outline — use on light backgrounds */
+.btn-secondary {
+  background-color: transparent;
+  color: #09090B;
+  border: 1.5px solid #09090B;
+}
+.btn-secondary:hover { background-color: #09090B; color: #FFFFFF; }
+
+/* White CTA — use on dark/black backgrounds */
+.btn-white {
+  background-color: #FFFFFF;
+  color: #09090B;
+  border: none;
+}
+.btn-white:hover {
+  background-color: rgba(255,255,255,0.90);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255,255,255,0.20);
+}
+
+/* Ghost white — use on dark backgrounds for secondary actions */
+.btn-ghost-white {
+  background-color: transparent;
+  color: rgba(255,255,255,0.85);
+  border: 1.5px solid rgba(255,255,255,0.30);
+}
+.btn-ghost-white:hover {
+  background-color: rgba(255,255,255,0.10);
+  color: #FFFFFF;
+  border-color: rgba(255,255,255,0.50);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BADGE SYSTEM
+════════════════════════════════════════════════════════════════ */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: var(--r-pill);
+  padding: 3px 9px;
+  border-radius: 9999px;
   line-height: 1;
 }
-.badge-ink    { background: var(--ink); color: #fff; }
-.badge-subtle { background: var(--bg-alt); color: var(--ink-muted); border: 1px solid var(--line); }
-.badge-green  { background: var(--green-bg); color: var(--green); }
-.badge-red    { background: var(--red-bg); color: var(--red); }
-.badge-amber  { background: var(--amber-bg); color: var(--amber); }
+.badge-dark  { background: #09090B; color: #FFFFFF; }
+.badge-light { background: #F4F4F5; color: #52525B; }
+.badge-red   { background: #FEF2F2; color: #DC2626; border: 1px solid #FCA5A5; }
+.badge-green { background: #F0FDF4; color: #16A34A; border: 1px solid #86EFAC; }
+.badge-amber { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
 
-/* ── Section Layout ───────────────────────────────────────────── */
-.section { padding: 80px 0; }
-.section-sm { padding: 48px 0; }
-.section-lg { padding: 120px 0; }
-.container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-
-/* ═══════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════════
    ANIMATIONS
-═══════════════════════════════════════════════════════════════════ */
-
-/* Float */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-10px); }
-}
-.animate-float { animation: float 5s var(--ease-in-out) infinite; }
-
-/* Float slow */
-@keyframes float-slow {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33%       { transform: translateY(-6px) rotate(1deg); }
-  66%       { transform: translateY(-3px) rotate(-1deg); }
-}
-.animate-float-slow { animation: float-slow 7s var(--ease-in-out) infinite; }
-
-/* Fade up */
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-up { animation: fade-up 0.5s var(--ease-out) forwards; }
-.animate-fade-up-delay-1 { animation: fade-up 0.5s 0.1s var(--ease-out) both; }
-.animate-fade-up-delay-2 { animation: fade-up 0.5s 0.2s var(--ease-out) both; }
-.animate-fade-up-delay-3 { animation: fade-up 0.5s 0.3s var(--ease-out) both; }
-.animate-fade-up-delay-4 { animation: fade-up 0.5s 0.4s var(--ease-out) both; }
-
-/* Fade in */
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-.animate-fade-in { animation: fade-in 0.4s var(--ease-out) forwards; }
-
-/* Marquee */
+════════════════════════════════════════════════════════════════ */
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
@@ -315,67 +204,38 @@ h4, h5, h6 {
 .animate-marquee { animation: marquee 28s linear infinite; }
 .animate-marquee:hover { animation-play-state: paused; }
 
-/* Shimmer */
-@keyframes shimmer {
-  from { background-position: -200% center; }
-  to   { background-position: 200% center; }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
 }
-.shimmer {
-  background: linear-gradient(90deg, var(--line-subtle) 25%, var(--surface) 50%, var(--line-subtle) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
+.animate-float { animation: float 4s ease-in-out infinite; }
 
-/* Pulse CTA */
-@keyframes pulse-ring {
-  0%   { box-shadow: 0 0 0 0 rgba(9,9,11,0.18); }
-  70%  { box-shadow: 0 0 0 8px rgba(9,9,11,0); }
-  100% { box-shadow: 0 0 0 0 rgba(9,9,11,0); }
-}
-.animate-pulse-ring { animation: pulse-ring 2.5s cubic-bezier(0.4,0,0.6,1) infinite; }
-
-/* Scale in */
-@keyframes scale-in {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
-}
-.animate-scale-in { animation: scale-in 0.35s var(--ease-spring) forwards; }
-
-/* Slide down */
-@keyframes slide-down {
-  from { opacity: 0; transform: translateY(-8px); }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-slide-down { animation: slide-down 0.3s var(--ease-out) forwards; }
+.animate-fade-up { animation: fade-up 0.55s var(--ease-out) both; }
 
-/* Bounce dot (scroll indicator) */
-@keyframes bounce-dot {
-  0%, 80%, 100% { transform: translateY(0); }
-  40%            { transform: translateY(6px); }
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.90); }
+  to   { opacity: 1; transform: scale(1); }
 }
-.animate-bounce-dot { animation: bounce-dot 1.4s ease-in-out infinite; }
+.animate-scale-in { animation: scale-in 0.35s var(--ease-spring) both; }
 
-/* ── Hover Lift micro-interaction ─────────────────────────────── */
-.hover-lift {
-  transition: transform var(--duration-base) var(--ease-out),
-              box-shadow var(--duration-base) var(--ease-out);
-}
-.hover-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-}
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 0.8s linear infinite; }
 
-/* ── Gradient text utility ────────────────────────────────────── */
-.gradient-text {
-  background: linear-gradient(135deg, var(--ink) 0%, #52525B 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+.delay-100 { animation-delay: 0.10s; }
+.delay-200 { animation-delay: 0.20s; }
+.delay-300 { animation-delay: 0.30s; }
+.delay-500 { animation-delay: 0.50s; }
 
-/* ── Scrollbar hide ───────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════
+   SCROLLBAR + CLAMP
+════════════════════════════════════════════════════════════════ */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ── Divider ──────────────────────────────────────────────────── */
-.divider { height: 1px; background: var(--line); }
+.line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; }
+.line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; }
+.line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; }

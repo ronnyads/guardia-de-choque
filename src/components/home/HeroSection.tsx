@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { ShoppingCart, Star, Zap, Shield, Truck, ArrowRight } from "lucide-react";
 import { KITS } from "@/lib/constants";
 
@@ -18,17 +18,17 @@ const STAT_CARDS = [
   { value: "48h",    label: "Envio expresso" },
 ];
 
-const stagger = {
+const stagger: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 };
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 22 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 };
-const fadeIn = {
+const fadeIn: Variants = {
   hidden: { opacity: 0, scale: 0.94 },
-  show:   { opacity: 1, scale: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+  show:   { opacity: 1, scale: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 };
 
 export default function HeroSection() {
@@ -55,7 +55,7 @@ export default function HeroSection() {
       <div aria-hidden className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-white/[0.04] blur-3xl" />
 
       {/* ── Main grid ── */}
-      <div className="container mx-auto px-4 md:px-6 max-w-7xl w-full py-20 lg:py-28 relative z-10">
+      <div className="container-wide w-full py-20 lg:py-28 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
 
           {/* ══ LEFT — Copy ══ */}
@@ -82,15 +82,18 @@ export default function HeroSection() {
             {/* Headline */}
             <motion.div variants={fadeUp}>
               <h1
-                className="text-white leading-[1.05] tracking-tight"
-                style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(42px,5.5vw,72px)" }}
+                className="leading-[1.05] tracking-tight"
+                style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(42px,5.5vw,72px)", color: "#FFFFFF" }}
               >
                 Produtos que{" "}
-                <em className="not-italic text-transparent"
+                <em
+                  className="not-italic"
                   style={{
                     backgroundImage: "linear-gradient(90deg,#F8FAFC,#94A3B8)",
                     WebkitBackgroundClip: "text",
                     backgroundClip: "text",
+                    color: "transparent",
+                    display: "inline",
                   }}
                 >
                   fazem diferença
@@ -102,7 +105,8 @@ export default function HeroSection() {
             {/* Subtext */}
             <motion.p
               variants={fadeUp}
-              className="text-white/60 text-[17px] leading-relaxed max-w-md"
+              className="leading-relaxed max-w-md"
+              style={{ color: "rgba(255,255,255,0.60)", fontSize: "17px" }}
             >
               Selecionados com critério, entregues com agilidade.
               Qualidade que a família garante — direto para a sua casa.
@@ -125,7 +129,7 @@ export default function HeroSection() {
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3 pt-2">
               <Link
                 href="/loja"
-                className="btn btn-primary animate-pulse-ring text-[15px] px-7 py-4"
+                className="btn btn-white text-[15px] px-7 py-4"
               >
                 Ver Coleção
                 <ArrowRight className="w-4 h-4" aria-hidden />

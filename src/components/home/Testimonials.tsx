@@ -38,8 +38,8 @@ const reviews = [
 
 export default function Testimonials() {
   return (
-    <section className="bg-[#F8FAFC] border-t border-[#E2E8F0] py-20">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
+    <section style={{ background: "#F9FAFB", borderTop: "1px solid #E4E4E7" }}>
+      <div className="container-wide section-pad">
 
         {/* Section header */}
         <div className="flex flex-col items-center text-center mb-14">
@@ -48,7 +48,16 @@ export default function Testimonials() {
               <Star key={s} className="w-6 h-6 fill-[#F59E0B] text-[#F59E0B]" aria-hidden />
             ))}
           </div>
-          <h2 className="font-playfair text-[32px] md:text-[40px] text-[#0F172A] leading-tight mb-3">
+          <h2
+            style={{
+              fontFamily: "var(--font-serif)",
+              fontSize: "clamp(28px, 3.5vw, 40px)",
+              color: "#09090B",
+              lineHeight: 1.2,
+              fontWeight: 700,
+            }}
+            className="mb-3"
+          >
             O que a família diz
           </h2>
           <p className="text-[#94A3B8] text-[15px] max-w-md">

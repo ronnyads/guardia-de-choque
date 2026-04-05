@@ -1,46 +1,103 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Tag } from "lucide-react";
 
 export default function FeaturedBanner() {
   return (
-    <section className="bg-gray-50 border-y border-gray-100 py-10">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 items-center">
+    <section style={{ background: "#FFFFFF" }}>
+      <div className="container-wide" style={{ paddingBottom: "80px" }}>
 
-            {/* Image */}
-            <div className="relative aspect-[4/3] md:aspect-auto md:h-72 bg-gray-50 flex items-center justify-center p-8">
-              <Image
-                src="/images/product/kit-completo.png"
-                alt="Kit Dupla Guardiã — produto em destaque"
-                width={400}
-                height={300}
-                className="object-contain w-full h-full"
-              />
-            </div>
+        {/* Eyebrow */}
+        <p
+          className="text-center text-[11px] font-bold tracking-[0.12em] uppercase mb-8"
+          style={{ color: "#A1A1AA" }}
+        >
+          Destaque da semana
+        </p>
 
-            {/* Text */}
-            <div className="flex flex-col gap-4 p-8 md:p-10">
-              <span className="text-xs font-bold text-[#E53E3E] tracking-widest uppercase">
+        {/* Banner card */}
+        <div
+          className="overflow-hidden grid grid-cols-1 md:grid-cols-2 items-center"
+          style={{
+            background: "#F9FAFB",
+            border: "1px solid #E4E4E7",
+            borderRadius: "24px",
+          }}
+        >
+          {/* ── Image ───────────────────────────────────────── */}
+          <div
+            className="relative flex items-center justify-center p-10"
+            style={{ background: "#F0F2F5", minHeight: "280px" }}
+          >
+            <Image
+              src="/images/product/kit-completo.png"
+              alt="Kit Dupla Guardiã — produto em destaque"
+              width={380}
+              height={280}
+              className="object-contain w-full h-auto"
+              style={{ maxHeight: "260px" }}
+            />
+
+            {/* Sale badge */}
+            <span
+              className="absolute top-5 left-5 badge badge-red"
+              style={{ fontSize: "12px", padding: "5px 12px" }}
+            >
+              -35% OFF
+            </span>
+          </div>
+
+          {/* ── Copy ────────────────────────────────────────── */}
+          <div className="flex flex-col gap-6 p-10 md:p-12">
+            {/* Eyebrow */}
+            <div className="flex items-center gap-2">
+              <Tag className="w-3.5 h-3.5" style={{ color: "#DC2626" }} aria-hidden />
+              <span
+                className="text-[11px] font-bold tracking-[0.10em] uppercase"
+                style={{ color: "#DC2626" }}
+              >
                 Campeão de Vendas
               </span>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#111111] leading-snug">
-                Kit Dupla Guardiã
-              </h2>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Dois aparelhos completos com coldre e cabo USB. Proteja você e quem você
-                ama com o melhor custo-benefício do catálogo.
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-[#111111] tabular-nums">R$ 169,90</span>
-                <span className="text-sm text-gray-400 line-through tabular-nums">R$ 259,80</span>
-                <span className="text-xs font-bold text-[#E53E3E] bg-red-50 px-2 py-0.5 rounded-full">-35%</span>
-              </div>
-              <Link
-                href="/produto/kit-dupla"
-                className="inline-flex items-center gap-2 bg-[#111111] hover:bg-[#333333] text-white font-semibold px-6 py-3 rounded-full text-sm transition-colors w-fit"
+            </div>
+
+            {/* Title */}
+            <h2
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontSize: "clamp(26px, 3vw, 36px)",
+                color: "#09090B",
+                fontWeight: 700,
+                lineHeight: 1.2,
+              }}
+            >
+              Kit Dupla Guardiã
+            </h2>
+
+            {/* Description */}
+            <p style={{ color: "#52525B", fontSize: "15px", lineHeight: 1.7 }}>
+              Dois aparelhos completos com coldre e cabo USB. Proteja você e quem você
+              ama com o melhor custo-benefício do catálogo.
+            </p>
+
+            {/* Price */}
+            <div className="flex items-baseline gap-3">
+              <span
+                className="font-bold tabular-nums"
+                style={{ color: "#09090B", fontSize: "28px" }}
               >
+                R$ 169,90
+              </span>
+              <span
+                className="line-through tabular-nums"
+                style={{ color: "#A1A1AA", fontSize: "15px" }}
+              >
+                R$ 259,80
+              </span>
+            </div>
+
+            {/* CTA */}
+            <div>
+              <Link href="/produto/kit-dupla" className="btn btn-primary" style={{ width: "fit-content" }}>
                 Comprar Agora
                 <ArrowRight className="w-4 h-4" aria-hidden />
               </Link>
