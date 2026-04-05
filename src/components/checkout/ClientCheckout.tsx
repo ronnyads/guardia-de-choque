@@ -44,6 +44,7 @@ export default function ClientCheckout() {
   
   const [paymentData, setPaymentData] = useState<any>(null);
   const [pixData, setPixData] = useState<{qrCodeBase64?: string, qrCode?: string, paymentId?: string} | null>(null);
+  const [gatewayStatus, setGatewayStatus] = useState<string>("");
 
   // Calcula subtotais
   const itemsTotal = kit.promoPrice;
@@ -78,60 +79,102 @@ export default function ClientCheckout() {
   const handleCompleteAll = async (acceptedUpsell: boolean) => {
     setShowUpsell(false);
     setIsProcessingFull(true);
+    setGatewayStatus("Conectando operadora bancária\u2026");
     
-    // Cálculo final com todas as adições de funil
     const finalItemsTotal = itemsTotal + (hasOrderBump ? orderBumpPrice : 0) + (acceptedUpsell ? upsellPrice : 0);
     const amountWithDiscount = paymentData.paymentMethod === 'pix' ? finalItemsTotal * 0.95 : finalItemsTotal;
 
+    const firePurchasePixel = (value: number) => {
+      if (typeof window !== "undefined" && window.fbq) {
+        window.fbq("track", "Purchase", {
+          value: value.toFixed(2),
+          currency: "BRL",
+          content_name: kit.name
+        });
+      }
+    };
+
+    const basePayload = {
+      amount: amountWithDiscount,
+      email: paymentData.personalData.email,
+      name: paymentData.personalData.name,
+      phone: paymentData.personalData.phone,
+      document: paymentData.document,
+      address: paymentData.address,
+      itemsDescription: `${kit.name}${hasOrderBump ? ' + Garantia Premium' : ''}${acceptedUpsell ? ' + Mini Taser 12.000KV' : ''}`
+    };
+
     try {
-      const endpoint = paymentData.paymentMethod === 'pix' ? '/api/checkout/pix' : '/api/checkout/card';
-      
-      const res = await fetch(endpoint, {
+      // ── Gateway 1: Mercado Pago ──────────────────────────────
+      if (paymentData.paymentMethod === 'pix') {
+        const res = await fetch('/api/checkout/pix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(basePayload),
+        });
+        const result = await res.json();
+        if (result.success) {
+          firePurchasePixel(amountWithDiscount);
+          setPixData({ qrCodeBase64: result.qrCodeBase64, qrCode: result.qrCode, paymentId: result.paymentId });
+          setCheckoutComplete(true);
+          return;
+        }
+        throw new Error(result.error || "PIX recusado.");
+      }
+
+      // Cartão — tenta MP primeiro
+      const mpRes = await fetch('/api/checkout/card', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: amountWithDiscount,
-          token: paymentData.token, // para cartão
+          ...basePayload,
+          token: paymentData.token,
           brand: paymentData.cardData?.brand || "visa",
-          installments: paymentData.cardData?.installments || 1, // para cartão
-          email: paymentData.personalData.email,
-          name: paymentData.personalData.name,
-          phone: paymentData.personalData.phone,
-          document: paymentData.document,
-          address: paymentData.address,
-          itemsDescription: `${kit.name}${hasOrderBump ? ' + Garantia Premium' : ''}${acceptedUpsell ? ' + Mini Taser 12.000KV' : ''}`
-        })
+          installments: paymentData.cardData?.installments || 1,
+        }),
       });
+      const mpResult = await mpRes.json();
 
-      const result = await res.json();
-
-      if (result.success) {
-        if (paymentData.paymentMethod === 'pix') {
-          setPixData({ 
-            qrCodeBase64: result.qrCodeBase64, 
-            qrCode: result.qrCode,
-            paymentId: result.paymentId
-          });
-        }
-        
-        // Dispara o Píxel Final de Purchase!!!
-        if (typeof window !== "undefined" && window.fbq) {
-          window.fbq("track", "Purchase", {
-            value: amountWithDiscount.toFixed(2),
-            currency: "BRL",
-            content_name: kit.name
-          });
-        }
-        
+      if (mpResult.success) {
+        firePurchasePixel(amountWithDiscount);
         setCheckoutComplete(true);
-      } else {
-        alert("Erro no Pagamento: " + (result.error || "Operadora recusou a transação."));
+        return;
       }
+
+      // ── Gateway 2: Stripe (fallback automático) ───────────────
+      setGatewayStatus("Verificando com operadora alternativa\u2026");
+      await new Promise(r => setTimeout(r, 900)); // pausa natural para UX
+
+      const [rawMonth, rawYear] = (paymentData.cardData?.expiry || "").split("/");
+      const stripeRes = await fetch('/api/checkout/stripe-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...basePayload,
+          cardNumber: paymentData.cardData?.number?.replace(/\s/g, ''),
+          cardExpMonth: rawMonth,
+          cardExpYear: rawYear,
+          cardCvc: paymentData.cardData?.cvv,
+          cardName: paymentData.cardData?.name || paymentData.personalData.name,
+        }),
+      });
+      const stripeResult = await stripeRes.json();
+
+      if (stripeResult.success) {
+        firePurchasePixel(amountWithDiscount);
+        setCheckoutComplete(true);
+        return;
+      }
+
+      // Ambos falharam
+      throw new Error(stripeResult.error || "Pagamento recusado. Tente outro cartão.");
+
     } catch (err: unknown) {
       const e = err as Error;
-      alert("Falha de conexão com os servidores do gateway: " + e.message);
+      alert(e.message || "Falha de conexão. Tente novamente.");
     } finally {
       setIsProcessingFull(false);
+      setGatewayStatus("");
     }
   };
 
@@ -139,7 +182,9 @@ export default function ClientCheckout() {
     return (
       <div className="flex flex-col items-center justify-center py-32 text-center h-[50vh]">
         <div className="w-12 h-12 border-2 border-[#0F172A] border-t-transparent rounded-full animate-spin mb-6 mx-auto" />
-        <h2 className="text-[20px] font-bold text-[#0F172A] mb-2">Conectando operadora bancária…</h2>
+        <h2 className="text-[20px] font-bold text-[#0F172A] mb-2">
+          {gatewayStatus || "Processando pagamento\u2026"}
+        </h2>
         <p className="text-[#64748B] max-w-sm text-[14px]">Dados criptografados sendo validados. Não feche esta página.</p>
       </div>
     );
