@@ -26,21 +26,19 @@ declare global {
 }
 
 // ---------- Helpers ----------
-export const kwaiInst = () =>
-  typeof window !== "undefined" && window.kwaiq && KWAI_PIXEL_ID
-    ? window.kwaiq.instance(KWAI_PIXEL_ID)
-    : null;
-
 export const kwaiPageView = () => {
   try {
-    if (typeof window !== "undefined" && window.kwaiq) {
-      window.kwaiq.page();
-    }
+    if (typeof window !== "undefined" && window.kwaiq) window.kwaiq.page();
   } catch { /* noop */ }
 };
 
 export const kwaiTrack = (event: string, params: Record<string, unknown> = {}) => {
-  try { kwaiInst()?.track(event, params); } catch { /* noop */ }
+  try {
+    // Usa kwaiq.track() diretamente — tem fila desde o stub (não depende de instance() carregar)
+    if (typeof window !== "undefined" && window.kwaiq) {
+      window.kwaiq.track(event, params);
+    }
+  } catch { /* noop */ }
 };
 
 export const kwaiViewContent = (id: string, name: string, value: number) =>
