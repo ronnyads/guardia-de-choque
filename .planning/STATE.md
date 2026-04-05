@@ -2,7 +2,7 @@
 
 ## Status
 **Milestone:** 2 — SaaS Multi-Tenant
-**Fase atual:** 8 — Plano 08-03 concluído
+**Fase atual:** 9 — Plano 09-02 concluído
 **Última atualização:** 2026-04-05
 
 ## Contexto Rápido
@@ -11,7 +11,7 @@
 - A loja atual DEVE continuar funcionando durante toda a migração (backward compatible)
 
 ## Próxima Ação
-Executar Fase 8: schema de banco + RLS + middleware tenant-aware
+Fase 9 completa (09-01 e 09-02). Próxima: Fase 10 ou conforme ROADMAP.
 
 ## Decisões Arquiteturais Tomadas
 - Multi-tenancy por `tenant_id` no banco (não projetos Supabase separados)
