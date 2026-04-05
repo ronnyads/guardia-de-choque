@@ -8,6 +8,7 @@ import ProductInfo from "@/components/product/ProductInfo";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import StickyMobileCTA from "@/components/product/StickyMobileCTA";
 import { storeProducts, getProductBySlug } from "@/lib/products";
+import ProductViewTracker from "@/components/analytics/ProductViewTracker";
 import {
   Zap, BatteryCharging, ShieldCheck, Lightbulb,
   Minimize2, Users, Tag, Gift, Star
@@ -75,6 +76,13 @@ export default async function ProdutoPage({ params }: Props) {
       <Navbar />
 
       <main className="bg-white">
+        {/* Tracker de ViewContent enriquecido — Kwai + Meta Pixel */}
+        <ProductViewTracker
+          productId={product.id}
+          productName={product.name}
+          price={product.price}
+        />
+
         {/* ── Hero: gallery + info ── */}
         <section className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 items-start">
