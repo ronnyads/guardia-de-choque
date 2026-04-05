@@ -53,8 +53,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  const product = await getProductBySlug(slug);
   if (!product) return {};
   return {
     title: `${product.name} | Os Oliveiras`,
@@ -63,8 +64,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProdutoPage({ params }: Props) {
-  const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
   const reviews          = staticReviews[slug] ?? [];

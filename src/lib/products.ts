@@ -147,8 +147,38 @@ export const storeProducts: StoreProduct[] = [
   },
 ];
 
-export function getProductBySlug(slug: string): StoreProduct | undefined {
-  return storeProducts.find((p) => p.slug === slug);
+import { supabase } from "./supabase";
+
+export async function getProductBySlug(slug: string): Promise<StoreProduct | undefined> {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return undefined;
+  
+  // Mapeamento pra manter a tipagem original do StoreProduct
+  return {
+    id: data.id,
+    name: data.name,
+    slug: data.slug,
+    category: data.category_id,
+    categoryName: "Categoria", // mock or join in the future
+    description: data.description,
+    longDescription: data.long_description || data.description,
+    images: data.images,
+    price: data.promo_price,
+    originalPrice: data.original_price,
+    pixPrice: data.cost_price, // temporarily storing it here
+    installments: { count: 12, value: data.promo_price / 12 },
+    rating: data.rating,
+    reviewCount: data.review_count,
+    badge: data.badge,
+    inStock: true,
+    features: data.features || [],
+    specs: data.specs || []
+  };
 }
 
 export function getProductsByCategory(categorySlug: string): StoreProduct[] {
@@ -159,10 +189,37 @@ export function getFeaturedProducts(): StoreProduct[] {
   return storeProducts.filter((p) => p.inStock);
 }
 
-export function getRelatedProducts(slug: string, limit = 3): StoreProduct[] {
-  const product = getProductBySlug(slug);
+export async function getRelatedProducts(slug: string, limit = 3): Promise<StoreProduct[]> {
+  const product = await getProductBySlug(slug);
   if (!product) return [];
-  return storeProducts
-    .filter((p) => p.slug !== slug && p.category === product.category)
-    .slice(0, limit);
+  
+  const { data } = await supabase
+    .from("products")
+    .select("*")
+    .eq("category_id", product.category)
+    .neq("slug", slug)
+    .limit(limit);
+
+  if (!data) return [];
+  
+  return data.map(d => ({
+    id: d.id,
+    name: d.name,
+    slug: d.slug,
+    category: d.category_id,
+    categoryName: "Categoria",
+    description: d.description,
+    longDescription: d.long_description || d.description,
+    images: d.images,
+    price: d.promo_price,
+    originalPrice: d.original_price,
+    pixPrice: d.cost_price,
+    installments: { count: 12, value: d.promo_price / 12 },
+    rating: d.rating,
+    reviewCount: d.review_count,
+    badge: d.badge,
+    inStock: true,
+    features: d.features || [],
+    specs: d.specs || []
+  }));
 }

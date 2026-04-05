@@ -5,10 +5,10 @@ interface Props {
   currentSlug: string;
 }
 
-export default function RelatedProducts({ currentSlug }: Props) {
-  const products = getRelatedProducts(currentSlug, 3);
+export default async function RelatedProducts({ currentSlug }: Props) {
+  const products = await getRelatedProducts(currentSlug, 3);
 
-  if (products.length === 0) return null;
+  if (!products || products.length === 0) return null;
 
   return (
     <>
