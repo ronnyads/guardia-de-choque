@@ -117,8 +117,9 @@ export default function ProductScroll({ title, subtitle, bg = "white" }: Props) 
                       src={product.images[0]}
                       alt={product.name}
                       fill
+                      loading="lazy"
                       className="object-contain p-4 group-hover:scale-[1.04] transition-transform duration-300"
-                      sizes="220px"
+                      sizes="(max-width: 640px) 45vw, 220px"
                     />
                   </Link>
 

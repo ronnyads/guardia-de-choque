@@ -44,15 +44,21 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${dmSans.variable} ${playfair.variable} h-full antialiased`}>
       <head>
+        {/* Preconnect — reduz latência de recursos críticos (Lighthouse insight) */}
+        <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+        <link rel="preconnect" href="https://www.facebook.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://mpc2-prod-28-is5qnl632q-ue.a.run.app" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://mpc2-prod-28-is5qnl632q-ue.a.run.app" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Store",
-              name: "Os Oliveiras",
-              description: "Loja de produtos selecionados com qualidade garantida pela família Oliveira.",
-              url: "https://os-oliveiras.vercel.app",
+              name: "Guardiã de Choque",
+              description: "Dispositivo de defesa pessoal com qualidade e segurança garantida.",
+              url: "https://guardiadechoque.online",
             }),
           }}
         />
