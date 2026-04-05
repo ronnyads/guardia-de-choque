@@ -55,9 +55,14 @@ function KwaiPixelContent() {
   const pathname     = usePathname();
   const searchParams = useSearchParams();
 
-  // Dispara pageView em cada navegação (client-side routing)
+  // Dispara pageView + EVENT_CONTENT_VIEW em cada navegação
   useEffect(() => {
+    // kwaiq.page() — registro interno do SDK
     kwaiPageView();
+    // EVENT_CONTENT_VIEW — aparece no painel Test Events do Kwai Ads Manager
+    kwaiTrack("EVENT_CONTENT_VIEW", {
+      page_url: typeof window !== "undefined" ? window.location.href : "",
+    });
   }, [pathname, searchParams]);
 
   if (!KWAI_PIXEL_ID) return null;
