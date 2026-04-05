@@ -96,6 +96,9 @@ export default function ClientCheckout() {
 
     const basePayload = {
       amount: amountWithDiscount,
+      kitId:     kit.id,
+      hasBump:   hasOrderBump,
+      hasUpsell: acceptedUpsell,
       email: paymentData.personalData.email,
       name: paymentData.personalData.name,
       phone: paymentData.personalData.phone,
