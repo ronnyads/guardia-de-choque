@@ -47,7 +47,7 @@ export default function Navbar() {
   const navBg = scrolled
     ? "glass-nav"
     : isHero
-      ? "bg-transparent border-transparent"
+      ? "bg-[#09090B]/90 border-transparent"
       : "bg-white border-b border-[#E4E4E7]";
 
   const textColor    = (!scrolled && isHero) ? "rgba(255,255,255,0.75)" : "#71717A";
