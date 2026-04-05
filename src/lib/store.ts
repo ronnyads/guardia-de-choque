@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartItem, StoreProduct } from "@/types";
+import { kwaiAddToCart } from "@/components/analytics/KwaiPixel";
 
 interface CartStore {
   items: CartItem[];
@@ -38,6 +39,17 @@ export const useCartStore = create<CartStore>()(
           }
           return { items: [...state.items, { product, qty }], isOpen: true };
         });
+        // Kwai Ads — EVENT_ADD_TO_CART
+        kwaiAddToCart(product.price * qty);
+        // Meta Pixel — AddToCart
+        if (typeof window !== "undefined" && window.fbq) {
+          window.fbq("track", "AddToCart", {
+            content_ids:  [product.id],
+            content_name: product.name,
+            value:        (product.price * qty).toFixed(2),
+            currency:     "BRL",
+          });
+        }
       },
 
       removeItem: (productId) => {
