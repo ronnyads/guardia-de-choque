@@ -1,27 +1,20 @@
-"use client";
+import { requireTenant } from '@/lib/tenant';
+import { createServerSupabase } from '@/lib/supabase-server';
+import { Plus, Package, Edit, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { Plus, Package, Edit, Trash2 } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
+export default async function AdminProductsPage() {
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
 
-export default function AdminProductsPage() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: products } = await supabase
+    .from('products')
+    .select('id, name, sku, status, inventory_count, promo_price, images')
+    .eq('tenant_id', tenantId)
+    .order('created_at', { ascending: false });
 
-  useEffect(() => {
-    async function loadProducts() {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (data) setProducts(data);
-      setLoading(false);
-    }
-    loadProducts();
-  }, []);
+  const productList = products ?? [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -37,9 +30,7 @@ export default function AdminProductsPage() {
       </div>
 
       <div className="bg-white border border-[#E2E8F0] shadow-sm rounded-xl overflow-hidden">
-        {loading ? (
-          <div className="p-8 text-center text-[#64748B]">Carregando produtos...</div>
-        ) : products.length === 0 ? (
+        {productList.length === 0 ? (
           <div className="p-12 text-center flex flex-col items-center justify-center">
             <Package className="w-12 h-12 text-[#CBD5E1] mb-3" />
             <h3 className="text-[#0F172A] font-semibold text-lg">Nenhum produto encontrado</h3>
@@ -58,7 +49,7 @@ export default function AdminProductsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2E8F0]">
-                {products.map((product) => (
+                {productList.map((product) => (
                   <tr key={product.id} className="hover:bg-[#F8FAFC]/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -71,7 +62,7 @@ export default function AdminProductsPage() {
                         </div>
                         <div>
                           <div className="font-semibold text-[#0F172A] text-sm">{product.name}</div>
-                          <div className="text-xs text-[#94A3B8]">{product.sku || "Sem SKU"}</div>
+                          <div className="text-xs text-[#94A3B8]">{product.sku || 'Sem SKU'}</div>
                         </div>
                       </div>
                     </td>
@@ -86,7 +77,7 @@ export default function AdminProductsPage() {
                       {product.inventory_count} unid.
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-[#0F172A]">
-                      R$ {product.promo_price.toFixed(2).replace('.', ',')}
+                      R$ {(product.promo_price ?? 0).toFixed(2).replace('.', ',')}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">

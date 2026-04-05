@@ -1,119 +1,101 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { MercadoPagoConfig, Payment } from 'mercadopago';
+import { requireTenant } from '@/lib/tenant';
+import { createServerSupabase } from '@/lib/supabase-server';
+import { ShoppingCart } from 'lucide-react';
 
-// Força a página a sempre buscar dados novos do MP na hora de carregar (Não usa cache antigo da Vercel)
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPedidos() {
-  const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN || "";
-  let payments: any[] = [];
-  let errorMsg = "";
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
 
-  try {
-    const client = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN });
-    const payment = new Payment(client);
+  const { data: orders, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('tenant_id', tenantId)
+    .order('created_at', { ascending: false })
+    .limit(50);
 
-    // Busca os últimos 50 pagamentos aprovados no Mercado Pago
-    const result = await payment.search({
-      options: {
-        status: 'approved',
-        sort: 'date_created',
-        criteria: 'desc',
-        limit: 50,
-      }
-    });
-
-    payments = result.results || [];
-  } catch (err: unknown) {
-    const e = err as Error;
-    errorMsg = "Erro ao buscar no Mercado Pago: " + e.message;
+  if (error) {
+    console.error('Erro ao buscar pedidos:', error);
   }
 
-  return (
-    <div className="min-h-screen bg-gray-900 text-white p-6 md:p-12 font-sans">
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-8 flex justify-between items-center border-b border-gray-800 pb-4">
-          <div>
-            <h1 className="text-3xl font-black text-amber-500">PAINEL DE ENTREGAS 📦</h1>
-            <p className="text-gray-400 mt-2">Os dados dos clientes são puxados direto do Mercado Pago. Nenhum dado de endereço será perdido.</p>
-          </div>
-          <div className="bg-gray-800 px-4 py-2 rounded-lg font-bold">
-            Total Encontrado: <span className="text-green-400">{payments.length} Vendas</span>
-          </div>
-        </header>
+  const orderList = orders ?? [];
 
-        {errorMsg && (
-          <div className="bg-red-900/50 border border-red-500 p-4 rounded-lg text-red-200 mb-6">
-            {errorMsg}
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#0F172A] mb-1">Pedidos</h1>
+          <p className="text-[#64748B] text-sm">Acompanhe os pedidos realizados na sua loja.</p>
+        </div>
+        <div className="bg-white border border-[#E2E8F0] px-4 py-2 rounded-lg text-sm font-medium text-[#475569]">
+          Total: <span className="text-[#0F172A] font-bold">{orderList.length}</span>
+        </div>
+      </div>
+
+      <div className="bg-white border border-[#E2E8F0] shadow-sm rounded-xl overflow-hidden">
+        {error && (
+          <div className="bg-red-50 border-b border-red-200 px-6 py-4 text-red-700 text-sm">
+            Erro ao buscar pedidos. Tente novamente mais tarde.
           </div>
         )}
 
-        <div className="grid gap-6">
-          {payments.map((p: any) => {
-            const address = p.additional_info?.payer?.address || p.payer?.address || {};
-            const phone = p.additional_info?.payer?.phone || p.payer?.phone || {};
-            const items = p.additional_info?.items || [];
-            
-            return (
-              <div key={p.id} className="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-green-500 text-black text-xs font-bold px-3 py-1 rounded-bl-lg">
-                  APROVADO
-                </div>
-                
-                <div className="flex flex-col md:flex-row gap-6">
-                  {/* Info Pessoal */}
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-amber-400 mb-4 border-b border-gray-700 pb-2">Comprador</h2>
-                    <p className="font-semibold text-lg">{p.payer?.first_name} {p.payer?.last_name || ""}</p>
-                    <p className="text-gray-300">📧 {p.payer?.email}</p>
-                    <p className="text-gray-300">📱 ({phone.area_code || ""}) {phone.number || "Sem telefone"}</p>
-                    <p className="text-gray-300 mt-2 text-sm">CPF/CNPJ: {p.payer?.identification?.number || "Não informado"}</p>
-                  </div>
-
-                  {/* Info Endereço */}
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-blue-400 mb-4 border-b border-gray-700 pb-2">Endereço de Entrega</h2>
-                    {address.street_name ? (
-                      <div className="bg-black/20 p-4 rounded-lg">
-                        <p className="font-mono text-lg">{address.zip_code}</p>
-                        <p>{address.street_name}, nº {address.street_number}</p>
-                        <p>Bairro: {address.neighborhood || "Centro"}</p>
-                        <p>{address.city} - {address.federal_unit}</p>
-                      </div>
-                    ) : (
-                      <p className="text-red-400 italic">Endereço não recebido do cliente nesta transação antiga.</p>
-                    )}
-                  </div>
-
-                  {/* Info Produto */}
-                  <div className="flex-1">
-                    <h2 className="text-xl font-bold text-emerald-400 mb-4 border-b border-gray-700 pb-2">O que entregar?</h2>
-                    
-                    {items.length > 0 ? (
-                      items.map((item: any, i: number) => (
-                        <p key={i} className="font-bold text-lg mb-1">{item.quantity}x {item.title || item.description}</p>
-                      ))
-                    ) : (
-                      <p className="font-bold text-lg">{p.description || "Produto Genérico"}</p>
-                    )}
-                    
-                    <p className="text-3xl font-black mt-4">R$ {p.transaction_amount?.toFixed(2).replace(".", ",")}</p>
-                    <p className="text-xs text-gray-400 mt-1">ID Pagamento: {p.id}</p>
-                    <p className="text-xs text-gray-400 mt-1">Data: {new Date(p.date_created).toLocaleString('pt-BR')}</p>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-
-          {payments.length === 0 && !errorMsg && (
-            <div className="text-center py-20 text-gray-500">
-              <p className="text-2xl mb-2">Poxaaa...</p>
-              <p>Nenhuma venda Aprovada encontrada no seu Mercado Pago ainda.</p>
-              <p>Esperando os anúncios rodarem!</p>
-            </div>
-          )}
-        </div>
+        {orderList.length === 0 ? (
+          <div className="p-12 text-center flex flex-col items-center justify-center">
+            <ShoppingCart className="w-12 h-12 text-[#CBD5E1] mb-3" />
+            <h3 className="text-[#0F172A] font-semibold text-lg">Nenhum pedido ainda</h3>
+            <p className="text-[#64748B] text-sm mt-1">
+              Os pedidos aparecerão aqui assim que os primeiros clientes comprarem.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-xs uppercase tracking-wider font-semibold">
+                  <th className="px-6 py-4">ID</th>
+                  <th className="px-6 py-4">Cliente</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Valor</th>
+                  <th className="px-6 py-4">Data</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E2E8F0]">
+                {orderList.map((order) => (
+                  <tr key={order.id} className="hover:bg-[#F8FAFC]/50 transition-colors">
+                    <td className="px-6 py-4 text-xs text-[#94A3B8] font-mono">
+                      {order.id?.slice(0, 8)}...
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#475569]">
+                      {order.customer_email ?? '—'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
+                        order.status === 'paid'
+                          ? 'bg-[#DCFCE7] text-[#166534]'
+                          : order.status === 'pending'
+                          ? 'bg-[#FEF9C3] text-[#854D0E]'
+                          : 'bg-[#F1F5F9] text-[#475569]'
+                      }`}>
+                        {order.status ?? 'desconhecido'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-medium text-[#0F172A]">
+                      {order.total_amount != null
+                        ? `R$ ${Number(order.total_amount).toFixed(2).replace('.', ',')}`
+                        : '—'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#64748B]">
+                      {order.created_at
+                        ? new Date(order.created_at).toLocaleString('pt-BR')
+                        : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,32 +1,29 @@
-"use client";
+import { requireTenant } from '@/lib/tenant';
+import { createServerSupabase } from '@/lib/supabase-server';
+import { Package, ShoppingCart, Target } from 'lucide-react';
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { Package, ShoppingCart, Target } from "lucide-react";
+export default async function AdminDashboard() {
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
 
-export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    products: 0,
-    funnels: 0,
-    orders: 0
-  });
-  
-  useEffect(() => {
-    async function loadStats() {
-      // Basic counts
-      const [productsRes, funnelsRes] = await Promise.all([
-        supabase.from("products").select("id", { count: "exact", head: true }),
-        supabase.from("upsell_rules").select("id", { count: "exact", head: true }),
-      ]);
-      
-      setStats({
-        products: productsRes.count || 0,
-        funnels: funnelsRes.count || 0,
-        orders: 0 // to implement via orders table soon
-      });
-    }
-    loadStats();
-  }, []);
+  const [
+    { count: productsCount },
+    { count: upsellCount },
+    { count: ordersCount },
+  ] = await Promise.all([
+    supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('tenant_id', tenantId),
+    supabase
+      .from('upsell_rules')
+      .select('*', { count: 'exact', head: true })
+      .eq('tenant_id', tenantId),
+    supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('tenant_id', tenantId),
+  ]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -41,15 +38,15 @@ export default function AdminDashboard() {
             <span className="font-semibold text-sm">Produtos Ativos</span>
             <Package className="w-5 h-5 text-[#0F172A]" />
           </div>
-          <span className="text-3xl font-bold text-[#0F172A]">{stats.products}</span>
+          <span className="text-3xl font-bold text-[#0F172A]">{productsCount ?? 0}</span>
         </div>
-        
+
         <div className="bg-white border border-[#E2E8F0] p-6 rounded-2xl shadow-sm flex flex-col gap-4">
           <div className="flex justify-between items-center text-[#475569]">
             <span className="font-semibold text-sm">Regras de Funil (Upsell)</span>
             <Target className="w-5 h-5 text-[#0F172A]" />
           </div>
-          <span className="text-3xl font-bold text-[#0F172A]">{stats.funnels}</span>
+          <span className="text-3xl font-bold text-[#0F172A]">{upsellCount ?? 0}</span>
         </div>
 
         <div className="bg-white border border-[#E2E8F0] p-6 rounded-2xl shadow-sm flex flex-col gap-4">
@@ -57,7 +54,7 @@ export default function AdminDashboard() {
             <span className="font-semibold text-sm">Pedidos (Geral)</span>
             <ShoppingCart className="w-5 h-5 text-[#0F172A]" />
           </div>
-          <span className="text-3xl font-bold text-[#0F172A]">{stats.orders}</span>
+          <span className="text-3xl font-bold text-[#0F172A]">{ordersCount ?? 0}</span>
         </div>
       </div>
     </div>
