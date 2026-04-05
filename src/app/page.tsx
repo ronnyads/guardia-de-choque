@@ -6,6 +6,7 @@ import TrustBar from "@/components/home/TrustBar";
 import FeaturedBanner from "@/components/home/FeaturedBanner";
 import ShippingBanner from "@/components/home/ShippingBanner";
 import Testimonials from "@/components/home/Testimonials";
+import BrandStory from "@/components/home/BrandStory";
 import NewsletterSection from "@/components/home/NewsletterSection";
 
 export default function HomePage() {
@@ -33,6 +34,9 @@ export default function HomePage() {
 
         {/* Avaliações */}
         <Testimonials />
+
+        {/* Nossa História — banner da família */}
+        <BrandStory />
 
         {/* Newsletter — captura de lead */}
         <NewsletterSection />

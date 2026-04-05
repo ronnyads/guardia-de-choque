@@ -18,7 +18,15 @@ export default function BrandStory() {
         />
         <div className="px-5 py-8 flex flex-col gap-4">
           <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">Nossa História</span>
-          <h2 className="font-playfair text-[24px] text-[#0F172A] leading-snug">
+          <h2
+            style={{
+              fontFamily: "var(--font-playfair, 'Playfair Display', Georgia, serif)",
+              fontSize: "24px",
+              color: "#0F172A",
+              lineHeight: 1.25,
+              fontWeight: 700,
+            }}
+          >
             Qualidade não precisa custar uma fortuna.
           </h2>
           <p className="text-[#475569] text-[13px] leading-relaxed">
@@ -48,7 +56,15 @@ export default function BrandStory() {
         <div className="absolute inset-0 flex items-center justify-end">
           <div className="max-w-[400px] mr-20 xl:mr-32 bg-white/85 backdrop-blur-sm rounded-2xl p-9 flex flex-col gap-4 shadow-lg">
             <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">Nossa História</span>
-            <h2 className="font-playfair text-[28px] text-[#0F172A] leading-snug">
+            <h2
+              style={{
+                fontFamily: "var(--font-playfair, 'Playfair Display', Georgia, serif)",
+                fontSize: "28px",
+                color: "#0F172A",
+                lineHeight: 1.25,
+                fontWeight: 700,
+              }}
+            >
               Qualidade não precisa custar uma fortuna.
             </h2>
             <p className="text-[#475569] text-[13px] leading-relaxed">
