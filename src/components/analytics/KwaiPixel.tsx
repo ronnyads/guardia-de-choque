@@ -8,29 +8,38 @@ export const KWAI_PIXEL_ID = process.env.NEXT_PUBLIC_KWAI_PIXEL_ID || "";
 
 declare global {
   interface Window {
-    kwaiq: ((...args: unknown[]) => void) & { q?: unknown[] };
+    KwaiAnalyticsObject: string;
+    kwaiq: {
+      load:     (pixelId: string, opts?: Record<string, unknown>) => void;
+      page:     (params?: Record<string, unknown>) => void;
+      track:    (event: string, params?: Record<string, unknown>) => void;
+      instance: (pixelId: string) => { track: (event: string, params?: Record<string, unknown>) => void };
+      push:     (...args: unknown[]) => void;
+    };
   }
 }
 
-export const kwaiTrack = (event: string, params?: Record<string, unknown>) => {
-  if (typeof window !== "undefined" && typeof window.kwaiq === "function") {
-    window.kwaiq("track", event, params ?? {});
-  }
-};
+// ---------- Helpers ----------
+const inst = () =>
+  typeof window !== "undefined" && window.kwaiq
+    ? window.kwaiq.instance(KWAI_PIXEL_ID)
+    : null;
 
-export const kwaiAddToCart = (v: number) => kwaiTrack("addToCart",        { value: v, currency: "BRL" });
-export const kwaiCheckout  = (v: number) => kwaiTrack("initiateCheckout", { value: v, currency: "BRL" });
-export const kwaiPurchase  = (v: number, id?: string) =>
-  kwaiTrack("completePayment", { value: v, currency: "BRL", order_id: id ?? "" });
+export const kwaiPageView   = ()                      => { try { window.kwaiq.page(); } catch {} };
+export const kwaiTrack      = (e: string, p = {})     => { try { inst()?.track(e, p); } catch {} };
+export const kwaiCheckout   = (value: number)         => kwaiTrack("EVENT_INITIATED_CHECKOUT", { value, currency: "BRL" });
+export const kwaiPurchase   = (value: number, id = "") => kwaiTrack("EVENT_PURCHASE",           { value, currency: "BRL", order_id: id });
+export const kwaiAddToCart  = (value: number)         => kwaiTrack("EVENT_ADD_TO_CART",         { value, currency: "BRL" });
+export const kwaiViewContent = (id: string, name: string, value: number) =>
+  kwaiTrack("EVENT_CONTENT_VIEW", { content_id: id, content_name: name, value, currency: "BRL" });
 
+// ---------- Componente ----------
 function KwaiPixelContent() {
   const pathname     = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (typeof window !== "undefined" && typeof window.kwaiq === "function") {
-      window.kwaiq("track", "pageView");
-    }
+    kwaiPageView();
   }, [pathname, searchParams]);
 
   if (!KWAI_PIXEL_ID) return null;
@@ -40,18 +49,9 @@ function KwaiPixelContent() {
       id="kwai-pixel"
       strategy="lazyOnload"
       dangerouslySetInnerHTML={{
-        __html: `
-          !function(e,t){
-            var a=function(){(a.q=a.q||[]).push(arguments)};
-            window.kwaiq=a;
-            var s=t.createElement("script");
-            s.src="https://s.kwai-analytics.com/pixel.min.js";
-            s.async=true;
-            t.head.appendChild(s);
-          }(window,document);
-          kwaiq("init","${KWAI_PIXEL_ID}");
-          kwaiq("track","pageView");
-        `,
+        __html: \$script
+kwaiq.load('');
+kwaiq.page();\,
       }}
     />
   );
