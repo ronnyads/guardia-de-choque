@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { kwaiViewContent } from "./KwaiPixel";
 
 interface Props {
   productId:   string;
@@ -8,13 +9,12 @@ interface Props {
   price:       number;
 }
 
-/**
- * Tracker de produto — só dispara Meta Pixel ViewContent.
- * O Kwai já cobre page views via kwaiq.page() no KwaiPixel global.
- */
 export default function ProductViewTracker({ productId, productName, price }: Props) {
   useEffect(() => {
-    // Meta Pixel — ViewContent enriquecido com dados do produto
+    // Kwai — EVENT_CONTENT_VIEW com dados do produto
+    kwaiViewContent(productId, productName, price);
+
+    // Meta Pixel — ViewContent com dados do produto
     if (typeof window !== "undefined" && window.fbq) {
       window.fbq("track", "ViewContent", {
         content_ids:  [productId],
