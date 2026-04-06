@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
 import { ShieldCheck, BarChart3, Layers, Eye, EyeOff } from "lucide-react";
 
 const features = [
@@ -24,7 +23,6 @@ const features = [
 ];
 
 export default function AdminLogin() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -45,18 +43,18 @@ export default function AdminLogin() {
     }
 
     // Verifica se é super admin da plataforma
-    const { data: superAdmin } = await supabase
-      .from("super_admins")
-      .select("user_id")
-      .eq("user_id", authData.user.id)
-      .single();
+    try {
+      const { data: superAdmin } = await supabase
+        .from("super_admins")
+        .select("user_id")
+        .eq("user_id", authData.user.id)
+        .single();
 
-    if (superAdmin) {
-      router.push("/super-admin");
-    } else {
-      router.push("/admin");
+      // Navegação completa (não SPA) garante cookies e re-render correto
+      window.location.href = superAdmin ? "/super-admin" : "/admin";
+    } catch {
+      window.location.href = "/admin";
     }
-    router.refresh();
   };
 
   return (
