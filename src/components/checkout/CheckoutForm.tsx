@@ -72,9 +72,11 @@ interface Props {
   hasOrderBump: boolean;
   setHasOrderBump: (val: boolean) => void;
   orderBumpPrice: number;
+  kitSlug?: string;
+  kitPrice?: number;
 }
 
-export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, orderBumpPrice }: Props) {
+export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, orderBumpPrice, kitSlug, kitPrice }: Props) {
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("cartao");
   const [paymentTracked, setPaymentTracked] = useState(false);
 
@@ -91,6 +93,30 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
   const [docError, setDocError]       = useState("");
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [personalData, setPersonalData] = useState({ name: "", email: "", phone: "" });
+  const leadCaptured = typeof window !== 'undefined' ? { current: !!localStorage.getItem('lead_id') } : { current: false };
+
+  const captureLeadSilently = async (phone: string) => {
+    if (leadCaptured.current) return;
+    if (!personalData.name || !personalData.email || !phone) return;
+    try {
+      const res = await fetch('/api/leads/capture', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:         personalData.name,
+          email:        personalData.email,
+          phone,
+          productSlug:  kitSlug,
+          productPrice: kitPrice,
+        }),
+      });
+      const data = await res.json();
+      if (data.leadId) {
+        localStorage.setItem('lead_id', data.leadId);
+        leadCaptured.current = true;
+      }
+    } catch { /* silencioso — não bloqueia o checkout */ }
+  };
 
   const [cardData, setCardData] = useState({ number: "", name: "", expiry: "", cvv: "", installments: "1" });
   const [isProcessing, setIsProcessing] = useState(false);
@@ -301,6 +327,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
             <label className={labelClass}>Celular / WhatsApp</label>
             <input required type="tel" value={personalData.phone}
               onChange={(e) => setPersonalData({ ...personalData, phone: e.target.value })}
+              onBlur={(e) => captureLeadSilently(e.target.value)}
               placeholder="(11) 99999-9999" className={inputClass} />
           </div>
         </div>

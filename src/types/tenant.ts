@@ -42,6 +42,7 @@ export interface TenantConfig {
   checkout_pix_polling_ms: number;
   checkout_upsell_price: number;
   checkout_order_bump_price: number;
+  recovery_whatsapp_template: string | null;
   updated_at: string;
 }
 

@@ -110,6 +110,25 @@ export async function updateCheckoutConfig(formData: FormData) {
   revalidatePath('/admin/settings');
 }
 
+// ─── RECUPERAÇÃO ──────────────────────────────────────────────────────────────
+
+export async function updateRecoveryConfig(formData: FormData) {
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
+
+  const recovery_whatsapp_template = formData.get('recovery_whatsapp_template') as string | null;
+
+  const { error } = await supabase
+    .from('tenant_config')
+    .upsert(
+      { tenant_id: tenantId, recovery_whatsapp_template: recovery_whatsapp_template || null, updated_at: new Date().toISOString() },
+      { onConflict: 'tenant_id' }
+    );
+
+  if (error) throw new Error(`Erro ao salvar recuperação: ${error.message}`);
+  revalidatePath('/admin/settings');
+}
+
 // ─── INTEGRAÇÕES ──────────────────────────────────────────────────────────────
 
 export type IntegrationProvider = 'mercadopago' | 'stripe' | 'meta_pixel' | 'kwai_pixel';

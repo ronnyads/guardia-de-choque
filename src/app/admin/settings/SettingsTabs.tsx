@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import {
   Palette, Phone, Plug, Search, X, Settings, CheckCircle,
-  Plus, Trash2, ChevronRight, CreditCard,
+  Plus, Trash2, ChevronRight, CreditCard, MessageCircle,
 } from 'lucide-react';
 import type { TenantConfig, TenantIntegration } from '@/types/tenant';
 import {
@@ -11,6 +11,7 @@ import {
   updateContactConfig,
   updateSeoConfig,
   updateCheckoutConfig,
+  updateRecoveryConfig,
   upsertIntegration,
   type IntegrationProvider,
 } from './actions';
@@ -18,7 +19,7 @@ import {
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type IntegrationRow = Omit<TenantIntegration, 'secret_key_encrypted' | 'tenant_id' | 'extra_config'>;
-type Section = 'marca' | 'contato' | 'integracoes' | 'seo' | 'checkout';
+type Section = 'marca' | 'contato' | 'integracoes' | 'seo' | 'checkout' | 'recuperacao';
 type FilterId = 'todos' | 'pagamentos' | 'analytics' | 'instalado';
 
 interface Props {
@@ -34,6 +35,7 @@ const SUB_NAV: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'integracoes', label: 'Integrações',         icon: Plug },
   { id: 'seo',         label: 'SEO',                icon: Search },
   { id: 'checkout',    label: 'Checkout',            icon: CreditCard },
+  { id: 'recuperacao', label: 'Recuperação',          icon: MessageCircle },
 ];
 
 // ── Integration catalog ───────────────────────────────────────────────────────
@@ -176,6 +178,7 @@ export default function SettingsTabs({ config, integrations }: Props) {
         {section === 'integracoes' && <IntegrationsSection integrations={integrations} onOpen={setOpenProvider} />}
         {section === 'seo'         && <SeoSection         config={config}       saving={saving} onSave={handleSave} />}
         {section === 'checkout'    && <CheckoutSection    config={config}       saving={saving} onSave={handleSave} />}
+        {section === 'recuperacao' && <RecoverySection    config={config}       saving={saving} onSave={handleSave} />}
       </main>
 
       {/* ── Sheet de configuração da integração ───────────────────────────── */}
@@ -723,6 +726,69 @@ function CheckoutSection({ config, saving, onSave }: {
 
         <button type="submit" disabled={saving} className={saveBtnCls}>
           {saving ? 'Salvando...' : 'Salvar Checkout'}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// ── Seção: Recuperação ────────────────────────────────────────────────────────
+
+const DEFAULT_TEMPLATE = 'Olá {name}! Vi que você ficou interessado(a) na {product}. Podemos ajudar? Acesse: {link}';
+
+function RecoverySection({ config, saving, onSave }: {
+  config: TenantConfig | null;
+  saving: boolean;
+  onSave: (action: (fd: FormData) => Promise<void>, fd: FormData) => Promise<void>;
+}) {
+  const [template, setTemplate] = useState(config?.recovery_whatsapp_template ?? DEFAULT_TEMPLATE);
+
+  return (
+    <div>
+      <h2 className="text-lg font-bold text-[#0F172A] mb-1">Recuperação de Carrinho</h2>
+      <p className="text-sm text-[#64748B] mb-6">Configure a mensagem enviada via WhatsApp para leads abandonados.</p>
+
+      <form
+        onSubmit={(e) => { e.preventDefault(); onSave(updateRecoveryConfig, new FormData(e.currentTarget)); }}
+        className="space-y-5"
+      >
+        <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 bg-[#F8FAFC] border-b border-[#E2E8F0]">
+            <p className="text-[13px] font-semibold text-[#0F172A]">Mensagem WhatsApp</p>
+            <p className="text-xs text-[#64748B] mt-0.5">
+              Variáveis disponíveis: <code className="bg-[#E2E8F0] px-1 rounded text-[11px]">{'{name}'}</code>{' '}
+              <code className="bg-[#E2E8F0] px-1 rounded text-[11px]">{'{product}'}</code>{' '}
+              <code className="bg-[#E2E8F0] px-1 rounded text-[11px]">{'{link}'}</code>
+            </p>
+          </div>
+          <div className="p-5 space-y-4">
+            <div>
+              <label className={labelCls}>Template da mensagem</label>
+              <textarea
+                name="recovery_whatsapp_template"
+                value={template}
+                onChange={e => setTemplate(e.target.value)}
+                className={`${inputCls} resize-none`}
+                rows={4}
+                placeholder={DEFAULT_TEMPLATE}
+              />
+            </div>
+
+            {/* Preview */}
+            <div className="p-4 bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl">
+              <p className="text-[11px] font-semibold text-[#166534] uppercase tracking-widest mb-2">Preview</p>
+              <p className="text-sm text-[#166534] whitespace-pre-wrap">
+                {template
+                  .replace('{name}', 'Maria Silva')
+                  .replace('{product}', 'Guardiã de Choque')
+                  .replace('{link}', 'guardiadechoque.online/checkout?kit=guardia-de-choque')}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" disabled={saving} className={saveBtnCls}>
+          {saving ? 'Salvando...' : 'Salvar Recuperação'}
         </button>
       </form>
     </div>

@@ -101,7 +101,18 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
     const finalItemsTotal = itemsTotal + (hasOrderBump ? orderBumpPrice : 0) + (acceptedUpsell ? upsellPrice : 0);
     const amountWithDiscount = paymentData.paymentMethod === 'pix' ? finalItemsTotal * 0.95 : finalItemsTotal;
 
-    const firePurchasePixel = (value: number) => {
+    const convertLead = (paymentId: string) => {
+    const leadId = typeof window !== 'undefined' ? localStorage.getItem('lead_id') : null;
+    if (!leadId) return;
+    fetch('/api/leads/convert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ leadId, orderId: paymentId }),
+    }).catch(() => {});
+    localStorage.removeItem('lead_id');
+  };
+
+  const firePurchasePixel = (value: number) => {
       // Meta Pixel
       if (typeof window !== "undefined" && window.fbq) {
         window.fbq("track", "Purchase", { value: value.toFixed(2), currency: "BRL", content_name: kit.name });
@@ -134,6 +145,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
         const result = await res.json();
         if (result.success) {
           firePurchasePixel(amountWithDiscount);
+          convertLead(result.paymentId);
           setPixData({ qrCodeBase64: result.qrCodeBase64, qrCode: result.qrCode, paymentId: result.paymentId });
           setCheckoutComplete(true);
           return;
@@ -156,6 +168,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
 
       if (mpResult.success) {
         firePurchasePixel(amountWithDiscount);
+        convertLead(String(mpResult.paymentId || ''));
         setCheckoutComplete(true);
         return;
       }
@@ -185,6 +198,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
 
       if (stripeResult.success) {
         firePurchasePixel(amountWithDiscount);
+        convertLead(String(stripeResult.paymentId || ''));
         setCheckoutComplete(true);
         return;
       }
@@ -289,6 +303,8 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
             hasOrderBump={hasOrderBump}
             setHasOrderBump={setHasOrderBump}
             orderBumpPrice={orderBumpPrice}
+            kitSlug={kit.slug}
+            kitPrice={kit.promoPrice}
           />
         </div>
 
