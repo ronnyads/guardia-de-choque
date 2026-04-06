@@ -119,8 +119,8 @@ export const STATS: Stat[] = [
 ];
 
 export const CHECKOUT_URLS = {
-  "kit-individual": "/checkout?kit=kit-individual",
+  "kit-individual": "/checkout?kit=guardia-de-choque",
   "kit-dupla": "/checkout?kit=kit-dupla",
   "kit-familia": "/checkout?kit=kit-familia",
-  "downsell": "/checkout?kit=kit-individual",
+  "downsell": "/checkout?kit=guardia-de-choque",
 };

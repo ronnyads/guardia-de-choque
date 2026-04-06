@@ -26,12 +26,12 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const rawKit     = params.kit;
   const rawProduto = params.produto;
-  const kitSlug    = rawKit || (rawProduto ? slugToKit[rawProduto] : null) || "kit-individual";
+  const kitSlug    = rawKit || (rawProduto ? slugToKit[rawProduto] : null) || "guardia-de-choque";
 
   const kitProduct = await getProductBySlug(kitSlug);
 
-  // Fallback: se não encontrar no banco, usa kit-individual
-  const resolvedKit = kitProduct ?? await getProductBySlug("kit-individual");
+  // Fallback: se não encontrar no banco, usa guardia-de-choque
+  const resolvedKit = kitProduct ?? await getProductBySlug("guardia-de-choque");
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
