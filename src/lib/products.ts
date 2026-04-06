@@ -158,12 +158,9 @@ export async function getProductBySlug(slug: string): Promise<StoreProduct | und
 
   if (error || !data) return undefined;
   
-  // Fallback to local static images when DB has none
+  // Always prefer local static images (DB images may be stale storage URLs)
   const staticProduct = storeProducts.find((p) => p.slug === slug);
-  const images =
-    Array.isArray(data.images) && data.images.length > 0
-      ? data.images
-      : (staticProduct?.images ?? []);
+  const images = staticProduct?.images ?? (Array.isArray(data.images) ? data.images : []);
 
   return {
     id: data.id,
