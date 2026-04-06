@@ -3,9 +3,14 @@ import { supabase } from "./supabase";
 
 const PIX_DISCOUNT = 0.05;
 
+// UUID pattern — category_id may be a UUID (legacy) or a slug string
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function mapDbToStoreProduct(d: Record<string, unknown>): StoreProduct {
   const promoPrice = Number(d.promo_price) || 0;
-  const categoryId = String(d.category_id || "");
+  const rawCategory = String(d.category_id || "");
+  // If category_id is a UUID (legacy data), fall back to empty string to avoid broken URLs
+  const categoryId = UUID_REGEX.test(rawCategory) ? "" : rawCategory;
   const categoryName = categoryId
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase()) || "Categoria";
