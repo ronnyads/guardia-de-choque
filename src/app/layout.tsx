@@ -25,17 +25,11 @@ const playfair = Playfair_Display({
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getStoreConfig();
   return {
-    title: config.seo_title ?? "Os Oliveiras | Produtos de Qualidade para sua Família",
-    description:
-      config.seo_description ??
-      "A loja da família Oliveira. Produtos selecionados com qualidade garantida — defesa pessoal, tecnologia e mais. Frete rápido, pagamento seguro.",
-    keywords:
-      "loja online, produtos qualidade, defesa pessoal, familia oliveira, comprar online brasil",
+    title: config.seo_title ?? "Minha Loja",
+    description: config.seo_description ?? "A melhor loja online. Frete rápido, pagamento seguro.",
     openGraph: {
-      title: config.seo_title ?? "Os Oliveiras | Qualidade que a família garante",
-      description:
-        config.seo_description ??
-        "Produtos selecionados com a confiança da família Oliveira. Qualidade garantida, entrega rápida.",
+      title: config.seo_title ?? "Minha Loja",
+      description: config.seo_description ?? "A melhor loja online. Qualidade garantida.",
       type: "website",
       locale: "pt_BR",
     },
@@ -88,9 +82,9 @@ export default async function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Store",
-              name: "Guardiã de Choque",
-              description: "Dispositivo de defesa pessoal com qualidade e segurança garantida.",
-              url: "https://guardiadechoque.online",
+              name: config.brand_name ?? "Minha Loja",
+              description: config.seo_description ?? "A melhor loja online.",
+              url: config.domain_display ? `https://${config.domain_display}` : undefined,
             }),
           }}
         />
