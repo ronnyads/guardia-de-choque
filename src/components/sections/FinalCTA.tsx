@@ -5,7 +5,10 @@ import { Zap, ShieldCheck, Truck, Award } from "lucide-react";
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
 import Button from "@/components/ui/Button";
 import CountdownTimer from "@/components/ui/CountdownTimer";
-import { MAIN_PRODUCT } from "@/lib/constants";
+
+// Preços inline — componente legado (landing page antiga), não está em uso em nenhuma página
+const PROMO_PRICE = 97.9;
+const ORIGINAL_PRICE = 129;
 
 export default function FinalCTA() {
   return (
@@ -46,10 +49,10 @@ export default function FinalCTA() {
           className="flex items-baseline gap-3"
         >
           <span className="text-text-muted text-lg line-through">
-            R$ {MAIN_PRODUCT.originalPrice.toFixed(2).replace(".", ",")}
+            R$ {ORIGINAL_PRICE.toFixed(2).replace(".", ",")}
           </span>
           <span className="text-4xl md:text-5xl font-bold text-accent">
-            R$ {MAIN_PRODUCT.promoPrice.toFixed(2).replace(".", ",")}
+            R$ {PROMO_PRICE.toFixed(2).replace(".", ",")}
           </span>
         </motion.div>
 

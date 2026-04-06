@@ -8,7 +8,12 @@ import Button from "@/components/ui/Button";
 import PriceTag from "@/components/ui/PriceTag";
 import StarRating from "@/components/ui/StarRating";
 import CountdownTimer from "@/components/ui/CountdownTimer";
-import { MAIN_PRODUCT } from "@/lib/constants";
+
+// Valores inline — componente legado (landing page antiga), não está em uso em nenhuma página
+const LEGACY_RATING = 4.7;
+const LEGACY_REVIEW_COUNT = 194;
+const LEGACY_ORIGINAL_PRICE = 129;
+const LEGACY_PROMO_PRICE = 97.9;
 
 const container = {
   hidden: { opacity: 0 },
@@ -39,8 +44,8 @@ export default function HeroSection() {
         >
           <motion.div variants={item}>
             <StarRating
-              rating={MAIN_PRODUCT.rating}
-              count={MAIN_PRODUCT.reviewCount}
+              rating={LEGACY_RATING}
+              count={LEGACY_REVIEW_COUNT}
               size="sm"
             />
           </motion.div>
@@ -63,8 +68,8 @@ export default function HeroSection() {
 
           <motion.div variants={item}>
             <PriceTag
-              original={MAIN_PRODUCT.originalPrice}
-              promo={MAIN_PRODUCT.promoPrice}
+              original={LEGACY_ORIGINAL_PRICE}
+              promo={LEGACY_PROMO_PRICE}
             />
           </motion.div>
 

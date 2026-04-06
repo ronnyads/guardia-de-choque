@@ -11,7 +11,23 @@ import {
   Scale,
 } from "lucide-react";
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
-import { MAIN_PRODUCT } from "@/lib/constants";
+
+// Dados inline — componente legado (landing page antiga), não está em uso em nenhuma página
+const LEGACY_SPECS = [
+  { label: "Tamanho", value: "16cm" },
+  { label: "Alimentação", value: "Bivolt 110/220V" },
+  { label: "Lanterna", value: "LED Cree alta potência" },
+  { label: "Material", value: "Corpo emborrachado (grau militar)" },
+];
+
+const LEGACY_FEATURES = [
+  { icon: "Zap", title: "16cm de Potência", description: "Descarga elétrica de alta voltagem que neutraliza qualquer ameaça" },
+  { icon: "BatteryCharging", title: "Recarregável USB", description: "Bateria bivolt 110/220V, sempre pronto quando você precisar" },
+  { icon: "Flashlight", title: "Lanterna LED Cree", description: "Alta luminosidade com baixo consumo de energia" },
+  { icon: "ShieldCheck", title: "Trava de Segurança", description: "Botão de trava impede acionamento acidental" },
+  { icon: "Package", title: "Coldre Incluso", description: "Coldre protetor para transporte seguro e discreto" },
+  { icon: "Scale", title: "Legal no Brasil", description: "Não é arma de fogo — livre para uso civil em todo território" },
+];
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Zap,
@@ -46,7 +62,7 @@ export default function ProductShowcase() {
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
                 <div className="grid grid-cols-2 gap-2">
-                  {MAIN_PRODUCT.specs.slice(0, 4).map((spec) => (
+                  {LEGACY_SPECS.map((spec) => (
                     <div
                       key={spec.label}
                       className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 text-center"
@@ -79,7 +95,7 @@ export default function ProductShowcase() {
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {MAIN_PRODUCT.features.map((feature, i) => {
+            {LEGACY_FEATURES.map((feature, i) => {
               const Icon = iconMap[feature.icon] || Zap;
               return (
                 <motion.div

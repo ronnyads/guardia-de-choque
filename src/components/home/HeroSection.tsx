@@ -219,7 +219,7 @@ export default function HeroSection({ highlightPixPrice }: Props) {
             >
               <p className="text-[10px] text-[#94A3B8] font-medium uppercase tracking-wider">A partir de</p>
               <p className="text-[22px] font-bold text-[#09090B] tabular-nums leading-tight">
-                {fmt(featured.pixPrice)}
+                {highlightPixPrice != null ? fmt(highlightPixPrice) : "—"}
               </p>
               <p className="text-[10px] text-green-600 font-semibold">PIX · 5% OFF</p>
             </motion.div>

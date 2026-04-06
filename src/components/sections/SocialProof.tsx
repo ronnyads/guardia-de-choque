@@ -4,7 +4,11 @@ import { motion } from "framer-motion";
 import { BadgeCheck, Quote } from "lucide-react";
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
 import StarRating from "@/components/ui/StarRating";
-import { MAIN_PRODUCT, REVIEWS } from "@/lib/constants";
+import { REVIEWS } from "@/lib/constants";
+
+// Valores inline — componente legado (landing page antiga), não está em uso em nenhuma página
+const LEGACY_RATING = 4.7;
+const LEGACY_REVIEW_COUNT = 194;
 
 export default function SocialProof() {
   return (
@@ -19,13 +23,13 @@ export default function SocialProof() {
         >
           <div className="flex items-baseline gap-3">
             <span className="text-6xl md:text-7xl font-bold text-accent bg-accent/10 px-5 py-2 rounded-2xl">
-              {MAIN_PRODUCT.rating}
+              {LEGACY_RATING}
             </span>
             <span className="text-2xl text-text-secondary">/5</span>
           </div>
-          <StarRating rating={MAIN_PRODUCT.rating} size="lg" />
+          <StarRating rating={LEGACY_RATING} size="lg" />
           <p className="text-text-secondary">
-            <span className="text-white font-semibold">{MAIN_PRODUCT.reviewCount}</span>{" "}
+            <span className="text-white font-semibold">{LEGACY_REVIEW_COUNT}</span>{" "}
             avaliações verificadas
           </p>
         </motion.div>

@@ -1,13 +1,37 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { Lock, Truck, ShieldCheck, Star } from "lucide-react";
 import ClientCheckout from "@/components/checkout/ClientCheckout";
+import { getProductBySlug } from "@/lib/products";
+import { ORDER_BUMP_PRICE } from "@/lib/pricing";
 
 export const metadata = {
   title: "Checkout Seguro | Guardia de Choque",
   description: "Finalize sua compra com seguranca. Frete gratis para todo o Brasil.",
 };
 
-export default function CheckoutPage() {
+// Mapa de produto-slug para kit-slug (para compatibilidade com ?produto=guardia-de-choque)
+const slugToKit: Record<string, string> = {
+  "guardia-de-choque": "kit-individual",
+  "kit-dupla":         "kit-dupla",
+  "kit-familia":       "kit-familia",
+  "mini-taser":        "kit-individual",
+};
+
+interface PageProps {
+  searchParams: Promise<{ kit?: string; produto?: string }>;
+}
+
+export default async function CheckoutPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const rawKit     = params.kit;
+  const rawProduto = params.produto;
+  const kitSlug    = rawKit || (rawProduto ? slugToKit[rawProduto] : null) || "kit-individual";
+
+  const kitProduct = await getProductBySlug(kitSlug);
+
+  // Fallback: se não encontrar no banco, usa kit-individual
+  const resolvedKit = kitProduct ?? await getProductBySlug("kit-individual");
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
 
@@ -55,13 +79,19 @@ export default function CheckoutPage() {
       </div>
 
       <main className="max-w-5xl mx-auto px-4 py-8 md:py-10">
-        <Suspense fallback={
+        {resolvedKit ? (
+          <Suspense fallback={
+            <div className="flex items-center justify-center py-32">
+              <div className="w-8 h-8 border-2 border-[#0F172A] border-t-transparent rounded-full animate-spin" />
+            </div>
+          }>
+            <ClientCheckout kit={resolvedKit} orderBumpPrice={ORDER_BUMP_PRICE} />
+          </Suspense>
+        ) : (
           <div className="flex items-center justify-center py-32">
-            <div className="w-8 h-8 border-2 border-[#0F172A] border-t-transparent rounded-full animate-spin" />
+            <p className="text-[#64748B]">Produto não encontrado. Verifique o link e tente novamente.</p>
           </div>
-        }>
-          <ClientCheckout />
-        </Suspense>
+        )}
       </main>
     </div>
   );

@@ -2,27 +2,40 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { KITS } from "@/lib/constants";
+import { StoreProduct } from "@/types";
+import { Kit } from "@/types";
 import OrderSummary from "./OrderSummary";
 import CheckoutForm from "./CheckoutForm";
 import UpsellModal from "./UpsellModal";
 import { kwaiPurchase, kwaiCheckout } from "@/components/analytics/KwaiPixel";
 
-export default function ClientCheckout() {
+interface Props {
+  kit: StoreProduct;
+  orderBumpPrice: number;
+}
+
+export default function ClientCheckout({ kit: kitProduct, orderBumpPrice }: Props) {
   const searchParams = useSearchParams();
 
-  // Suporta ?kit=kit-dupla (checkout direto) e ?produto=guardia-de-choque (vindo da PDP)
-  const slugToKit: Record<string, string> = {
-    "guardia-de-choque": "kit-individual",
-    "kit-dupla":         "kit-dupla",
-    "kit-familia":       "kit-familia",
-    "mini-taser":        "kit-individual",
+  // Adapta StoreProduct para o shape que OrderSummary (Kit) espera
+  const kit: Kit = {
+    id: kitProduct.id,
+    name: kitProduct.name,
+    slug: kitProduct.slug,
+    badge: kitProduct.badge ?? undefined,
+    highlighted: kitProduct.slug === "kit-dupla",
+    quantity: kitProduct.quantity ?? 1,
+    items: [],
+    originalPrice: kitProduct.originalPrice,
+    promoPrice: kitProduct.price,
+    perUnit: kitProduct.price / (kitProduct.quantity ?? 1),
+    savings: kitProduct.originalPrice - kitProduct.price,
+    savingsPercent: Math.round(
+      ((kitProduct.originalPrice - kitProduct.price) / kitProduct.originalPrice) * 100
+    ),
+    installments: kitProduct.installments,
+    pixPrice: kitProduct.pixPrice,
   };
-  const rawKit     = searchParams.get("kit");
-  const rawProduto = searchParams.get("produto");
-  const kitId      = rawKit || (rawProduto ? slugToKit[rawProduto] : null) || "kit-individual";
-
-  const kit = KITS.find((k) => k.id === kitId) ?? KITS[0];
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.fbq) {
@@ -32,13 +45,12 @@ export default function ClientCheckout() {
   }, [kit.name, kit.promoPrice]);
 
   const [hasOrderBump, setHasOrderBump] = useState(false);
-  const orderBumpPrice = 29.90; // Preço da Garantia Estendida
   const upsellPrice = 69.90;
 
   const [showUpsell, setShowUpsell] = useState(false);
   const [checkoutComplete, setCheckoutComplete] = useState(false);
   const [isProcessingFull, setIsProcessingFull] = useState(false);
-  
+
   const [paymentData, setPaymentData] = useState<any>(null);
   const [pixData, setPixData] = useState<{qrCodeBase64?: string, qrCode?: string, paymentId?: string} | null>(null);
   const [gatewayStatus, setGatewayStatus] = useState<string>("");
@@ -77,7 +89,7 @@ export default function ClientCheckout() {
     setShowUpsell(false);
     setIsProcessingFull(true);
     setGatewayStatus("Conectando operadora bancária\u2026");
-    
+
     const finalItemsTotal = itemsTotal + (hasOrderBump ? orderBumpPrice : 0) + (acceptedUpsell ? upsellPrice : 0);
     const amountWithDiscount = paymentData.paymentMethod === 'pix' ? finalItemsTotal * 0.95 : finalItemsTotal;
 
@@ -92,7 +104,7 @@ export default function ClientCheckout() {
 
     const basePayload = {
       amount: amountWithDiscount,
-      kitId:     kit.id,
+      kitId:     kit.slug,
       hasBump:   hasOrderBump,
       hasUpsell: acceptedUpsell,
       email: paymentData.personalData.email,
@@ -260,7 +272,7 @@ export default function ClientCheckout() {
             ))}
           </div>
 
-          <CheckoutForm 
+          <CheckoutForm
             onFinish={handleFinishCheckout}
             hasOrderBump={hasOrderBump}
             setHasOrderBump={setHasOrderBump}
@@ -269,19 +281,19 @@ export default function ClientCheckout() {
         </div>
 
         <div className="lg:col-span-5 xl:col-span-4 sticky top-24">
-          <OrderSummary 
-            kit={kit} 
-            hasOrderBump={hasOrderBump} 
-            orderBumpPrice={orderBumpPrice} 
-            total={total} 
+          <OrderSummary
+            kit={kit}
+            hasOrderBump={hasOrderBump}
+            orderBumpPrice={orderBumpPrice}
+            total={total}
           />
         </div>
       </div>
 
       {showUpsell && (
-        <UpsellModal 
-          upsellPrice={upsellPrice} 
-          onDecision={handleCompleteAll} 
+        <UpsellModal
+          upsellPrice={upsellPrice}
+          onDecision={handleCompleteAll}
         />
       )}
     </>
