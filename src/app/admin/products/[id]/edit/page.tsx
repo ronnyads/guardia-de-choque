@@ -212,20 +212,7 @@ export default async function EditProductPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-2">
-          {/* Arquivar produto */}
-          <form action={deleteProduct}>
-            <input type="hidden" name="id" value={product.id} />
-            <button
-              type="submit"
-              className="flex items-center gap-2 px-4 py-2.5 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
-              onClick={(e) => { if (!confirm('Arquivar este produto? Ele não aparecerá mais na loja.')) e.preventDefault(); }}
-            >
-              <Archive className="w-4 h-4" />
-              Arquivar Produto
-            </button>
-          </form>
-
+        <div className="flex justify-end pt-2">
           <button
             type="submit"
             className="bg-[#0F172A] hover:bg-[#1E293B] text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2"
@@ -234,6 +221,19 @@ export default async function EditProductPage({ params }: Props) {
             Salvar Alterações
           </button>
         </div>
+      </form>
+
+      {/* Arquivar produto — form separado, fora do form principal */}
+      <form action={deleteProduct}>
+        <input type="hidden" name="id" value={product.id} />
+        <button
+          type="submit"
+          className="flex items-center gap-2 px-4 py-2.5 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
+          onClick={(e) => { if (!confirm('Arquivar este produto? Ele não aparecerá mais na loja.')) e.preventDefault(); }}
+        >
+          <Archive className="w-4 h-4" />
+          Arquivar Produto
+        </button>
       </form>
     </div>
   );
