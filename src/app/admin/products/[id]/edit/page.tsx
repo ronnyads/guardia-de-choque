@@ -2,7 +2,7 @@ import { requireTenant } from '@/lib/tenant';
 import { createServerSupabase } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, ArrowRight } from 'lucide-react';
 import { updateProduct } from './actions';
 import ArchiveButton from './ArchiveButton';
 
@@ -27,6 +27,19 @@ export default async function EditProductPage({ params }: Props) {
     .single();
 
   if (!product) notFound();
+
+  // Buscar variantes da mesma categoria (outros produtos relacionados)
+  let relatedVariants: { id: string; name: string; promo_price: number; status: string }[] = [];
+  if (product.category_id) {
+    const { data: variantData } = await supabase
+      .from('products')
+      .select('id, name, promo_price, status')
+      .eq('category_id', product.category_id)
+      .eq('tenant_id', tenantId)
+      .neq('id', product.id)
+      .order('promo_price', { ascending: true });
+    relatedVariants = variantData ?? [];
+  }
 
   const margin = product.cost_price && product.promo_price
     ? Math.round(((product.promo_price - product.cost_price) / product.promo_price) * 100)
@@ -247,6 +260,35 @@ export default async function EditProductPage({ params }: Props) {
                 </div>
               </div>
             </div>
+
+            {/* Variantes */}
+            {relatedVariants.length > 0 && (
+              <div className={sectionCls}>
+                <div className="px-6 py-4 border-b border-[#F1F5F9]">
+                  <h2 className="font-semibold text-[#0F172A]">Variantes</h2>
+                </div>
+                <div className="p-4 flex flex-col gap-2">
+                  {relatedVariants.map((v) => (
+                    <Link
+                      key={v.id}
+                      href={`/admin/products/${v.id}/edit`}
+                      className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0] hover:bg-[#F8FAFC] transition-colors group"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-[#0F172A]">{v.name}</p>
+                        <p className="text-xs text-[#64748B]">R$ {Number(v.promo_price).toFixed(2).replace('.', ',')}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${v.status === 'active' ? 'bg-[#DCFCE7] text-[#166534]' : 'bg-[#F1F5F9] text-[#475569]'}`}>
+                          {v.status === 'active' ? 'Ativo' : 'Rascunho'}
+                        </span>
+                        <ArrowRight className="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#0F172A] transition-colors" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
           </div>
         </div>

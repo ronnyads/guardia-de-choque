@@ -46,6 +46,11 @@ const staticReviews: Record<string, Array<{ name: string; city: string; date: st
     { name: "Patricia L.", city: "Fortaleza, CE", date: "Mar 2025", rating: 5, text: "Comprei para mim e para minha filha. Ambos chegaram perfeitos, com coldre e cabo. Vale cada centavo." },
     { name: "Gustavo N.",  city: "Manaus, AM",    date: "Fev 2025", rating: 5, text: "Ótimo custo-benefício. Por esse preço, dois aparelhos de qualidade. Chegou em 4 dias." },
   ],
+  "kit-familia": [
+    { name: "Carla M.",  city: "Goiânia, GO",     date: "Mar 2025", rating: 5, text: "Comprei para mim, minha irmã e minha mãe. Chegou em 5 dias, tudo certinho. Agora todas saem mais tranquilas." },
+    { name: "Diego F.",  city: "Porto Alegre, RS", date: "Fev 2025", rating: 5, text: "Presente para as três mulheres da família. Elas adoraram o coldre. Vale demais pelo preço do kit." },
+    { name: "Simone T.", city: "Recife, PE",       date: "Jan 2025", rating: 4, text: "Ótimo produto. A entrega demorou um pouco mais que o esperado, mas o produto veio perfeito." },
+  ],
 };
 
 export async function generateStaticParams() {
@@ -84,7 +89,7 @@ export default async function ProdutoPage({ params }: Props) {
       highlight: p.badge === "Kit" || p.slug === "kit-dupla",
     }));
 
-  const reviews          = staticReviews[slug] ?? [];
+  const reviews          = staticReviews[slug] ?? staticReviews['guardia-de-choque'] ?? [];
   const fmt              = (v: number) => v.toFixed(2).replace(".", ",");
   const lifestyleImages  = product.images.slice(1);
 
