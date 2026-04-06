@@ -11,10 +11,11 @@ export const metadata = {
 
 // Mapa de produto-slug para kit-slug (para compatibilidade com ?produto=guardia-de-choque)
 const slugToKit: Record<string, string> = {
-  "guardia-de-choque": "kit-individual",
+  "guardia-de-choque": "guardia-de-choque",
+  "kit-individual":    "guardia-de-choque",
   "kit-dupla":         "kit-dupla",
   "kit-familia":       "kit-familia",
-  "mini-taser":        "kit-individual",
+  "mini-taser":        "guardia-de-choque",
 };
 
 interface PageProps {
