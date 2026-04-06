@@ -136,7 +136,7 @@ export default function ImageUploader({ initialImages = [], name = 'images' }: P
           {dragging ? <Upload className="w-5 h-5 text-[#0F172A]" /> : <ImageIcon className="w-5 h-5 text-[#94A3B8]" />}
         </div>
         <div className="text-center">
-          <p className="text-sm font-medium text-[#0F172A]">Arraste ou clique para enviar</p>
+          <p className="text-sm font-medium text-[#0F172A]">Arraste ou clique para adicionar fotos</p>
           <p className="text-xs text-[#94A3B8] mt-0.5">JPEG, PNG, WebP ou GIF — máx. 5MB por imagem</p>
         </div>
       </div>

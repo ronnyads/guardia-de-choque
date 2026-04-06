@@ -15,16 +15,16 @@ interface Props {
 }
 
 const ICONS = [
-  { value: 'zap',     label: '⚡ Zap' },
-  { value: 'shield',  label: '🛡️ Shield' },
-  { value: 'star',    label: '⭐ Star' },
-  { value: 'check',   label: '✓ Check' },
-  { value: 'award',   label: '🏆 Award' },
-  { value: 'clock',   label: '⏱ Clock' },
-  { value: 'truck',   label: '🚚 Truck' },
-  { value: 'heart',   label: '❤ Heart' },
-  { value: 'lock',    label: '🔒 Lock' },
-  { value: 'bolt',    label: '🔩 Bolt' },
+  { value: 'zap',     label: '⚡ Raio' },
+  { value: 'shield',  label: '🛡️ Escudo' },
+  { value: 'star',    label: '⭐ Estrela' },
+  { value: 'check',   label: '✓ Confirmado' },
+  { value: 'award',   label: '🏆 Prêmio' },
+  { value: 'clock',   label: '⏱ Relógio' },
+  { value: 'truck',   label: '🚚 Entrega' },
+  { value: 'heart',   label: '❤ Coração' },
+  { value: 'lock',    label: '🔒 Cadeado' },
+  { value: 'bolt',    label: '🔩 Parafuso' },
 ];
 
 const inputCls = 'border border-[#CBD5E1] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A]/20 focus:border-[#0F172A] bg-white transition-colors';
@@ -85,7 +85,7 @@ export default function FeaturesEditor({ defaultValue = [], name = 'features' }:
         className="flex items-center gap-2 text-sm text-[#64748B] hover:text-[#0F172A] transition-colors w-fit"
       >
         <Plus className="w-4 h-4" />
-        Adicionar feature
+        Adicionar benefício
       </button>
     </div>
   );
