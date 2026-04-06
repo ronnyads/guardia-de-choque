@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { createServerSupabase } from '@/lib/supabase-server';
 import type { TenantContext } from '@/types/tenant';
 
@@ -38,7 +39,7 @@ export async function getTenantFromSession(): Promise<TenantContext | null> {
 export async function requireTenant(): Promise<TenantContext> {
   const ctx = await getTenantFromSession();
   if (!ctx) {
-    throw new Error('Tenant não encontrado. Usuário não está associado a nenhuma loja.');
+    redirect('/admin/login');
   }
   return ctx;
 }
