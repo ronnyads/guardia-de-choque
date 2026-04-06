@@ -79,7 +79,7 @@ export default async function ProdutoPage({ params }: Props) {
         .replace(/Guardia\s+de\s+Choque\s*[—-]\s*/i, "")
         .replace(/^Kit\s+/i, "")
         .trim() || p.name,
-      qty: p.quantity ? `${p.quantity} aparelho${p.quantity > 1 ? "s" : ""}` : "1 aparelho",
+      qty: p.slug === "kit-dupla" ? "2 aparelhos" : p.slug === "kit-familia" ? "3 aparelhos" : "1 aparelho",
       price: p.price,
       highlight: p.badge === "Kit" || p.slug === "kit-dupla",
     }));
