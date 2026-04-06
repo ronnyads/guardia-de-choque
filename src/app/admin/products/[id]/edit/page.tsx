@@ -6,6 +6,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 import { updateProduct } from './actions';
 import ArchiveButton from './ArchiveButton';
 import ProductEditForm from '@/components/admin/ProductEditForm';
+import SavedToast from '@/components/admin/SavedToast';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -69,6 +70,8 @@ export default async function EditProductPage({ params }: Props) {
         updateAction={updateProduct}
         createAction={updateProduct}
       />
+
+      <SavedToast />
     </div>
   );
 }
