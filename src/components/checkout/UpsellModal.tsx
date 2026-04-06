@@ -82,9 +82,10 @@ export default function UpsellModal({ upsellPrice, onDecision }: Props) {
             <button
               onClick={() => handleAction(false)}
               disabled={loading}
-              className="w-full text-center py-3 text-[12px] text-[#94A3B8] hover:text-[#475569] transition-colors"
+              className="w-full text-center py-3 px-4 text-[13px] text-[#64748B] hover:text-[#0F172A] border border-[#E2E8F0] hover:border-[#CBD5E1] rounded-xl transition-colors flex items-center justify-center gap-1.5"
             >
-              Não, obrigado. Finalizar sem a unidade extra.
+              <span>Não quero — finalizar pedido sem o extra</span>
+              <span className="text-[10px] bg-[#F1F5F9] px-1.5 py-0.5 rounded text-[#94A3B8]">clique aqui</span>
             </button>
           </div>
 
