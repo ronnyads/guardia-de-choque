@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { icon: LayoutDashboard, label: "Visão Geral",  href: "/admin" },
     { icon: Package,         label: "Produtos",     href: "/admin/products" },
     { icon: RefreshCw,       label: "Funis (Upsell)",href: "/admin/funnels" },
-    { icon: ShoppingCart,    label: "Pedidos",      href: "/admin/orders" },
+    { icon: ShoppingCart,    label: "Pedidos",      href: "/admin/pedidos" },
     { icon: Settings,        label: "Configurações",href: "/admin/settings" },
   ];
 
