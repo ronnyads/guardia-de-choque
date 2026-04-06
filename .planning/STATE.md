@@ -2,7 +2,7 @@
 
 ## Status
 **Milestone:** 2 — SaaS Multi-Tenant
-**Fase atual:** 10 — COMPLETA ✓
+**Fase atual:** 11 — Em progresso (1/4 completo)
 **Última atualização:** 2026-04-05
 
 ## Contexto Rápido
@@ -11,7 +11,7 @@
 - A loja atual DEVE continuar funcionando durante toda a migração (backward compatible)
 
 ## Próxima Ação
-Fase 10 completa (10-01, 10-02, 10-03). Próxima: Milestone 3 ou conforme ROADMAP.
+Fase 11 em progresso. 11-01 completo. Próximo: 11-02.
 
 ## Decisões Arquiteturais Tomadas
 - Multi-tenancy por `tenant_id` no banco (não projetos Supabase separados)
@@ -20,3 +20,5 @@ Fase 10 completa (10-01, 10-02, 10-03). Próxima: Milestone 3 ou conforme ROADMA
 - Chaves secretas criptografadas via `pgcrypto` no Supabase
 - Server Actions para mutations no admin (não API routes avulsas)
 - `unstable_cache` do Next.js para cache de store config (ISR)
+- Soft delete de produtos via `status='archived'` preserva histórico (11-01)
+- JSON inválido em features/specs usa array vazio como fallback silencioso (11-01)
