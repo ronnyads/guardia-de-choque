@@ -76,6 +76,8 @@ export async function updateProduct(formData: FormData) {
   if (error) throw new Error(`Erro ao atualizar produto: ${error.message}`);
 
   revalidatePath('/admin/products');
+  revalidatePath(`/produto/${slug}`);
+  revalidatePath('/');
   redirect('/admin/products');
 }
 
