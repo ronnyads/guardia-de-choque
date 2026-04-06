@@ -2,8 +2,9 @@ import { requireTenant } from '@/lib/tenant';
 import { createServerSupabase } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Archive } from 'lucide-react';
-import { updateProduct, deleteProduct } from './actions';
+import { ArrowLeft, Save } from 'lucide-react';
+import { updateProduct } from './actions';
+import ArchiveButton from './ArchiveButton';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -223,18 +224,7 @@ export default async function EditProductPage({ params }: Props) {
         </div>
       </form>
 
-      {/* Arquivar produto — form separado, fora do form principal */}
-      <form action={deleteProduct}>
-        <input type="hidden" name="id" value={product.id} />
-        <button
-          type="submit"
-          className="flex items-center gap-2 px-4 py-2.5 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
-          onClick={(e) => { if (!confirm('Arquivar este produto? Ele não aparecerá mais na loja.')) e.preventDefault(); }}
-        >
-          <Archive className="w-4 h-4" />
-          Arquivar Produto
-        </button>
-      </form>
+      <ArchiveButton productId={product.id} />
     </div>
   );
 }
