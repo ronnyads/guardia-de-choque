@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { ShoppingCart, Menu, Search, X, Heart, Package } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { useWishlistStore } from "@/lib/wishlist-store";
+import { useStoreConfig } from "@/components/providers/TenantProvider";
 import MobileMenu from "./MobileMenu";
 import CartDrawer from "./CartDrawer";
 
@@ -16,15 +17,13 @@ const navLinks = [
   { href: "/rastreio",label: "Rastrear Pedido" },
 ];
 
-const STRIP_ITEMS = [
-  "🚚 Frete grátis acima de R$ 199",
-  "⚡ 5% OFF no PIX",
-  "💳 Parcele em 6x sem juros",
-  "🔒 Compra 100% segura",
-];
-
 export default function Navbar() {
   const pathname   = usePathname();
+  const config     = useStoreConfig();
+
+  const STRIP_ITEMS = config.announcement_messages.length > 0
+    ? config.announcement_messages
+    : ["🔒 Compra 100% segura"];
   const [scrolled,   setScrolled]   = useState(false);
   const [menuOpen,   setMenuOpen]   = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -78,7 +77,7 @@ export default function Navbar() {
         <div className="container-wide h-[62px] flex items-center gap-4">
 
           {/* Logo */}
-          <Link href="/" className="shrink-0 flex items-center gap-2.5" aria-label="Os Oliveiras — início">
+          <Link href="/" className="shrink-0 flex items-center gap-2.5" aria-label={`${config.brand_name ?? 'Minha Loja'} — início`}>
             <div
               className="w-8 h-8 flex items-center justify-center rounded-lg shrink-0"
               style={{ background: logoColor === "#FFFFFF" ? "rgba(255,255,255,0.15)" : "#09090B" }}
@@ -89,7 +88,7 @@ export default function Navbar() {
               className="font-bold text-[18px] tracking-tight transition-colors duration-300"
               style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", color: logoColor }}
             >
-              Os Oliveiras
+              {config.brand_name ?? 'Minha Loja'}
             </span>
           </Link>
 

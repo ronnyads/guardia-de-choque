@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { X, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useStoreConfig } from "@/components/providers/TenantProvider";
 
 const links = [
   { href: "/",                         label: "Início"          },
@@ -19,6 +20,9 @@ interface Props {
 }
 
 export default function MobileMenu({ open, onClose, currentPath }: Props) {
+  const config = useStoreConfig();
+  const brandName = config.brand_name ?? 'Minha Loja';
+
   return (
     <AnimatePresence>
       {open && (
@@ -41,7 +45,7 @@ export default function MobileMenu({ open, onClose, currentPath }: Props) {
                 className="text-base font-bold text-[#111111]"
                 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic" }}
               >
-                Os Oliveiras
+                {brandName}
               </span>
               <button
                 onClick={onClose}
@@ -76,7 +80,7 @@ export default function MobileMenu({ open, onClose, currentPath }: Props) {
             </div>
 
             <div className="px-5 py-4 border-t border-gray-100">
-              <p className="text-xs text-gray-400 text-center">© 2025 Os Oliveiras</p>
+              <p className="text-xs text-gray-400 text-center">© {new Date().getFullYear()} {brandName}</p>
             </div>
           </motion.nav>
         </>

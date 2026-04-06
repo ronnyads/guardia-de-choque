@@ -1,6 +1,12 @@
+'use client';
+
 import { Zap } from "lucide-react";
+import { useStoreConfig } from "@/components/providers/TenantProvider";
 
 export default function Footer() {
+  const config = useStoreConfig();
+  const brandName = config.brand_name ?? 'Minha Loja';
+
   return (
     <footer className="bg-[#050505] border-t border-white/5 px-6 md:px-12 lg:px-24 py-10">
       <div className="max-w-6xl mx-auto">
@@ -10,7 +16,7 @@ export default function Footer() {
               <Zap className="w-4 h-4 text-black" />
             </div>
             <span className="font-bold text-sm tracking-tight">
-              Guardiã<span className="text-accent">.</span>
+              {brandName}<span className="text-accent">.</span>
             </span>
           </div>
 
@@ -29,7 +35,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-6 border-t border-white/5 text-center">
           <p className="text-text-muted text-xs">
-            © {new Date().getFullYear()} Guardiã de Choque. Todos os direitos reservados.
+            © {new Date().getFullYear()} {brandName}. Todos os direitos reservados.
           </p>
           <p className="text-text-muted text-[10px] mt-2">
             Este produto não é classificado como arma de fogo. Uso permitido para civis conforme legislação brasileira.

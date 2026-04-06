@@ -2,7 +2,12 @@
 import Stripe from "stripe";
 import { validateAmount, sanitizeString, sanitizeEmail, sanitizeAmount } from "@/lib/pricing";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+// Instância lazy — só criada quando a key existe (evita erro no build sem env)
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY não configurado.");
+  return new Stripe(key);
+}
 
 const FATAL_CODES = new Set(["insufficient_funds","stolen_card","lost_card","restricted_card",
   "card_not_supported","expired_card","incorrect_number","incorrect_cvc"]);
@@ -18,6 +23,8 @@ export async function POST(request: Request) {
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({ success: false, error: "Gateway alternativo nao configurado." }, { status: 500 });
     }
+
+    const stripe = getStripe();
 
     // Valida preco contra o catalogo do servidor
     validateAmount(amount, {

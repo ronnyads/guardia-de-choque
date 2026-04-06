@@ -1,8 +1,14 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
 import { ShieldCheck, Phone } from "lucide-react";
+import { useStoreConfig } from "@/components/providers/TenantProvider";
 
 export default function StoreFooter() {
+  const config = useStoreConfig();
+  const brandName = config.brand_name ?? 'Minha Loja';
+
   return (
     <footer className="bg-[#111111] text-white">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-14">
@@ -14,7 +20,7 @@ export default function StoreFooter() {
               className="text-xl font-bold text-white"
               style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic" }}
             >
-              Os Oliveiras
+              {brandName}
             </span>
             <p className="text-gray-400 text-sm leading-relaxed mt-3 max-w-xs">
               Produtos selecionados com o cuidado que só uma família pode oferecer.
@@ -89,7 +95,7 @@ export default function StoreFooter() {
 
         {/* Bottom */}
         <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-gray-500">© 2025 Os Oliveiras. Todos os direitos reservados.</p>
+          <p className="text-xs text-gray-500">© {new Date().getFullYear()} {brandName}. Todos os direitos reservados.</p>
           <p className="text-xs text-gray-500">Produto legal no Brasil · Entrega nacional</p>
         </div>
       </div>
