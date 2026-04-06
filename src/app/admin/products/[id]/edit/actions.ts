@@ -85,7 +85,8 @@ export async function updateProduct(formData: FormData) {
   revalidatePath('/admin/products');
   revalidatePath(`/produto/${slug}`);
   revalidatePath('/');
-  redirect('/admin/products');
+  // Mantém na mesma página após salvar
+  redirect(`/admin/products/${id}/edit`);
 }
 
 export async function deleteProduct(formData: FormData) {

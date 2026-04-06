@@ -188,11 +188,10 @@ export default async function ProdutoPage({ params }: Props) {
           <section className="bg-[#F8FAFC] border-y border-[#E2E8F0] py-14">
             <div className="max-w-3xl mx-auto px-4 md:px-6">
               <h2 className="font-playfair text-[26px] text-[#0F172A] mb-6">Sobre o Produto</h2>
-              <div className="pl-5 border-l-2 border-[#0F172A] flex flex-col gap-4">
-                {product.longDescription.split("\n").filter(Boolean).map((p, i) => (
-                  <p key={i} className="text-[15px] text-[#475569] leading-relaxed">{p}</p>
-                ))}
-              </div>
+              <div
+                className="prose prose-slate max-w-none text-[15px] leading-relaxed [&_h2]:font-playfair [&_h2]:text-xl [&_h2]:text-[#0F172A] [&_h3]:font-semibold [&_h3]:text-[#0F172A] [&_p]:text-[#475569] [&_li]:text-[#475569] [&_strong]:text-[#0F172A]"
+                dangerouslySetInnerHTML={{ __html: product.longDescription }}
+              />
             </div>
           </section>
         )}

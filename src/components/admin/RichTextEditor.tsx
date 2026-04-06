@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -16,12 +17,17 @@ export default function RichTextEditor({
   name = 'long_description',
   placeholder = 'Descrição completa exibida na página do produto...',
 }: Props) {
+  const [html, setHtml] = useState(defaultValue);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
       Placeholder.configure({ placeholder }),
     ],
     content: defaultValue,
+    onUpdate: ({ editor }) => {
+      setHtml(editor.getHTML());
+    },
     editorProps: {
       attributes: {
         class: 'min-h-[200px] px-4 py-3 text-sm text-[#0F172A] focus:outline-none prose prose-sm max-w-none',
@@ -36,8 +42,8 @@ export default function RichTextEditor({
 
   return (
     <div className="border border-[#CBD5E1] rounded-lg overflow-hidden bg-white focus-within:ring-2 focus-within:ring-[#0F172A]/20 focus-within:border-[#0F172A] transition-colors">
-      {/* Hidden input para form submit */}
-      <input type="hidden" name={name} value={editor.getHTML()} />
+      {/* Hidden input sincronizado com o conteúdo do editor */}
+      <input type="hidden" name={name} value={html} />
 
       {/* Toolbar */}
       <div className="flex items-center gap-0.5 px-3 py-2 border-b border-[#E2E8F0] bg-[#F8FAFC] flex-wrap">
