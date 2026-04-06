@@ -158,26 +158,32 @@ export async function getProductBySlug(slug: string): Promise<StoreProduct | und
 
   if (error || !data) return undefined;
   
-  // Mapeamento pra manter a tipagem original do StoreProduct
+  // Fallback to local static images when DB has none
+  const staticProduct = storeProducts.find((p) => p.slug === slug);
+  const images =
+    Array.isArray(data.images) && data.images.length > 0
+      ? data.images
+      : (staticProduct?.images ?? []);
+
   return {
     id: data.id,
     name: data.name,
     slug: data.slug,
     category: data.category_id,
-    categoryName: "Categoria", // mock or join in the future
+    categoryName: staticProduct?.categoryName ?? "Categoria",
     description: data.description,
     longDescription: data.long_description || data.description,
-    images: data.images,
+    images,
     price: data.promo_price,
     originalPrice: data.original_price,
-    pixPrice: data.cost_price, // temporarily storing it here
+    pixPrice: data.cost_price,
     installments: { count: 12, value: data.promo_price / 12 },
     rating: data.rating,
     reviewCount: data.review_count,
     badge: data.badge,
     inStock: true,
-    features: data.features || [],
-    specs: data.specs || []
+    features: data.features?.length ? data.features : (staticProduct?.features ?? []),
+    specs: data.specs?.length ? data.specs : (staticProduct?.specs ?? []),
   };
 }
 

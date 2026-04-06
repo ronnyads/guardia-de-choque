@@ -19,6 +19,13 @@ const nextConfig: NextConfig = {
     deviceSizes:      [390, 640, 768, 1024, 1280, 1920],
     imageSizes:       [32, 64, 128, 220, 256, 384],
     minimumCacheTTL:  5184000,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "qfzkuqqusunsvqzjpaag.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
   },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

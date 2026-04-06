@@ -1,7 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LayoutDashboard, Package, RefreshCw, ShoppingCart, Settings, LogOut } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isLoginPage = pathname === "/admin/login";
+
+  if (isLoginPage) return <>{children}</>;
+
   const menuItems = [
     { icon: LayoutDashboard, label: "Visão Geral",  href: "/admin" },
     { icon: Package,         label: "Produtos",     href: "/admin/products" },
