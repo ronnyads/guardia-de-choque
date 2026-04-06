@@ -25,6 +25,7 @@ const DEFAULT_CONFIG: TenantConfig = {
   checkout_pix_polling_ms: 3000,
   checkout_upsell_price: 69.90,
   checkout_order_bump_price: 29.90,
+  recovery_whatsapp_template: null,
   updated_at: new Date().toISOString(),
 };
 
