@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Store, LogOut } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function SuperAdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -47,13 +48,16 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         </nav>
 
         <div className="p-4 border-t border-white/10">
-          <Link
-            href="/admin/login"
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = "/admin/login";
+            }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full text-red-400 hover:bg-white/5 transition-colors font-medium text-[14px]"
           >
             <LogOut className="w-4 h-4" />
             Sair
-          </Link>
+          </button>
         </div>
       </aside>
 

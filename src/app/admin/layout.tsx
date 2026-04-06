@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Package, RefreshCw, ShoppingCart, Settings, LogOut } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -42,7 +43,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         <div className="p-4 border-t border-[#E2E8F0]">
-          <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full hover:bg-red-50 text-[#EF4444] transition-colors font-medium text-[14px]">
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = "/admin/login";
+            }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full hover:bg-red-50 text-[#EF4444] transition-colors font-medium text-[14px]"
+          >
             <LogOut className="w-4 h-4" />
             Sair
           </button>
