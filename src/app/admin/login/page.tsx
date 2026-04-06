@@ -36,15 +36,27 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError("Credenciais inválidas. Verifique e tente novamente.");
       setLoading(false);
+      return;
+    }
+
+    // Verifica se é super admin da plataforma
+    const { data: superAdmin } = await supabase
+      .from("super_admins")
+      .select("user_id")
+      .eq("user_id", authData.user.id)
+      .single();
+
+    if (superAdmin) {
+      router.push("/super-admin");
     } else {
       router.push("/admin");
-      router.refresh();
     }
+    router.refresh();
   };
 
   return (

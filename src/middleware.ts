@@ -26,18 +26,18 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isAdminRoute = pathname.startsWith('/admin');
-  const isLoginPage = pathname === '/admin/login';
+  const isAdminRoute      = pathname.startsWith('/admin');
+  const isSuperAdminRoute = pathname.startsWith('/super-admin');
+  const isLoginPage       = pathname === '/admin/login';
+  const isProtected       = isAdminRoute || isSuperAdminRoute;
 
   // Redirecionar não-autenticados para login
-  if (isAdminRoute && !isLoginPage && !user) {
+  if (isProtected && !isLoginPage && !user) {
     return NextResponse.redirect(new URL('/admin/login', request.url));
   }
 
-  // Redirecionar autenticados da página de login para o admin
-  if (isLoginPage && user) {
-    return NextResponse.redirect(new URL('/admin', request.url));
-  }
+  // Na página de login com usuário autenticado — deixa o client-side decidir para onde ir
+  // (super admin → /super-admin, owner → /admin)
 
   // Injetar tenant_id no header para Server Components do admin
   if (user && isAdminRoute && !isLoginPage) {
@@ -56,5 +56,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/super-admin/:path*'],
 };
