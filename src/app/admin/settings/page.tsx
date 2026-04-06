@@ -23,8 +23,8 @@ export default async function AdminSettingsPage() {
   ]);
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <div className="mb-8">
+    <div className="flex flex-col gap-0 h-full">
+      <div className="mb-6 pb-5 border-b border-[#E2E8F0]">
         <h1 className="text-2xl font-bold text-[#0F172A]">Configurações</h1>
         <p className="text-sm text-[#64748B] mt-1">
           Personalize sua loja, integrações e conteúdo.
