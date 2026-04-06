@@ -11,7 +11,8 @@ import { getAllProductSlugs, getFeaturedProducts, getProductBySlug } from "@/lib
 import ProductViewTracker from "@/components/analytics/ProductViewTracker";
 import {
   Zap, BatteryCharging, ShieldCheck, Lightbulb,
-  Minimize2, Users, Tag, Gift, Star
+  Minimize2, Users, Tag, Gift, Star,
+  Check, Award, Clock, Truck, Heart, Lock, Bolt
 } from "lucide-react";
 
 interface Props {
@@ -28,6 +29,14 @@ const featureIconMap: Record<string, React.ElementType> = {
   "users":            Users,
   "tag":              Tag,
   "gift":             Gift,
+  "star":             Star,
+  "check":            Check,
+  "award":            Award,
+  "clock":            Clock,
+  "truck":            Truck,
+  "heart":            Heart,
+  "lock":             Lock,
+  "bolt":             Bolt,
 };
 
 /* Static reviews per product */
