@@ -73,7 +73,7 @@ Plans:
 3. **Admin Produtos — Edit:** `src/app/admin/products/[id]/edit/page.tsx` com form completo + upload de imagens.
 4. **Admin Produtos — Delete:** Implementar soft delete (status → 'archived').
 5. **Admin Produtos — Imagens:** Upload para Supabase Storage. Retorna URL pública.
-6. **Admin Categorias:** `src/app/admin/categories/page.tsx` — CRUD de categorias por tenant.
+6. ~~**Admin Categorias:** `src/app/admin/categories/page.tsx` — CRUD de categorias por tenant.~~ → Movido para Fase 12 (campo `category_id` fica como texto livre no Fase 11).
 7. **Checkout APIs** — `pix/route.ts` e `card/route.ts`: buscar preços do banco (não de pricing.ts).
 
 **Critério de sucesso:** Criar produto no admin → aparece na loja. Mudar preço → checkout valida novo preço. Build com 0 erros.
