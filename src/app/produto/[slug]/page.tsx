@@ -7,7 +7,7 @@ import ProductImages from "@/components/product/ProductImages";
 import ProductInfo from "@/components/product/ProductInfo";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import StickyMobileCTA from "@/components/product/StickyMobileCTA";
-import { getAllProductSlugs, getProductBySlug } from "@/lib/products";
+import { getAllProductSlugs, getFeaturedProducts, getProductBySlug } from "@/lib/products";
 import ProductViewTracker from "@/components/analytics/ProductViewTracker";
 import {
   Zap, BatteryCharging, ShieldCheck, Lightbulb,
@@ -70,6 +70,20 @@ export default async function ProdutoPage({ params }: Props) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
+  const allProducts = await getFeaturedProducts();
+  const variants = allProducts
+    .filter((p) => p.category === product.category && p.slug !== "mini-taser")
+    .map((p) => ({
+      slug: p.slug,
+      label: p.name
+        .replace(/Guardia\s+de\s+Choque\s*[—-]\s*/i, "")
+        .replace(/^Kit\s+/i, "")
+        .trim() || p.name,
+      qty: p.quantity ? `${p.quantity} aparelho${p.quantity > 1 ? "s" : ""}` : "1 aparelho",
+      price: p.price,
+      highlight: p.badge === "Kit" || p.slug === "kit-dupla",
+    }));
+
   const reviews          = staticReviews[slug] ?? [];
   const fmt              = (v: number) => v.toFixed(2).replace(".", ",");
   const lifestyleImages  = product.images.slice(1);
@@ -91,7 +105,7 @@ export default async function ProdutoPage({ params }: Props) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 items-start">
             <ProductImages images={product.images} name={product.name} />
             <div className="lg:sticky lg:top-24">
-              <ProductInfo product={product} />
+              <ProductInfo product={product} variants={variants} />
             </div>
           </div>
         </section>

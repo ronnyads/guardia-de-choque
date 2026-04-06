@@ -14,18 +14,21 @@ const PAYMENT_LOGOS = [
   { src: "/images/product/bandeiras/elo.png",         alt: "Elo",        w: 40, h: 24 },
 ];
 
-const KIT_VARIANTS = [
-  { slug: "guardia-de-choque", label: "Individual",       qty: "1 aparelho",  price: 97.90,  highlight: false },
-  { slug: "kit-dupla",         label: "Dupla Proteção",   qty: "2 aparelhos", price: 169.90, highlight: true  },
-  { slug: "kit-familia",       label: "Kit Família",      qty: "3 aparelhos", price: 227.90, highlight: false },
-];
+interface Variant {
+  slug: string;
+  label: string;
+  qty: string;
+  price: number;
+  highlight: boolean;
+}
 
 interface Props {
   product: StoreProduct;
+  variants?: Variant[];
   onAdd?: () => void;
 }
 
-export default function ProductInfo({ product, onAdd }: Props) {
+export default function ProductInfo({ product, variants = [], onAdd }: Props) {
   const addItem = useCartStore((s) => s.addItem);
   const openCart = useCartStore((s) => s.openCart);
   const [qty, setQty]   = useState(1);
@@ -92,39 +95,41 @@ export default function ProductInfo({ product, onAdd }: Props) {
       <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-5 flex flex-col gap-3">
 
         {/* Kit variant selector */}
-        <div className="flex flex-col gap-2 pb-3 border-b border-[#E2E8F0]">
-          <p className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-widest">Escolha seu kit</p>
-          <div className="grid grid-cols-3 gap-2">
-            {KIT_VARIANTS.map((v) => {
-              const isActive = product.slug === v.slug;
-              return (
-                <Link
-                  key={v.slug}
-                  href={`/produto/${v.slug}`}
-                  className={[
-                    "relative flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl border-2 text-center transition-all",
-                    isActive
-                      ? "border-[#0F172A] bg-[#0F172A]"
-                      : "border-[#E2E8F0] bg-white hover:border-[#94A3B8]",
-                  ].join(" ")}
-                >
-                  {v.highlight && !isActive && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#DC2626] text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                      Mais Escolhido
+        {variants.length > 0 && (
+          <div className="flex flex-col gap-2 pb-3 border-b border-[#E2E8F0]">
+            <p className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-widest">Escolha seu kit</p>
+            <div className="grid grid-cols-3 gap-2">
+              {variants.map((v) => {
+                const isActive = product.slug === v.slug;
+                return (
+                  <Link
+                    key={v.slug}
+                    href={`/produto/${v.slug}`}
+                    className={[
+                      "relative flex flex-col items-center gap-1 py-2.5 px-2 rounded-xl border-2 text-center transition-all",
+                      isActive
+                        ? "border-[#0F172A] bg-[#0F172A]"
+                        : "border-[#E2E8F0] bg-white hover:border-[#94A3B8]",
+                    ].join(" ")}
+                  >
+                    {v.highlight && !isActive && (
+                      <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#DC2626] text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                        Mais Escolhido
+                      </span>
+                    )}
+                    <span className={`text-[12px] font-bold leading-tight ${isActive ? "text-white" : "text-[#0F172A]"}`}>
+                      {v.label}
                     </span>
-                  )}
-                  <span className={`text-[12px] font-bold leading-tight ${isActive ? "text-white" : "text-[#0F172A]"}`}>
-                    {v.label}
-                  </span>
-                  <span className="text-[10px] text-[#94A3B8]">{v.qty}</span>
-                  <span className={`text-[11px] font-semibold tabular-nums ${isActive ? "text-white" : "text-[#475569]"}`}>
-                    R$ {v.price.toFixed(2).replace(".", ",")}
-                  </span>
-                </Link>
-              );
-            })}
+                    <span className="text-[10px] text-[#94A3B8]">{v.qty}</span>
+                    <span className={`text-[11px] font-semibold tabular-nums ${isActive ? "text-white" : "text-[#475569]"}`}>
+                      R$ {v.price.toFixed(2).replace(".", ",")}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
         <div className="flex items-baseline gap-3 flex-wrap">
           <span className="text-[32px] font-bold text-[#0F172A] tabular-nums leading-none">
             R$ {fmt(product.price)}
