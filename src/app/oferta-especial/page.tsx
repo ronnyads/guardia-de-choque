@@ -14,8 +14,16 @@ import {
 } from "lucide-react";
 import Button from "@/components/ui/Button";
 import StarRating from "@/components/ui/StarRating";
-import { MINI_TASER, REVIEWS } from "@/lib/constants";
+import { REVIEWS } from "@/lib/constants";
 import { getCheckoutUrl } from "@/lib/checkout";
+
+// Dados inline do Mini Taser — página de oferta especial (downsell)
+// MINI_TASER removido de constants.ts; valores mantidos aqui diretamente.
+const MINI_TASER_NAME = "Mini Taser Defesa Pessoal";
+const MINI_TASER_RATING = 4.5;
+const MINI_TASER_REVIEW_COUNT = 87;
+const MINI_TASER_ORIGINAL_PRICE = 109;
+const MINI_TASER_PROMO_PRICE = 89;
 
 const features = [
   { icon: Minimize2, title: "Ultra Compacto", desc: "Apenas 10cm — cabe no bolso" },
@@ -75,8 +83,8 @@ export default function OfertaEspecial() {
             />
           </div>
 
-          <h2 className="text-xl font-bold">{MINI_TASER.name}</h2>
-          <StarRating rating={MINI_TASER.rating} count={MINI_TASER.reviewCount} size="sm" />
+          <h2 className="text-xl font-bold">{MINI_TASER_NAME}</h2>
+          <StarRating rating={MINI_TASER_RATING} count={MINI_TASER_REVIEW_COUNT} size="sm" />
 
           {/* Features */}
           <div className="grid grid-cols-3 gap-4 w-full">
@@ -94,10 +102,10 @@ export default function OfertaEspecial() {
           {/* Price */}
           <div className="flex flex-col items-center gap-1">
             <span className="text-sm text-text-muted line-through">
-              De R$ {MINI_TASER.originalPrice.toFixed(2).replace(".", ",")}
+              De R$ {MINI_TASER_ORIGINAL_PRICE.toFixed(2).replace(".", ",")}
             </span>
             <span className="text-4xl font-bold text-accent">
-              R$ {MINI_TASER.promoPrice.toFixed(2).replace(".", ",")}
+              R$ {MINI_TASER_PROMO_PRICE.toFixed(2).replace(".", ",")}
             </span>
             <span className="text-xs text-text-secondary">
               ou 3x de R$ 29,67 sem juros

@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import ScrollSnapSection from "@/components/layout/ScrollSnapSection";
-import KitCard from "@/components/ui/KitCard";
-import { KITS } from "@/lib/constants";
 
+// Componente legado (landing page antiga) — não está em uso em nenhuma página.
+// KITS removido de constants.ts (plan 11-04). KitCard dependia do tipo Kit legado.
+// Componente mantido como placeholder para não quebrar o build.
 export default function KitOffers() {
   return (
     <ScrollSnapSection id="kits" className="bg-gradient-to-b from-background via-surface/30 to-background">
@@ -42,12 +43,6 @@ export default function KitOffers() {
             className="w-full h-auto rounded-2xl"
           />
         </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 w-full items-start">
-          {KITS.map((kit, i) => (
-            <KitCard key={kit.id} kit={kit} index={i} />
-          ))}
-        </div>
 
         <motion.p
           initial={{ opacity: 0 }}

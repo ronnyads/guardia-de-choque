@@ -102,7 +102,3 @@ export async function getRelatedProducts(
   return data.map(mapDbToStoreProduct);
 }
 
-/**
- * @deprecated — Usar getFeaturedProducts() async. Sera removido no plan 11-04.
- */
-export const storeProducts: StoreProduct[] = [];

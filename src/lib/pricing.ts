@@ -4,7 +4,6 @@
  */
 
 import { createServiceSupabase } from '@/lib/supabase-server';
-import { KITS } from './constants';
 
 
 export const ORDER_BUMP_PRICE = 29.90;
@@ -36,14 +35,7 @@ async function getProductPrice(slug: string): Promise<number> {
  * Calculates the expected total amount server-side, fetching price from DB.
  */
 export async function calculateExpectedAmount(p: PriceParams): Promise<number> {
-  const legacyKit = KITS.find(k => k.id === p.kitId || k.slug === p.kitId);
-  let basePrice = 0;
-
-  if (legacyKit) {
-    basePrice = legacyKit.promoPrice;
-  } else {
-    basePrice = await getProductPrice(p.kitId);
-  }
+  const basePrice = await getProductPrice(p.kitId);
 
   let total = basePrice;
   if (p.hasBump)   total += ORDER_BUMP_PRICE;
