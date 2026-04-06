@@ -2,7 +2,7 @@ import { requireTenant } from '@/lib/tenant';
 import { createServerSupabase } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Save, ArrowRight, Plus } from 'lucide-react';
 import { updateProduct } from './actions';
 import ArchiveButton from './ArchiveButton';
 
@@ -262,31 +262,51 @@ export default async function EditProductPage({ params }: Props) {
             </div>
 
             {/* Variantes */}
-            {relatedVariants.length > 0 && (
+            {product.category_id && (
               <div className={sectionCls}>
-                <div className="px-6 py-4 border-b border-[#F1F5F9]">
+                <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
                   <h2 className="font-semibold text-[#0F172A]">Variantes</h2>
+                  <Link
+                    href={`/admin/products/new?category_id=${product.category_id}`}
+                    className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#0F172A] transition-colors"
+                  >
+                    <Plus className="w-3 h-3" />
+                    Nova
+                  </Link>
                 </div>
-                <div className="p-4 flex flex-col gap-2">
-                  {relatedVariants.map((v) => (
+                {relatedVariants.length === 0 ? (
+                  <div className="p-6 text-center flex flex-col items-center gap-2">
+                    <p className="text-xs text-[#94A3B8]">Nenhuma variante nesta categoria.</p>
                     <Link
-                      key={v.id}
-                      href={`/admin/products/${v.id}/edit`}
-                      className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0] hover:bg-[#F8FAFC] transition-colors group"
+                      href={`/admin/products/new?category_id=${product.category_id}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-[#0F172A] hover:underline"
                     >
-                      <div>
-                        <p className="text-sm font-medium text-[#0F172A]">{v.name}</p>
-                        <p className="text-xs text-[#64748B]">R$ {Number(v.promo_price).toFixed(2).replace('.', ',')}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${v.status === 'active' ? 'bg-[#DCFCE7] text-[#166534]' : 'bg-[#F1F5F9] text-[#475569]'}`}>
-                          {v.status === 'active' ? 'Ativo' : 'Rascunho'}
-                        </span>
-                        <ArrowRight className="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#0F172A] transition-colors" />
-                      </div>
+                      <Plus className="w-3 h-3" />
+                      Criar variante
                     </Link>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <div className="p-4 flex flex-col gap-2">
+                    {relatedVariants.map((v) => (
+                      <Link
+                        key={v.id}
+                        href={`/admin/products/${v.id}/edit`}
+                        className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0] hover:bg-[#F8FAFC] transition-colors group"
+                      >
+                        <div>
+                          <p className="text-sm font-medium text-[#0F172A]">{v.name}</p>
+                          <p className="text-xs text-[#64748B]">R$ {Number(v.promo_price).toFixed(2).replace('.', ',')}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${v.status === 'active' ? 'bg-[#DCFCE7] text-[#166534]' : 'bg-[#F1F5F9] text-[#475569]'}`}>
+                            {v.status === 'active' ? 'Ativo' : 'Rascunho'}
+                          </span>
+                          <ArrowRight className="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#0F172A] transition-colors" />
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
