@@ -53,9 +53,13 @@ export default function ProductInfo({ product, variants = [], onAdd }: Props) {
       <nav className="text-[11px] text-[#94A3B8] flex items-center gap-1.5" aria-label="Breadcrumb">
         <Link href="/loja" className="hover:text-[#0F172A] transition-colors">Loja</Link>
         <span aria-hidden>/</span>
-        <Link href={`/categoria/${product.category}`} className="hover:text-[#0F172A] transition-colors capitalize">
-          {product.categoryName}
-        </Link>
+        {product.category ? (
+          <Link href={`/categoria/${product.category}`} className="hover:text-[#0F172A] transition-colors capitalize">
+            {product.categoryName}
+          </Link>
+        ) : (
+          <span className="capitalize">{product.categoryName}</span>
+        )}
         <span aria-hidden>/</span>
         <span className="text-[#475569]" aria-current="page">{product.name}</span>
       </nav>

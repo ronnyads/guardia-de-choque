@@ -72,7 +72,7 @@ export default async function ProdutoPage({ params }: Props) {
 
   const allProducts = await getFeaturedProducts();
   const variants = allProducts
-    .filter((p) => p.category === product.category && p.slug !== "mini-taser")
+    .filter((p) => p.category === product.category && p.category !== "" && p.slug !== product.slug)
     .map((p) => ({
       slug: p.slug,
       label: p.name
