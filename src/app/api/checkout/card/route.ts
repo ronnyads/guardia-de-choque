@@ -1,6 +1,7 @@
 ﻿import { NextResponse } from "next/server";
 import { MercadoPagoConfig, Payment } from "mercadopago";
 import { validateAmount, sanitizeString, sanitizeEmail, sanitizeDocument, sanitizeAmount } from "@/lib/pricing";
+import { createServiceSupabase } from "@/lib/supabase-server";
 
 const client  = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || "" });
 const payment = new Payment(client);
@@ -77,6 +78,30 @@ export async function POST(request: Request) {
     });
 
     if (result.status === "approved" || result.status === "in_process") {
+      // Salvar pedido no banco
+      try {
+        const supabase = createServiceSupabase();
+        const { data: prod } = await supabase
+          .from('products')
+          .select('tenant_id, name')
+          .eq('slug', String(body.kitId || ''))
+          .single();
+        if (prod?.tenant_id) {
+          await supabase.from('orders').insert({
+            tenant_id:           prod.tenant_id,
+            customer_name:       name,
+            customer_email:      email,
+            total_amount:        amount,
+            payment_method:      'card',
+            payment_provider:    'mercadopago',
+            external_payment_id: String(result.id),
+            status:              result.status === 'approved' ? 'approved' : 'pending',
+            items:               [{ slug: body.kitId, name: prod.name, price: amount }],
+          });
+        }
+      } catch (saveErr) {
+        console.error('[MP Card] Erro ao salvar pedido:', saveErr);
+      }
       return NextResponse.json({ success: true, status: result.status, paymentId: result.id });
     }
 

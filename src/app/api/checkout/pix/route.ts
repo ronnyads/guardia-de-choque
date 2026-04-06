@@ -1,6 +1,7 @@
 ﻿import { NextResponse } from "next/server";
 import { MercadoPagoConfig, Payment } from "mercadopago";
 import { validateAmount, sanitizeString, sanitizeEmail, sanitizeDocument, sanitizeAmount } from "@/lib/pricing";
+import { createServiceSupabase } from "@/lib/supabase-server";
 
 const client  = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || "" });
 const payment = new Payment(client);
@@ -43,6 +44,30 @@ export async function POST(request: Request) {
     });
 
     if (result.status === "pending" && result.point_of_interaction) {
+      // Salvar pedido pendente no banco
+      try {
+        const supabase = createServiceSupabase();
+        const { data: prod } = await supabase
+          .from('products')
+          .select('tenant_id, name')
+          .eq('slug', String(body.kitId || ''))
+          .single();
+        if (prod?.tenant_id) {
+          await supabase.from('orders').insert({
+            tenant_id:           prod.tenant_id,
+            customer_name:       name,
+            customer_email:      email,
+            total_amount:        amount,
+            payment_method:      'pix',
+            payment_provider:    'mercadopago',
+            external_payment_id: String(result.id),
+            status:              'pending',
+            items:               [{ slug: body.kitId, name: prod.name, price: amount }],
+          });
+        }
+      } catch (saveErr) {
+        console.error('[PIX] Erro ao salvar pedido:', saveErr);
+      }
       return NextResponse.json({
         success:      true,
         qrCode:       result.point_of_interaction.transaction_data?.qr_code,

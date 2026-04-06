@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
+import { createServiceSupabase } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,20 @@ export async function GET(request: Request) {
     }
 
     const result = await payment.get({ id });
+
+    // Atualizar pedido no banco quando PIX for pago
+    if (result.status === 'approved') {
+      try {
+        const supabase = createServiceSupabase();
+        await supabase
+          .from('orders')
+          .update({ status: 'approved', updated_at: new Date().toISOString() })
+          .eq('external_payment_id', String(result.id))
+          .eq('status', 'pending');
+      } catch (updateErr) {
+        console.error('[Status] Erro ao atualizar pedido:', updateErr);
+      }
+    }
 
     return NextResponse.json({
       id: result.id,
