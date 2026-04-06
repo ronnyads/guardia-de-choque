@@ -4,7 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import StoreFooter from "@/components/layout/StoreFooter";
 import ProductGrid from "@/components/catalog/ProductGrid";
 import { getCategoryBySlug, categories } from "@/lib/categories";
-import { getProductsByCategory, storeProducts } from "@/lib/products";
+import { getProductsByCategory } from "@/lib/products";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -29,8 +29,7 @@ export default async function CategoriaPage({ params }: Props) {
   const cat = getCategoryBySlug(slug);
   if (!cat) notFound();
 
-  const products = getProductsByCategory(slug);
-  const fallback = products.length === 0 ? storeProducts : products;
+  const products = await getProductsByCategory(slug);
 
   return (
     <>
@@ -44,7 +43,7 @@ export default async function CategoriaPage({ params }: Props) {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
-          <ProductGrid products={fallback} />
+          <ProductGrid products={products} />
         </div>
       </main>
       <StoreFooter />

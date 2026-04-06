@@ -1,13 +1,9 @@
 /**
  * Server-side pricing — NEVER trust the client amount.
- * Always recalculate from known constants.
+ * Always recalculate from the database.
  */
 
-export const KIT_PRICES: Record<string, number> = {
-  "kit-individual": 97.90,
-  "kit-dupla":      169.90,
-  "kit-familia":    227.90,
-};
+import { createServiceSupabase } from '@/lib/supabase-server';
 
 export const ORDER_BUMP_PRICE = 29.90;
 export const UPSELL_PRICE     = 69.90;
@@ -21,27 +17,39 @@ export interface PriceParams {
   paymentMethod: "pix" | "cartao";
 }
 
+async function getProductPrice(slug: string): Promise<number> {
+  const supabase = createServiceSupabase();
+  const { data, error } = await supabase
+    .from('products')
+    .select('promo_price')
+    .eq('slug', slug)
+    .eq('status', 'active')
+    .single();
+
+  if (error || !data) throw new Error(`Produto não encontrado: ${slug}`);
+  return Number(data.promo_price);
+}
+
 /**
- * Calculates the expected total amount server-side.
+ * Calculates the expected total amount server-side, fetching price from DB.
  */
-export function calculateExpectedAmount(p: PriceParams): number {
-  const base = KIT_PRICES[p.kitId];
-  if (!base) throw new Error(`Kit inválido: ${p.kitId}`);
+export async function calculateExpectedAmount(p: PriceParams): Promise<number> {
+  const base = await getProductPrice(p.kitId);
 
   let total = base;
   if (p.hasBump)   total += ORDER_BUMP_PRICE;
   if (p.hasUpsell) total += UPSELL_PRICE;
   if (p.paymentMethod === "pix") total = total * (1 - PIX_DISCOUNT);
 
-  return Math.round(total * 100) / 100; // 2 casas decimais
+  return Math.round(total * 100) / 100;
 }
 
 /**
  * Validates that the client-provided amount matches the server calculation.
  * Throws if tampered.
  */
-export function validateAmount(clientAmount: number, params: PriceParams): void {
-  const expected = calculateExpectedAmount(params);
+export async function validateAmount(clientAmount: number, params: PriceParams): Promise<void> {
+  const expected = await calculateExpectedAmount(params);
   const diff = Math.abs(clientAmount - expected);
 
   if (diff > AMOUNT_TOLERANCE) {

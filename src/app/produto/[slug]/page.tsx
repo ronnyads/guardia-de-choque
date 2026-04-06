@@ -7,7 +7,7 @@ import ProductImages from "@/components/product/ProductImages";
 import ProductInfo from "@/components/product/ProductInfo";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import StickyMobileCTA from "@/components/product/StickyMobileCTA";
-import { storeProducts, getProductBySlug } from "@/lib/products";
+import { getAllProductSlugs, getProductBySlug } from "@/lib/products";
 import ProductViewTracker from "@/components/analytics/ProductViewTracker";
 import {
   Zap, BatteryCharging, ShieldCheck, Lightbulb,
@@ -49,7 +49,8 @@ const staticReviews: Record<string, Array<{ name: string; city: string; date: st
 };
 
 export async function generateStaticParams() {
-  return storeProducts.map((p) => ({ slug: p.slug }));
+  const slugs = await getAllProductSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

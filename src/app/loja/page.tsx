@@ -2,14 +2,16 @@ import { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import StoreFooter from "@/components/layout/StoreFooter";
 import ProductGrid from "@/components/catalog/ProductGrid";
-import { storeProducts } from "@/lib/products";
+import { getFeaturedProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
   title: "Loja | Os Oliveiras",
   description: "Todos os produtos selecionados pela família Oliveira. Defesa pessoal, tecnologia e mais.",
 };
 
-export default function LojaPage() {
+export default async function LojaPage() {
+  const products = await getFeaturedProducts();
+
   return (
     <>
       <Navbar />
@@ -18,12 +20,12 @@ export default function LojaPage() {
           <div className="max-w-7xl mx-auto px-4 md:px-8">
             <h1 className="text-3xl md:text-4xl text-foreground">Nossa Loja</h1>
             <p className="text-text-secondary mt-2">
-              {storeProducts.length} produtos selecionados com a confiança Oliveira
+              {products.length} produtos selecionados com a confiança Oliveira
             </p>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-          <ProductGrid products={storeProducts} />
+          <ProductGrid products={products} />
         </div>
       </main>
       <StoreFooter />

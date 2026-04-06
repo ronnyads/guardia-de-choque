@@ -2,8 +2,8 @@ import Link from "next/link";
 import { getFeaturedProducts } from "@/lib/products";
 import ProductCard from "@/components/catalog/ProductCard";
 
-export default function FeaturedProducts() {
-  const products = getFeaturedProducts();
+export default async function FeaturedProducts() {
+  const products = await getFeaturedProducts();
 
   return (
     <section className="bg-background py-20">
