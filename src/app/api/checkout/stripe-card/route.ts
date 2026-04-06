@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const stripe = getStripe();
 
     // Valida preco contra o catalogo do servidor
-    validateAmount(amount, {
+    await validateAmount(amount, {
       kitId:         String(body.kitId || ""),
       hasBump:       Boolean(body.hasBump),
       hasUpsell:     Boolean(body.hasUpsell),

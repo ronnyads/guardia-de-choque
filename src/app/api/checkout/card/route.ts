@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     if (!token)    return NextResponse.json({ success: false, error: "Token de cartao ausente." }, { status: 400 });
 
     // Valida preco contra o catalogo do servidor
-    validateAmount(amount, {
+    await validateAmount(amount, {
       kitId:         String(body.kitId || ""),
       hasBump:       Boolean(body.hasBump),
       hasUpsell:     Boolean(body.hasUpsell),

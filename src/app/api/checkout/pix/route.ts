@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!document) return NextResponse.json({ success: false, error: "Documento inválido." }, { status: 400 });
 
     // Valida o preco contra o catalogo do servidor
-    validateAmount(amount, {
+    await validateAmount(amount, {
       kitId:         String(body.kitId || ""),
       hasBump:       Boolean(body.hasBump),
       hasUpsell:     Boolean(body.hasUpsell),
