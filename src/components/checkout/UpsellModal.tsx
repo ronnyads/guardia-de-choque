@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, AlertCircle } from "lucide-react";
+import { Zap, Shield, X } from "lucide-react";
 
 interface Props {
   upsellPrice: number;
@@ -13,73 +13,78 @@ export default function UpsellModal({ upsellPrice, onDecision }: Props) {
 
   const handleAction = (accepted: boolean) => {
     setLoading(true);
-    setTimeout(() => {
-      onDecision(accepted);
-    }, 1200);
+    setTimeout(() => onDecision(accepted), 1000);
   };
 
+  const fmt = (v: number) => v.toFixed(2).replace(".", ",");
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
-      <div className="bg-surface border border-accent/30 rounded-3xl max-w-xl w-full flex flex-col max-h-[95vh] p-1 overflow-hidden animate-fade-in shadow-[0_0_100px_rgba(251,191,36,0.15)]">
-        
-        {/* Progress bar fake indicando que a compra tá em 80% */}
-        <div className="h-2 w-full bg-white/5 rounded-t-3xl overflow-hidden relative">
-           <div className="absolute top-0 left-0 bottom-0 bg-accent w-[85%] animate-[shimmer_2s_infinite]"></div>
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/70 p-0 sm:p-4">
+      <div className="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
+
+        {/* Barra de urgência */}
+        <div className="bg-[#0F172A] px-5 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+            <span className="text-yellow-400 text-[11px] font-bold uppercase tracking-wider">Oferta exclusiva — apenas agora</span>
+          </div>
+          <button onClick={() => handleAction(false)} className="text-white/40 hover:text-white transition-colors">
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
-        <div className="p-4 md:p-6 lg:p-8 relative overflow-y-auto flex-1 custom-scrollbar">
-          
-          <div className="flex items-center justify-center gap-2 text-accent font-bold uppercase tracking-widest text-xs mb-4">
-            <AlertCircle className="w-4 h-4 animate-pulse" />
-            <span className="text-center">Atenção! Seu pedido não está completo</span>
+        <div className="px-5 py-6 flex flex-col gap-5">
+
+          {/* Headline */}
+          <div className="text-center">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-[#059669] mb-2">Seu pedido foi recebido ✓</p>
+            <h2 className="text-[22px] font-black text-[#0F172A] leading-tight">
+              Leve uma Guardiã extra<br />
+              <span className="text-[#059669]">pelo preço de custo</span>
+            </h2>
+            <p className="text-[13px] text-[#64748B] mt-2 leading-relaxed">
+              91% dos clientes pedem uma unidade reserva depois. Aproveite agora — o frete já está pago.
+            </p>
           </div>
 
-          <h2 className="text-2xl md:text-4xl font-black text-white text-center mb-6 leading-tight">
-            NÃO FECHE ESSA PÁGINA <br/> 
-            <span className="text-lg md:text-2xl font-normal text-text-muted mt-2 block">
-              Leia essa mensagem com muita atenção.
-            </span>
-          </h2>
-
-          <div className="bg-black/50 border border-white/5 rounded-2xl p-4 md:p-6 mb-8 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-[50px]"></div>
-            
-            <p className="text-text mb-4 text-left leading-relaxed">
-              Recebemos aqui o seu pedido com sucesso. Mas antes de finalizarmos, notamos que 91% dos nossos clientes se arrependem de não comprar uma <strong>unidade extra de Backup</strong> para deixar no carro ou no trabalho.
-            </p>
-            <p className="text-white font-bold mb-4 text-left leading-relaxed">
-              Como você já pagou o frete no primeiro kit, eu consegui liberar uma condição que você nunca mais vai ver:
-            </p>
-
-            <div className="bg-gradient-to-r from-accent/20 to-transparent border-l-4 border-accent p-4 text-left rounded-r-lg inline-block w-full mt-2">
-              <span className="block text-accent font-black text-2xl mb-1">
-                Leve +1 Guardiã Reserva
-              </span>
-              <span className="block text-white">Por apenas <strong className="text-xl">R$ {upsellPrice.toFixed(2).replace(".", ",")}</strong> (Preço de custo!)</span>
+          {/* Produto destaque */}
+          <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4 flex items-center gap-4">
+            <div className="w-16 h-16 bg-[#0F172A] rounded-xl flex items-center justify-center shrink-0">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-[#0F172A] text-[14px]">Guardiã de Choque — Reserva</p>
+              <p className="text-[12px] text-[#64748B] mt-0.5">Unidade extra + coldre + cabo de carga</p>
+              <div className="flex items-center gap-2 mt-1.5">
+                <span className="text-[11px] text-[#94A3B8] line-through">R$ 97,90</span>
+                <span className="text-[16px] font-black text-[#059669]">R$ {fmt(upsellPrice)}</span>
+                <span className="bg-[#DCFCE7] text-[#166534] text-[10px] font-bold px-1.5 py-0.5 rounded-md">-28%</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <button 
+          {/* CTAs */}
+          <div className="flex flex-col gap-2">
+            <button
               onClick={() => handleAction(true)}
               disabled={loading}
-              className="w-full bg-accent hover:bg-accent-hover text-black font-black text-lg py-5 rounded-2xl flex justify-center items-center gap-2 transition-all shadow-xl hover:scale-[1.02]"
+              className="w-full bg-[#059669] hover:bg-[#047857] disabled:opacity-60 text-white font-black text-[15px] py-4 rounded-2xl flex justify-center items-center gap-2 transition-all shadow-lg active:scale-[0.98]"
             >
               {loading ? (
-                <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  <Zap className="w-5 h-5 fill-black" />
-                  SIM! ADICIONAR COM DESCONTO
+                  <Zap className="w-4 h-4 fill-white" />
+                  SIM! QUERO ADICIONAR POR R$ {fmt(upsellPrice)}
                 </>
               )}
             </button>
-            <button 
+            <button
               onClick={() => handleAction(false)}
               disabled={loading}
-              className="w-full text-center py-4 text-sm text-text-muted hover:text-white underline decoration-white/20 hover:decoration-white transition-colors"
+              className="w-full text-center py-3 text-[12px] text-[#94A3B8] hover:text-[#475569] transition-colors"
             >
-              Não, obrigado. Quero correr o risco e ficar só com meu pedido original.
+              Não, obrigado. Finalizar sem a unidade extra.
             </button>
           </div>
 
