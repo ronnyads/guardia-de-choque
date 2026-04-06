@@ -83,7 +83,7 @@ export default function ProductScroll({ title, subtitle, bg = "white", products 
           role="list"
           aria-label={`Produtos — ${title}`}
         >
-          {storeProducts.map((product) => {
+          {products.map((product) => {
             const savings = Math.round(
               ((product.originalPrice - product.price) / product.originalPrice) * 100
             );

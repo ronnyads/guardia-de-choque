@@ -33,6 +33,9 @@ export default function Navbar() {
   const isCartOpen = useCartStore((s) => s.isOpen);
   const wishCount  = useWishlistStore((s) => s.count());
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const isHero = pathname === "/";
 
   useEffect(() => {
@@ -133,13 +136,13 @@ export default function Navbar() {
 
             {/* Wishlist */}
             <Link
-              href="/favoritos"
+              href="/loja"
               className="relative w-9 h-9 hidden md:flex items-center justify-center rounded-xl transition-colors duration-200"
               style={{ color: iconColor }}
-              aria-label={`Favoritos${wishCount > 0 ? ` (${wishCount})` : ""}`}
+              aria-label={`Favoritos${mounted && wishCount > 0 ? ` (${wishCount})` : ""}`}
             >
               <Heart className="w-[17px] h-[17px]" />
-              {wishCount > 0 && (
+              {mounted && wishCount > 0 && (
                 <span
                   className="absolute top-0.5 right-0.5 min-w-[14px] h-3.5 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-0.5 tabular-nums"
                   style={{ background: "#DC2626" }}
@@ -155,10 +158,10 @@ export default function Navbar() {
               onClick={openCart}
               className="relative w-9 h-9 flex items-center justify-center rounded-xl transition-colors duration-200"
               style={{ color: iconColor }}
-              aria-label={`Carrinho${count > 0 ? ` (${count} itens)` : ""}`}
+              aria-label={`Carrinho${mounted && count > 0 ? ` (${count} itens)` : ""}`}
             >
               <ShoppingCart className="w-[17px] h-[17px]" />
-              {count > 0 && (
+              {mounted && count > 0 && (
                 <span
                   className="absolute top-0.5 right-0.5 min-w-[16px] h-4 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-1 tabular-nums"
                   style={{ background: "#09090B" }}

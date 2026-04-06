@@ -4,8 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
 import { ShoppingCart, Star, Zap, Shield, Truck, ArrowRight } from "lucide-react";
-import { KITS } from "@/lib/constants";
-
 const TRUST_PILLS = [
   { icon: Shield, label: "Compra 100% Segura" },
   { icon: Truck,  label: "Frete Grátis acima de R$ 199" },
@@ -31,8 +29,11 @@ const fadeIn: Variants = {
   show:   { opacity: 1, scale: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 };
 
-export default function HeroSection() {
-  const featured = KITS[1]; // Kit Dupla — mais vendido
+interface Props {
+  highlightPixPrice?: number;
+}
+
+export default function HeroSection({ highlightPixPrice }: Props) {
   const fmt = (v: number) => `R$ ${v.toFixed(2).replace(".", ",")}`;
 
   return (
