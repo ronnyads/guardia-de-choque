@@ -42,16 +42,11 @@ export default function AdminLogin() {
       return;
     }
 
-    // Verifica se é super admin da plataforma
+    // Consulta server-side para determinar papel do usuário
     try {
-      const { data: superAdmin } = await supabase
-        .from("super_admins")
-        .select("user_id")
-        .eq("user_id", authData.user.id)
-        .single();
-
-      // Navegação completa (não SPA) garante cookies e re-render correto
-      window.location.href = superAdmin ? "/super-admin" : "/admin";
+      const res = await fetch("/api/auth/role");
+      const { role } = await res.json();
+      window.location.href = role === "super_admin" ? "/super-admin" : "/admin";
     } catch {
       window.location.href = "/admin";
     }
