@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import { Lock, Truck, ShieldCheck, Star } from "lucide-react";
 import ClientCheckout from "@/components/checkout/ClientCheckout";
 import { getProductBySlug } from "@/lib/products";
-import { ORDER_BUMP_PRICE } from "@/lib/pricing";
+import { ORDER_BUMP_PRICE, UPSELL_PRICE } from "@/lib/pricing";
+import { getStoreConfig } from "@/lib/store-config";
 
 export const metadata = {
   title: "Checkout Seguro | Guardia de Choque",
@@ -28,10 +29,20 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const rawProduto = params.produto;
   const kitSlug    = rawKit || (rawProduto ? slugToKit[rawProduto] : null) || "guardia-de-choque";
 
-  const kitProduct = await getProductBySlug(kitSlug);
+  const [kitProduct, storeConfig] = await Promise.all([
+    getProductBySlug(kitSlug),
+    getStoreConfig(),
+  ]);
 
   // Fallback: se não encontrar no banco, usa guardia-de-choque
   const resolvedKit = kitProduct ?? await getProductBySlug("guardia-de-choque");
+
+  const checkoutConfig = {
+    enableStripeFallback: storeConfig.checkout_enable_stripe_fallback ?? true,
+    retryDelayMs:         storeConfig.checkout_retry_delay_ms ?? 900,
+    pixPollingMs:         storeConfig.checkout_pix_polling_ms ?? 3000,
+    upsellPrice:          storeConfig.checkout_upsell_price ?? UPSELL_PRICE,
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -86,7 +97,11 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
               <div className="w-8 h-8 border-2 border-[#0F172A] border-t-transparent rounded-full animate-spin" />
             </div>
           }>
-            <ClientCheckout kit={resolvedKit} orderBumpPrice={ORDER_BUMP_PRICE} />
+            <ClientCheckout
+                kit={resolvedKit}
+                orderBumpPrice={storeConfig.checkout_order_bump_price ?? ORDER_BUMP_PRICE}
+                checkoutConfig={checkoutConfig}
+              />
           </Suspense>
         ) : (
           <div className="flex items-center justify-center py-32">

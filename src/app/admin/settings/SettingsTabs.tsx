@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import {
   Palette, Phone, Plug, Search, X, Settings, CheckCircle,
-  Plus, Trash2, ChevronRight,
+  Plus, Trash2, ChevronRight, CreditCard,
 } from 'lucide-react';
 import type { TenantConfig, TenantIntegration } from '@/types/tenant';
 import {
   updateBrandConfig,
   updateContactConfig,
   updateSeoConfig,
+  updateCheckoutConfig,
   upsertIntegration,
   type IntegrationProvider,
 } from './actions';
@@ -17,7 +18,7 @@ import {
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type IntegrationRow = Omit<TenantIntegration, 'secret_key_encrypted' | 'tenant_id' | 'extra_config'>;
-type Section = 'marca' | 'contato' | 'integracoes' | 'seo';
+type Section = 'marca' | 'contato' | 'integracoes' | 'seo' | 'checkout';
 type FilterId = 'todos' | 'pagamentos' | 'analytics' | 'instalado';
 
 interface Props {
@@ -32,6 +33,7 @@ const SUB_NAV: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'contato',     label: 'Contato & Conteúdo', icon: Phone },
   { id: 'integracoes', label: 'Integrações',         icon: Plug },
   { id: 'seo',         label: 'SEO',                icon: Search },
+  { id: 'checkout',    label: 'Checkout',            icon: CreditCard },
 ];
 
 // ── Integration catalog ───────────────────────────────────────────────────────
@@ -173,6 +175,7 @@ export default function SettingsTabs({ config, integrations }: Props) {
         {section === 'contato'     && <ContactSection     config={config}       saving={saving} onSave={handleSave} />}
         {section === 'integracoes' && <IntegrationsSection integrations={integrations} onOpen={setOpenProvider} />}
         {section === 'seo'         && <SeoSection         config={config}       saving={saving} onSave={handleSave} />}
+        {section === 'checkout'    && <CheckoutSection    config={config}       saving={saving} onSave={handleSave} />}
       </main>
 
       {/* ── Sheet de configuração da integração ───────────────────────────── */}
@@ -603,6 +606,125 @@ function IntegrationCard({ meta, existing, onOpen }: {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+// ── Seção: Checkout ───────────────────────────────────────────────────────────
+
+function CheckoutSection({ config, saving, onSave }: {
+  config: TenantConfig | null;
+  saving: boolean;
+  onSave: (action: (fd: FormData) => Promise<void>, fd: FormData) => Promise<void>;
+}) {
+  const [stripeFallback, setStripeFallback] = useState(config?.checkout_enable_stripe_fallback ?? true);
+
+  return (
+    <div>
+      <h2 className="text-lg font-bold text-[#0F172A] mb-1">Checkout</h2>
+      <p className="text-sm text-[#64748B] mb-6">Configure a retentativa inteligente e os preços do funil.</p>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const fd = new FormData(e.currentTarget);
+          fd.set('checkout_enable_stripe_fallback', String(stripeFallback));
+          onSave(updateCheckoutConfig, fd);
+        }}
+        className="space-y-6"
+      >
+        {/* Retentativa Inteligente */}
+        <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 bg-[#F8FAFC] border-b border-[#E2E8F0]">
+            <p className="text-[13px] font-semibold text-[#0F172A]">Retentativa Inteligente</p>
+            <p className="text-xs text-[#64748B] mt-0.5">Se o Mercado Pago recusar, tenta automaticamente pelo Stripe.</p>
+          </div>
+          <div className="p-5 space-y-5">
+            {/* Toggle Stripe fallback */}
+            <label className="flex items-center justify-between cursor-pointer">
+              <div>
+                <p className="text-sm font-medium text-[#0F172A]">Ativar Stripe como fallback</p>
+                <p className="text-xs text-[#64748B] mt-0.5">Quando desativado, erros de cartão são mostrados imediatamente.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setStripeFallback(v => !v)}
+                className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ml-4 ${stripeFallback ? 'bg-[#059669]' : 'bg-[#CBD5E1]'}`}
+              >
+                <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${stripeFallback ? 'left-6' : 'left-1'}`} />
+              </button>
+            </label>
+
+            {stripeFallback && (
+              <div>
+                <label className={labelCls}>Pausa entre tentativas (ms)</label>
+                <input
+                  type="number"
+                  name="checkout_retry_delay_ms"
+                  defaultValue={config?.checkout_retry_delay_ms ?? 900}
+                  min={0}
+                  max={5000}
+                  step={100}
+                  className={inputCls}
+                />
+                <p className="text-xs text-[#94A3B8] mt-1">Tempo de espera antes de tentar o Stripe. Padrão: 900ms.</p>
+              </div>
+            )}
+
+            <div>
+              <label className={labelCls}>Intervalo de verificação PIX (ms)</label>
+              <input
+                type="number"
+                name="checkout_pix_polling_ms"
+                defaultValue={config?.checkout_pix_polling_ms ?? 3000}
+                min={1000}
+                max={10000}
+                step={500}
+                className={inputCls}
+              />
+              <p className="text-xs text-[#94A3B8] mt-1">Com que frequência checar se o PIX foi pago. Padrão: 3000ms.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Preços do Funil */}
+        <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 bg-[#F8FAFC] border-b border-[#E2E8F0]">
+            <p className="text-[13px] font-semibold text-[#0F172A]">Preços do Funil</p>
+            <p className="text-xs text-[#64748B] mt-0.5">Valores exibidos e cobrados no checkout e no modal de upsell.</p>
+          </div>
+          <div className="p-5 grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelCls}>Preço do Upsell (R$)</label>
+              <input
+                type="number"
+                step="0.01"
+                name="checkout_upsell_price"
+                defaultValue={config?.checkout_upsell_price ?? 69.90}
+                min={0}
+                className={inputCls}
+              />
+              <p className="text-xs text-[#94A3B8] mt-1">Exibido no modal pós-compra.</p>
+            </div>
+            <div>
+              <label className={labelCls}>Preço do Order Bump (R$)</label>
+              <input
+                type="number"
+                step="0.01"
+                name="checkout_order_bump_price"
+                defaultValue={config?.checkout_order_bump_price ?? 29.90}
+                min={0}
+                className={inputCls}
+              />
+              <p className="text-xs text-[#94A3B8] mt-1">Exibido na oferta adicional do checkout.</p>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" disabled={saving} className={saveBtnCls}>
+          {saving ? 'Salvando...' : 'Salvar Checkout'}
+        </button>
+      </form>
     </div>
   );
 }

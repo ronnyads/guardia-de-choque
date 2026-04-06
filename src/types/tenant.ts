@@ -37,6 +37,11 @@ export interface TenantConfig {
   seo_title: string | null;
   seo_description: string | null;
   og_image_url: string | null;
+  checkout_enable_stripe_fallback: boolean;
+  checkout_retry_delay_ms: number;
+  checkout_pix_polling_ms: number;
+  checkout_upsell_price: number;
+  checkout_order_bump_price: number;
   updated_at: string;
 }
 

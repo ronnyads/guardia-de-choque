@@ -20,6 +20,11 @@ const DEFAULT_CONFIG: TenantConfig = {
   seo_title: 'Minha Loja',
   seo_description: null,
   og_image_url: null,
+  checkout_enable_stripe_fallback: true,
+  checkout_retry_delay_ms: 900,
+  checkout_pix_polling_ms: 3000,
+  checkout_upsell_price: 69.90,
+  checkout_order_bump_price: 29.90,
   updated_at: new Date().toISOString(),
 };
 

@@ -87,6 +87,29 @@ export async function updateSeoConfig(formData: FormData) {
   revalidatePath('/admin/settings');
 }
 
+// ─── CHECKOUT ─────────────────────────────────────────────────────────────────
+
+export async function updateCheckoutConfig(formData: FormData) {
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
+
+  const checkout_enable_stripe_fallback = formData.get('checkout_enable_stripe_fallback') === 'true';
+  const checkout_retry_delay_ms         = Math.max(0,    parseInt((formData.get('checkout_retry_delay_ms')   as string) || '900'));
+  const checkout_pix_polling_ms         = Math.max(1000, parseInt((formData.get('checkout_pix_polling_ms')   as string) || '3000'));
+  const checkout_upsell_price           = parseFloat((formData.get('checkout_upsell_price')       as string) || '69.90');
+  const checkout_order_bump_price       = parseFloat((formData.get('checkout_order_bump_price')   as string) || '29.90');
+
+  const { error } = await supabase
+    .from('tenant_config')
+    .upsert(
+      { tenant_id: tenantId, checkout_enable_stripe_fallback, checkout_retry_delay_ms, checkout_pix_polling_ms, checkout_upsell_price, checkout_order_bump_price, updated_at: new Date().toISOString() },
+      { onConflict: 'tenant_id' }
+    );
+
+  if (error) throw new Error(`Erro ao salvar checkout: ${error.message}`);
+  revalidatePath('/admin/settings');
+}
+
 // ─── INTEGRAÇÕES ──────────────────────────────────────────────────────────────
 
 export type IntegrationProvider = 'mercadopago' | 'stripe' | 'meta_pixel' | 'kwai_pixel';

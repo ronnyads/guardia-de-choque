@@ -9,12 +9,20 @@ import CheckoutForm from "./CheckoutForm";
 import UpsellModal from "./UpsellModal";
 import { kwaiPurchase, kwaiCheckout } from "@/components/analytics/KwaiPixel";
 
+interface CheckoutConfig {
+  enableStripeFallback: boolean;
+  retryDelayMs: number;
+  pixPollingMs: number;
+  upsellPrice: number;
+}
+
 interface Props {
   kit: StoreProduct;
   orderBumpPrice: number;
+  checkoutConfig: CheckoutConfig;
 }
 
-export default function ClientCheckout({ kit: kitProduct, orderBumpPrice }: Props) {
+export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checkoutConfig }: Props) {
   const searchParams = useSearchParams();
 
   // Adapta StoreProduct para o shape que OrderSummary (Kit) espera
@@ -45,7 +53,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice }: Prop
   }, [kit.name, kit.promoPrice]);
 
   const [hasOrderBump, setHasOrderBump] = useState(false);
-  const upsellPrice = 69.90;
+  const upsellPrice = checkoutConfig.upsellPrice;
 
   const [showUpsell, setShowUpsell] = useState(false);
   const [checkoutComplete, setCheckoutComplete] = useState(false);
@@ -74,7 +82,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice }: Prop
         } catch (e) {
           console.error("Poller error", e);
         }
-      }, 3000); // 3 em 3 segundos
+      }, checkoutConfig.pixPollingMs);
     }
 
     return () => clearInterval(intervalId);
@@ -153,8 +161,12 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice }: Prop
       }
 
       // ── Gateway 2: Stripe (fallback automático) ───────────────
+      if (!checkoutConfig.enableStripeFallback) {
+        throw new Error(mpResult.error || "Pagamento recusado. Tente outro cartão.");
+      }
+
       setGatewayStatus("Verificando com operadora alternativa\u2026");
-      await new Promise(r => setTimeout(r, 900)); // pausa natural para UX
+      await new Promise(r => setTimeout(r, checkoutConfig.retryDelayMs));
 
       const [rawMonth, rawYear] = (paymentData.cardData?.expiry || "").split("/");
       const stripeRes = await fetch('/api/checkout/stripe-card', {
