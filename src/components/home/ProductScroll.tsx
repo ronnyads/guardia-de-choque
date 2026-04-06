@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, ShoppingCart, Star, Zap, ArrowRight } from "lucide-react";
-import { storeProducts } from "@/lib/products";
+import { StoreProduct } from "@/types";
 import { useCartStore } from "@/lib/store";
 import { useWishlistStore } from "@/lib/wishlist-store";
 import { useToastStore } from "@/components/ui/ToastProvider";
@@ -15,20 +15,21 @@ interface Props {
   title: string;
   subtitle?: string;
   bg?: "white" | "gray";
+  products: StoreProduct[];
 }
 
-export default function ProductScroll({ title, subtitle, bg = "white" }: Props) {
+export default function ProductScroll({ title, subtitle, bg = "white", products }: Props) {
   const addItem   = useCartStore((s) => s.addItem);
   const toggle    = useWishlistStore((s) => s.toggle);
   const hasWish   = useWishlistStore((s) => s.has);
   const showToast = useToastStore((s) => s.show);
 
-  function handleAdd(product: (typeof storeProducts)[0]) {
+  function handleAdd(product: StoreProduct) {
     addItem(product);
     showToast({ type: "success", title: "Adicionado ao carrinho!", message: product.name });
   }
 
-  function handleWish(product: (typeof storeProducts)[0]) {
+  function handleWish(product: StoreProduct) {
     const willAdd = !hasWish(product.id);
     toggle(product);
     showToast({
