@@ -4,6 +4,8 @@ import "./globals.css";
 import MetaPixel from "@/components/analytics/MetaPixel";
 import KwaiPixel from "@/components/analytics/KwaiPixel";
 import ToastProvider from "@/components/ui/ToastProvider";
+import { getStoreConfig } from '@/lib/store-config';
+import { TenantProvider } from '@/components/providers/TenantProvider';
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -20,20 +22,25 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Os Oliveiras | Produtos de Qualidade para sua Família",
-  description:
-    "A loja da família Oliveira. Produtos selecionados com qualidade garantida — defesa pessoal, tecnologia e mais. Frete rápido, pagamento seguro.",
-  keywords:
-    "loja online, produtos qualidade, defesa pessoal, familia oliveira, comprar online brasil",
-  openGraph: {
-    title: "Os Oliveiras | Qualidade que a família garante",
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await getStoreConfig();
+  return {
+    title: config.seo_title ?? "Os Oliveiras | Produtos de Qualidade para sua Família",
     description:
-      "Produtos selecionados com a confiança da família Oliveira. Qualidade garantida, entrega rápida.",
-    type: "website",
-    locale: "pt_BR",
-  },
-};
+      config.seo_description ??
+      "A loja da família Oliveira. Produtos selecionados com qualidade garantida — defesa pessoal, tecnologia e mais. Frete rápido, pagamento seguro.",
+    keywords:
+      "loja online, produtos qualidade, defesa pessoal, familia oliveira, comprar online brasil",
+    openGraph: {
+      title: config.seo_title ?? "Os Oliveiras | Qualidade que a família garante",
+      description:
+        config.seo_description ??
+        "Produtos selecionados com a confiança da família Oliveira. Qualidade garantida, entrega rápida.",
+      type: "website",
+      locale: "pt_BR",
+    },
+  };
+}
 
 // SDK minificado do Kwai — roda ANTES do React para garantir window.kwaiq disponível
 const KWAI_PIXEL_ID = process.env.NEXT_PUBLIC_KWAI_PIXEL_ID || "";
@@ -47,13 +54,22 @@ const kwaiInitScript = KWAI_PIXEL_ID
     "});"
   : "";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const config = await getStoreConfig();
+
   return (
-    <html lang="pt-BR" className={`${dmSans.variable} ${playfair.variable} h-full antialiased`}>
+    <html
+      lang="pt-BR"
+      className={`${dmSans.variable} ${playfair.variable} h-full antialiased`}
+      style={{
+        '--store-primary': config.primary_color ?? '#0F172A',
+        '--store-accent': config.accent_color ?? '#059669',
+      } as React.CSSProperties}
+    >
       <head>
         {/* Kwai Ads SDK — roda antes do React, garante window.kwaiq disponível em qualquer useEffect */}
         {kwaiInitScript && (
@@ -83,7 +99,9 @@ export default function RootLayout({
         <MetaPixel />
         <KwaiPixel />
         <ToastProvider />
-        {children}
+        <TenantProvider config={config}>
+          {children}
+        </TenantProvider>
       </body>
     </html>
   );
