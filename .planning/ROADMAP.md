@@ -62,9 +62,9 @@ Numeração contínua (Milestone 1 teve fases 1-7 do redesign UI).
 **Plans:** 4 plans
 
 Plans:
-- [ ] 11-01-PLAN.md — Completar Admin CRUD de Produtos (campos faltantes + soft delete)
-- [ ] 11-02-PLAN.md — Reescrever products.ts + pricing.ts para usar banco
-- [ ] 11-03-PLAN.md — Checkout Dinamico (validateAmount async do banco)
+- [x] 11-01-PLAN.md — Completar Admin CRUD de Produtos (campos faltantes + soft delete)
+- [x] 11-02-PLAN.md — Reescrever products.ts + pricing.ts para usar banco
+- [x] 11-03-PLAN.md — Checkout Dinamico (validateAmount async do banco)
 - [ ] 11-04-PLAN.md — Limpar hardcodes restantes e build final
 
 ### Tarefas
