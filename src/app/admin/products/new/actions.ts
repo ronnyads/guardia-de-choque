@@ -23,8 +23,14 @@ export async function createProduct(formData: FormData) {
   const badge = (formData.get('badge') as string) || null;
   const category_id = (formData.get('category_id') as string) || null;
 
-  const imagesRaw = (formData.get('images') as string) || '';
-  const images = imagesRaw.split('\n').map(s => s.trim()).filter(Boolean);
+  const imagesRaw = (formData.get('images') as string) || '[]';
+  let images: string[] = [];
+  try {
+    const parsed = JSON.parse(imagesRaw);
+    if (Array.isArray(parsed)) images = parsed.map(String).filter(Boolean);
+  } catch {
+    images = imagesRaw.split('\n').map(s => s.trim()).filter(Boolean);
+  }
 
   let features: unknown[] = [];
   try {
