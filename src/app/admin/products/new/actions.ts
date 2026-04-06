@@ -19,6 +19,31 @@ export async function createProduct(formData: FormData) {
   const inventory_count = parseInt((formData.get('inventory_count') as string) || '0');
   const description = (formData.get('description') as string) || '';
 
+  const long_description = (formData.get('long_description') as string) || '';
+  const badge = (formData.get('badge') as string) || null;
+  const category_id = (formData.get('category_id') as string) || null;
+
+  const imagesRaw = (formData.get('images') as string) || '';
+  const images = imagesRaw.split('\n').map(s => s.trim()).filter(Boolean);
+
+  let features: unknown[] = [];
+  try {
+    const featuresRaw = (formData.get('features') as string) || '[]';
+    const parsed = JSON.parse(featuresRaw);
+    if (Array.isArray(parsed)) features = parsed;
+  } catch {
+    // JSON inválido — manter array vazio
+  }
+
+  let specs: unknown[] = [];
+  try {
+    const specsRaw = (formData.get('specs') as string) || '[]';
+    const parsed = JSON.parse(specsRaw);
+    if (Array.isArray(parsed)) specs = parsed;
+  } catch {
+    // JSON inválido — manter array vazio
+  }
+
   if (!name || !slug) {
     throw new Error('Nome e slug são obrigatórios');
   }
@@ -33,6 +58,12 @@ export async function createProduct(formData: FormData) {
     sku,
     inventory_count,
     description,
+    long_description,
+    badge,
+    category_id,
+    images,
+    features,
+    specs,
   });
 
   if (error) {

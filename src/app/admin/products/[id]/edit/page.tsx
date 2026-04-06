@@ -2,7 +2,7 @@ import { requireTenant } from '@/lib/tenant';
 import { createServerSupabase } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Archive } from 'lucide-react';
 import { updateProduct, deleteProduct } from './actions';
 
 interface Props {
@@ -67,6 +67,119 @@ export default async function EditProductPage({ params }: Props) {
           </div>
         </div>
 
+        {/* Conteúdo Detalhado */}
+        <div className="bg-white p-6 rounded-xl border border-[#E2E8F0] shadow-sm flex flex-col gap-4">
+          <h2 className="font-semibold text-[#0F172A] text-lg">Conteúdo Detalhado</h2>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-[#475569]">Descrição Longa</label>
+            <textarea
+              rows={6}
+              name="long_description"
+              defaultValue={product.long_description ?? ''}
+              className={inputCls}
+              placeholder="Descrição completa do produto..."
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-[#475569]">Badge</label>
+              <select name="badge" defaultValue={product.badge ?? ''} className={inputCls}>
+                <option value="">Nenhum</option>
+                <option value="Mais Vendido">Mais Vendido</option>
+                <option value="Kit">Kit</option>
+                <option value="Oferta">Oferta</option>
+                <option value="Novo">Novo</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-[#475569]">Categoria (slug)</label>
+              <input
+                type="text"
+                name="category_id"
+                defaultValue={product.category_id ?? ''}
+                className={inputCls}
+                placeholder="defesa-pessoal"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Imagens */}
+        <div className="bg-white p-6 rounded-xl border border-[#E2E8F0] shadow-sm flex flex-col gap-4">
+          <h2 className="font-semibold text-[#0F172A] text-lg">Imagens</h2>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-[#475569]">URLs das Imagens (uma por linha)</label>
+            <textarea
+              rows={4}
+              name="images"
+              defaultValue={product.images?.join('\n') ?? ''}
+              className={inputCls}
+              placeholder="/images/product/foto.png"
+            />
+            <p className="text-xs text-[#94A3B8]">Cole uma URL por linha. Exemplos: /images/product/foto.png ou https://...</p>
+          </div>
+        </div>
+
+        {/* Features e Especificações */}
+        <div className="bg-white p-6 rounded-xl border border-[#E2E8F0] shadow-sm flex flex-col gap-4">
+          <h2 className="font-semibold text-[#0F172A] text-lg">Features e Especificações</h2>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-[#475569]">Features (JSON)</label>
+            <textarea
+              rows={6}
+              name="features"
+              defaultValue={JSON.stringify(product.features ?? [], null, 2)}
+              className={inputCls}
+            />
+            <p className="text-xs text-[#94A3B8]">{`Formato: [{"icon": "zap", "title": "Titulo", "description": "Texto"}]`}</p>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-[#475569]">Especificações (JSON)</label>
+            <textarea
+              rows={4}
+              name="specs"
+              defaultValue={JSON.stringify(product.specs ?? [], null, 2)}
+              className={inputCls}
+            />
+            <p className="text-xs text-[#94A3B8]">{`Formato: [{"label": "Peso", "value": "180g"}]`}</p>
+          </div>
+        </div>
+
+        {/* Avaliação */}
+        <div className="bg-white p-6 rounded-xl border border-[#E2E8F0] shadow-sm flex flex-col gap-4">
+          <h2 className="font-semibold text-[#0F172A] text-lg">Avaliação</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-[#475569]">Nota (0–5)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                name="rating"
+                defaultValue={product.rating ?? 0}
+                className={inputCls}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-[#475569]">Quantidade de Avaliações</label>
+              <input
+                type="number"
+                min="0"
+                name="review_count"
+                defaultValue={product.review_count ?? 0}
+                className={inputCls}
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Precificação e estoque */}
         <div className="bg-white p-6 rounded-xl border border-[#E2E8F0] shadow-sm flex flex-col gap-4">
           <h2 className="font-semibold text-[#0F172A] text-lg">Precificação e Estoque</h2>
@@ -92,7 +205,7 @@ export default async function EditProductPage({ params }: Props) {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-[#475569]">Status</label>
-            <select name="status" defaultValue={product.status} className={`${inputCls} bg-white`}>
+            <select name="status" defaultValue={product.status} className={inputCls}>
               <option value="active">Ativo</option>
               <option value="draft">Rascunho</option>
             </select>
@@ -100,16 +213,16 @@ export default async function EditProductPage({ params }: Props) {
         </div>
 
         <div className="flex items-center justify-between pt-2">
-          {/* Deletar */}
+          {/* Arquivar produto */}
           <form action={deleteProduct}>
             <input type="hidden" name="id" value={product.id} />
             <button
               type="submit"
               className="flex items-center gap-2 px-4 py-2.5 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition-colors"
-              onClick={(e) => { if (!confirm('Excluir este produto permanentemente?')) e.preventDefault(); }}
+              onClick={(e) => { if (!confirm('Arquivar este produto? Ele não aparecerá mais na loja.')) e.preventDefault(); }}
             >
-              <Trash2 className="w-4 h-4" />
-              Excluir Produto
+              <Archive className="w-4 h-4" />
+              Arquivar Produto
             </button>
           </form>
 
