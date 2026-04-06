@@ -45,6 +45,7 @@ export async function updateProduct(formData: FormData) {
     // JSON inválido — manter array vazio
   }
 
+  const cost_price = parseFloat((formData.get('cost_price') as string) || '0') || null;
   const rating = parseFloat((formData.get('rating') as string) || '0');
   const review_count = parseInt((formData.get('review_count') as string) || '0');
 
@@ -56,6 +57,7 @@ export async function updateProduct(formData: FormData) {
       status,
       original_price,
       promo_price,
+      cost_price,
       sku,
       inventory_count,
       description,
