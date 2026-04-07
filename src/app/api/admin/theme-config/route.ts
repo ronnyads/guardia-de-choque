@@ -9,7 +9,7 @@ export async function GET() {
 
     const { data } = await supabase
       .from('tenant_config')
-      .select('primary_color, accent_color, font_heading, font_body, brand_name')
+      .select('primary_color, accent_color, font_heading, font_body, brand_name, page_sections, header_config, footer_config')
       .eq('tenant_id', tenantId)
       .single();
 

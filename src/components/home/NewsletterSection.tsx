@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import { ArrowRight, Sparkles, Check } from "lucide-react";
+import type { NewsletterConfig } from "@/types/sections";
 
-export default function NewsletterSection() {
+interface Props {
+  config?: NewsletterConfig;
+}
+
+export default function NewsletterSection({ config }: Props) {
+  const headline    = config?.headline    ?? 'Receba ofertas antes de todo mundo.';
+  const subtext     = config?.subtext     ?? 'Mais de 1.200 pessoas já recebem nossas promoções exclusivas. Sem spam — só o que vale a pena.';
+  const buttonText  = config?.button_text ?? 'Quero receber';
+  const placeholder = config?.placeholder ?? 'seu@email.com';
   const [email,     setEmail]     = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading,   setLoading]   = useState(false);
@@ -59,27 +68,12 @@ export default function NewsletterSection() {
               fontWeight: 700,
             }}
           >
-            Receba ofertas antes
-            <br />
-            <em
-              className="not-italic"
-              style={{
-                backgroundImage: "linear-gradient(90deg,#F8FAFC,#94A3B8)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-              }}
-            >
-              de todo mundo.
-            </em>
+            {headline}
           </h2>
 
           {/* Subtext */}
           <p className="text-[15px] mb-8 leading-relaxed" style={{ color: "rgba(255,255,255,0.50)" }}>
-            Mais de{" "}
-            <strong style={{ color: "rgba(255,255,255,0.80)" }}>1.200 pessoas</strong>{" "}
-            já recebem nossas promoções exclusivas.{" "}
-            Sem spam — só o que vale a pena.
+            {subtext}
           </p>
 
           {/* Form */}
@@ -112,7 +106,7 @@ export default function NewsletterSection() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
+                placeholder={placeholder}
                 className="flex-1 w-full rounded-full px-5 py-3.5 text-[14px] focus:outline-none transition-all"
                 style={{
                   background: "rgba(255,255,255,0.08)",
@@ -144,7 +138,7 @@ export default function NewsletterSection() {
                   />
                 ) : (
                   <>
-                    Quero receber
+                    {buttonText}
                     <ArrowRight className="w-4 h-4" aria-hidden />
                   </>
                 )}

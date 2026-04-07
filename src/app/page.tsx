@@ -1,48 +1,41 @@
 import Navbar from "@/components/layout/Navbar";
 import StoreFooter from "@/components/layout/StoreFooter";
-import HeroSection from "@/components/home/HeroSection";
-import ProductScroll from "@/components/home/ProductScroll";
-import TrustBar from "@/components/home/TrustBar";
-import FeaturedBanner from "@/components/home/FeaturedBanner";
-import ShippingBanner from "@/components/home/ShippingBanner";
-import Testimonials from "@/components/home/Testimonials";
-import BrandStory from "@/components/home/BrandStory";
-import NewsletterSection from "@/components/home/NewsletterSection";
+import SectionRenderer from "@/components/home/SectionRenderer";
+import PreviewWrapper from "@/components/home/PreviewWrapper";
 import { getFeaturedProducts } from "@/lib/products";
+import { getStoreConfig } from "@/lib/store-config";
+import { DEFAULT_SECTIONS } from "@/types/sections";
+import type { PageSection } from "@/types/sections";
 
 export default async function HomePage() {
-  const products = await getFeaturedProducts();
+  const [products, config] = await Promise.all([
+    getFeaturedProducts(),
+    getStoreConfig(),
+  ]);
+
+  const sections: PageSection[] =
+    config.page_sections && config.page_sections.length > 0
+      ? [...config.page_sections].sort((a, b) => a.order - b.order)
+      : DEFAULT_SECTIONS;
+
+  const highlightPixPrice = products[0]?.pixPrice;
 
   return (
     <>
       <Navbar />
       <main>
-        {/* Hero cinematic — dark, full viewport */}
-        <HeroSection highlightPixPrice={products[0]?.pixPrice} />
-
-        {/* Produtos mais vendidos */}
-        <ProductScroll title="Mais Vendidos" subtitle="Os favoritos de quem já comprou" products={products} />
-
-        {/* Trust pillars — dark section */}
-        <TrustBar />
-
-        {/* Banner destaque */}
-        <FeaturedBanner />
-
-        {/* Novidades */}
-        <ProductScroll title="Novidades" subtitle="Confira o que acabou de chegar" products={products} />
-
-        {/* Formas de pagamento */}
-        <ShippingBanner />
-
-        {/* Avaliações */}
-        <Testimonials />
-
-        {/* Nossa História — banner da família */}
-        <BrandStory />
-
-        {/* Newsletter — captura de lead */}
-        <NewsletterSection />
+        <PreviewWrapper products={products} highlightPixPrice={highlightPixPrice}>
+          {sections
+            .filter((s) => s.enabled)
+            .map((section) => (
+              <SectionRenderer
+                key={section.id}
+                section={section}
+                products={products}
+                highlightPixPrice={highlightPixPrice}
+              />
+            ))}
+        </PreviewWrapper>
       </main>
       <StoreFooter />
     </>

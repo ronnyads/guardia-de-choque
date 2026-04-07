@@ -3,14 +3,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
-import { ShoppingCart, Star, Zap, Shield, Truck, ArrowRight } from "lucide-react";
-const TRUST_PILLS = [
-  { icon: Shield, label: "Compra 100% Segura" },
-  { icon: Truck,  label: "Frete Grátis acima de R$ 199" },
-  { icon: Zap,    label: "PIX com 5% OFF" },
+import { Star, Zap, Shield, Truck, ArrowRight } from "lucide-react";
+import type { HeroConfig } from "@/types/sections";
+
+const DEFAULT_TRUST_PILLS = [
+  { label: "Compra 100% Segura" },
+  { label: "Frete Grátis acima de R$ 199" },
+  { label: "PIX com 5% OFF" },
 ];
 
-const STAT_CARDS = [
+const PILL_ICONS = [Shield, Truck, Zap];
+
+const DEFAULT_STAT_CARDS = [
   { value: "2.000+", label: "Pedidos entregues" },
   { value: "4.8 ★",  label: "Avaliação média" },
   { value: "48h",    label: "Envio expresso" },
@@ -31,10 +35,20 @@ const fadeIn: Variants = {
 
 interface Props {
   highlightPixPrice?: number;
+  config?: HeroConfig;
 }
 
-export default function HeroSection({ highlightPixPrice }: Props) {
+export default function HeroSection({ highlightPixPrice, config }: Props) {
   const fmt = (v: number) => `R$ ${v.toFixed(2).replace(".", ",")}`;
+
+  const headline        = config?.headline        ?? 'Produtos que fazem diferença na sua vida.';
+  const subheadline     = config?.subheadline     ?? 'Selecionados com critério, entregues com agilidade. Qualidade que a família garante — direto para a sua casa.';
+  const ctaText         = config?.cta_text        ?? 'Ver Coleção';
+  const ctaLink         = config?.cta_link        ?? '/loja';
+  const ctaSecondary    = config?.cta_secondary_text ?? 'Mais Vendidos';
+  const ctaSecondaryLink= config?.cta_secondary_link ?? '/loja';
+  const trustPills      = config?.trust_pills     ?? DEFAULT_TRUST_PILLS;
+  const statCards       = config?.stat_cards      ?? DEFAULT_STAT_CARDS;
 
   return (
     <section
@@ -86,20 +100,7 @@ export default function HeroSection({ highlightPixPrice }: Props) {
                 className="leading-[1.05] tracking-tight"
                 style={{ fontFamily: "var(--font-playfair)", fontSize: "clamp(42px,5.5vw,72px)", color: "#FFFFFF" }}
               >
-                Produtos que{" "}
-                <em
-                  className="not-italic"
-                  style={{
-                    backgroundImage: "linear-gradient(90deg,#F8FAFC,#94A3B8)",
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                    color: "transparent",
-                    display: "inline",
-                  }}
-                >
-                  fazem diferença
-                </em>
-                <br />na sua vida.
+                {headline}
               </h1>
             </motion.div>
 
@@ -109,43 +110,42 @@ export default function HeroSection({ highlightPixPrice }: Props) {
               className="leading-relaxed max-w-md"
               style={{ color: "rgba(255,255,255,0.60)", fontSize: "17px" }}
             >
-              Selecionados com critério, entregues com agilidade.
-              Qualidade que a família garante — direto para a sua casa.
+              {subheadline}
             </motion.p>
 
             {/* Trust pills */}
             <motion.div variants={fadeUp} className="flex flex-wrap gap-2">
-              {TRUST_PILLS.map(({ icon: Icon, label }) => (
-                <div
-                  key={label}
-                  className="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 rounded-full px-3.5 py-1.5"
-                >
-                  <Icon className="w-3 h-3 text-white/60 shrink-0" aria-hidden />
-                  <span className="text-white/70 text-[11px] font-medium">{label}</span>
-                </div>
-              ))}
+              {trustPills.map(({ label }, i) => {
+                const Icon = PILL_ICONS[i % PILL_ICONS.length];
+                return (
+                  <div
+                    key={label}
+                    className="inline-flex items-center gap-1.5 bg-white/8 border border-white/12 rounded-full px-3.5 py-1.5"
+                  >
+                    <Icon className="w-3 h-3 text-white/60 shrink-0" aria-hidden />
+                    <span className="text-white/70 text-[11px] font-medium">{label}</span>
+                  </div>
+                );
+              })}
             </motion.div>
 
             {/* CTA Buttons */}
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3 pt-2">
-              <Link
-                href="/loja"
-                className="btn btn-white text-[15px] px-7 py-4"
-              >
-                Ver Coleção
+              <Link href={ctaLink} className="btn btn-white text-[15px] px-7 py-4">
+                {ctaText}
                 <ArrowRight className="w-4 h-4" aria-hidden />
               </Link>
               <Link
-                href="/loja"
+                href={ctaSecondaryLink}
                 className="inline-flex items-center gap-2 border border-white/25 text-white hover:bg-white/10 font-semibold px-7 py-4 rounded-full text-[15px] transition-all duration-200"
               >
-                Mais Vendidos
+                {ctaSecondary}
               </Link>
             </motion.div>
 
             {/* Stat cards row */}
             <motion.div variants={fadeUp} className="flex gap-4 pt-4 border-t border-white/10 mt-2">
-              {STAT_CARDS.map(({ value, label }) => (
+              {statCards.map(({ value, label }) => (
                 <div key={label} className="flex flex-col gap-0.5">
                   <span className="text-white font-bold text-[20px] tabular-nums leading-none">{value}</span>
                   <span className="text-white/45 text-[11px]">{label}</span>

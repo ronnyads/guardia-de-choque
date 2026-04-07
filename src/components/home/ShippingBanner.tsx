@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Zap, ArrowRight } from "lucide-react";
+import type { ShippingBannerConfig } from "@/types/sections";
 
 const PAYMENT_LOGOS = [
   { src: "/images/product/bandeiras/pix.png",        alt: "PIX",        w: 36, h: 36 },
@@ -9,7 +10,16 @@ const PAYMENT_LOGOS = [
   { src: "/images/product/bandeiras/elo.png",         alt: "Elo",        w: 36, h: 22 },
 ];
 
-export default function ShippingBanner() {
+interface Props {
+  config?: ShippingBannerConfig;
+}
+
+export default function ShippingBanner({ config }: Props) {
+  const eyebrow     = config?.eyebrow      ?? 'Formas de Pagamento';
+  const title       = config?.title        ?? 'Pague do jeito que preferir';
+  const body        = config?.body         ?? 'Aceitamos PIX com 5% de desconto, cartão de crédito em até 6x sem juros e muito mais.';
+  const pixHeadline = config?.pix_headline ?? '5% OFF';
+  const pixSubtitle = config?.pix_subtitle ?? 'Instantâneo e Seguro';
   return (
     <section style={{ background: "#F9FAFB", borderTop: "1px solid #E4E4E7" }}>
       <div className="container-wide section-pad">
@@ -22,7 +32,7 @@ export default function ShippingBanner() {
               className="text-[11px] font-bold tracking-[0.12em] uppercase"
               style={{ color: "#A1A1AA" }}
             >
-              Formas de Pagamento
+              {eyebrow}
             </p>
 
             {/* Heading */}
@@ -35,13 +45,12 @@ export default function ShippingBanner() {
                 fontWeight: 700,
               }}
             >
-              Pague do jeito<br />que preferir
+              {title}
             </h2>
 
             {/* Body */}
             <p style={{ color: "#52525B", fontSize: "15px", lineHeight: 1.7, maxWidth: "380px" }}>
-              Aceitamos PIX com <strong style={{ color: "#09090B" }}>5% de desconto</strong>,
-              cartão de crédito em até <strong style={{ color: "#09090B" }}>6x sem juros</strong> e muito mais.
+              {body}
             </p>
 
             {/* Payment logos */}
@@ -106,13 +115,13 @@ export default function ShippingBanner() {
                   className="font-bold tabular-nums leading-none"
                   style={{ color: "#FFFFFF", fontSize: "clamp(48px,7vw,64px)" }}
                 >
-                  5% OFF
+                  {pixHeadline}
                 </p>
                 <p
                   className="mt-2"
                   style={{ color: "rgba(255,255,255,0.60)", fontSize: "15px" }}
                 >
-                  Instantâneo e Seguro
+                  {pixSubtitle}
                 </p>
               </div>
 

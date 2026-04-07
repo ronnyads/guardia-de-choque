@@ -1,42 +1,21 @@
 import { Star, Check, Package } from "lucide-react";
+import type { TestimonialsConfig, TestimonialReview } from "@/types/sections";
 
-const reviews = [
-  {
-    id: "1",
-    name: "Mariana Silva",
-    initials: "MS",
-    city: "São Paulo, SP",
-    date: "15/03/2025",
-    rating: 5,
-    product: "Guardiã Individual",
-    text: "Chegou rapidíssimo e o produto é exatamente como descrito. Minha filha adorou. Me sinto muito mais tranquila sabendo que ela está protegida.",
-    verified: true,
-  },
-  {
-    id: "2",
-    name: "Carlos Eduardo",
-    initials: "CE",
-    city: "Curitiba, PR",
-    date: "12/03/2025",
-    rating: 5,
-    product: "Kit Dupla Proteção",
-    text: "Comprei o Kit Dupla para mim e para minha esposa. Qualidade excelente, atendimento ótimo. Os Oliveiras é diferente — parece que você está comprando de uma família de verdade.",
-    verified: true,
-  },
-  {
-    id: "3",
-    name: "Ana Beatriz",
-    initials: "AB",
-    city: "Belo Horizonte, MG",
-    date: "10/03/2025",
-    rating: 5,
-    product: "Kit Família",
-    text: "Produto chegou embalado com muito cuidado. Parece presente de família. O arco elétrico é potente e a lanterna é um bônus incrível.",
-    verified: true,
-  },
+const DEFAULT_REVIEWS: TestimonialReview[] = [
+  { id: "1", name: "Mariana Silva",  initials: "MS", city: "São Paulo, SP",       date: "15/03/2025", rating: 5, product: "Guardiã Individual",  text: "Chegou rapidíssimo e o produto é exatamente como descrito. Minha filha adorou. Me sinto muito mais tranquila sabendo que ela está protegida.", verified: true },
+  { id: "2", name: "Carlos Eduardo", initials: "CE", city: "Curitiba, PR",        date: "12/03/2025", rating: 5, product: "Kit Dupla Proteção",   text: "Comprei o Kit Dupla para mim e para minha esposa. Qualidade excelente, atendimento ótimo. Os Oliveiras é diferente — parece que você está comprando de uma família de verdade.", verified: true },
+  { id: "3", name: "Ana Beatriz",    initials: "AB", city: "Belo Horizonte, MG",  date: "10/03/2025", rating: 5, product: "Kit Família",           text: "Produto chegou embalado com muito cuidado. Parece presente de família. O arco elétrico é potente e a lanterna é um bônus incrível.", verified: true },
 ];
 
-export default function Testimonials() {
+interface Props {
+  config?: TestimonialsConfig;
+}
+
+export default function Testimonials({ config }: Props) {
+  const title    = config?.title    ?? 'O que a família diz';
+  const subtitle = config?.subtitle ?? 'Mais de 2.000 pedidos entregues com 4.8 estrelas de avaliação';
+  const reviews  = config?.reviews  ?? DEFAULT_REVIEWS;
+
   return (
     <section style={{ background: "#F9FAFB", borderTop: "1px solid #E4E4E7" }}>
       <div className="container-wide section-pad">
@@ -58,10 +37,10 @@ export default function Testimonials() {
             }}
             className="mb-3"
           >
-            O que a família diz
+            {title}
           </h2>
           <p className="text-[#94A3B8] text-[15px] max-w-md">
-            Mais de 2.000 pedidos entregues com 4.8 estrelas de avaliação
+            {subtitle}
           </p>
         </div>
 

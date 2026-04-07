@@ -1,23 +1,35 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import type { BrandStoryConfig } from "@/types/sections";
 
-export default function BrandStory() {
+interface Props {
+  config?: BrandStoryConfig;
+}
+
+export default function BrandStory({ config }: Props) {
+  const eyebrow  = config?.eyebrow   ?? 'Nossa História';
+  const headline = config?.headline  ?? 'Qualidade não precisa custar uma fortuna.';
+  const body     = config?.body      ?? 'A família Oliveira acredita que todo brasileiro merece produtos de qualidade, com segurança garantida e atendimento humano. Cada item testado e aprovado antes de chegar até você.';
+  const ctaText  = config?.cta_text  ?? 'Conheça nossa história';
+  const ctaLink  = config?.cta_link  ?? '/sobre';
+  const imageUrl = config?.image_url ?? '/images/product/banner-historia.png';
+
   return (
     <section className="bg-white border-t border-[#E2E8F0]">
 
       {/* Mobile: stack vertical */}
       <div className="lg:hidden">
         <Image
-          src="/images/product/banner-historia.png"
-          alt="Família Os Oliveiras"
+          src={imageUrl}
+          alt={headline}
           width={1920}
           height={480}
           className="w-full h-48 object-cover object-center"
           sizes="100vw"
         />
         <div className="px-5 py-8 flex flex-col gap-4">
-          <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">Nossa História</span>
+          <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">{eyebrow}</span>
           <h2
             style={{
               fontFamily: "var(--font-playfair, 'Playfair Display', Georgia, serif)",
@@ -27,18 +39,14 @@ export default function BrandStory() {
               fontWeight: 700,
             }}
           >
-            Qualidade não precisa custar uma fortuna.
+            {headline}
           </h2>
-          <p className="text-[#475569] text-[13px] leading-relaxed">
-            A família Oliveira acredita que todo brasileiro merece produtos de qualidade,
-            com segurança garantida e atendimento humano. Cada item testado e aprovado
-            antes de chegar até você.
-          </p>
+          <p className="text-[#475569] text-[13px] leading-relaxed">{body}</p>
           <Link
-            href="/sobre"
+            href={ctaLink}
             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#0F172A] hover:gap-3 transition-all duration-150 w-fit border-b border-[#0F172A] pb-0.5"
           >
-            Conheça nossa história <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+            {ctaText} <ArrowRight className="w-3.5 h-3.5" aria-hidden />
           </Link>
         </div>
       </div>
@@ -46,8 +54,8 @@ export default function BrandStory() {
       {/* Desktop: overlay */}
       <div className="hidden lg:block relative w-full overflow-hidden">
         <Image
-          src="/images/product/banner-historia.png"
-          alt="Família Os Oliveiras — qualidade e segurança para quem você ama"
+          src={imageUrl}
+          alt={headline}
           width={1920}
           height={480}
           className="w-full h-auto object-cover"
@@ -55,7 +63,7 @@ export default function BrandStory() {
         />
         <div className="absolute inset-0 flex items-center justify-end">
           <div className="max-w-[400px] mr-20 xl:mr-32 bg-white/85 backdrop-blur-sm rounded-2xl p-9 flex flex-col gap-4 shadow-lg">
-            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">Nossa História</span>
+            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">{eyebrow}</span>
             <h2
               style={{
                 fontFamily: "var(--font-playfair, 'Playfair Display', Georgia, serif)",
@@ -65,18 +73,14 @@ export default function BrandStory() {
                 fontWeight: 700,
               }}
             >
-              Qualidade não precisa custar uma fortuna.
+              {headline}
             </h2>
-            <p className="text-[#475569] text-[13px] leading-relaxed">
-              A família Oliveira acredita que todo brasileiro merece produtos de qualidade,
-              com segurança garantida e atendimento humano. Cada item testado e aprovado
-              antes de chegar até você.
-            </p>
+            <p className="text-[#475569] text-[13px] leading-relaxed">{body}</p>
             <Link
-              href="/sobre"
+              href={ctaLink}
               className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#0F172A] hover:gap-3 transition-all duration-150 w-fit border-b border-[#0F172A] pb-0.5"
             >
-              Conheça nossa história <ArrowRight className="w-3.5 h-3.5" aria-hidden />
+              {ctaText} <ArrowRight className="w-3.5 h-3.5" aria-hidden />
             </Link>
           </div>
         </div>

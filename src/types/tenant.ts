@@ -43,6 +43,9 @@ export interface TenantConfig {
   checkout_upsell_price: number;
   checkout_order_bump_price: number;
   recovery_whatsapp_template: string | null;
+  page_sections: import('./sections').PageSection[] | null;
+  header_config: import('./sections').HeaderConfig | null;
+  footer_config: import('./sections').FooterConfig | null;
   updated_at: string;
 }
 

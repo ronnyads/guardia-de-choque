@@ -129,6 +129,60 @@ export async function updateRecoveryConfig(formData: FormData) {
   revalidatePath('/admin/settings');
 }
 
+// ─── PAGE SECTIONS ────────────────────────────────────────────────────────────
+
+export async function updatePageSections(sections: unknown[]) {
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
+
+  const { error } = await supabase
+    .from('tenant_config')
+    .upsert(
+      { tenant_id: tenantId, page_sections: sections, updated_at: new Date().toISOString() },
+      { onConflict: 'tenant_id' }
+    );
+
+  if (error) throw new Error(`Erro ao salvar seções: ${error.message}`);
+  revalidatePath('/');
+  revalidatePath('/admin/tema');
+}
+
+// ─── HEADER CONFIG ────────────────────────────────────────────────────────────
+
+export async function updateHeaderConfig(headerConfig: unknown) {
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
+
+  const { error } = await supabase
+    .from('tenant_config')
+    .upsert(
+      { tenant_id: tenantId, header_config: headerConfig, updated_at: new Date().toISOString() },
+      { onConflict: 'tenant_id' }
+    );
+
+  if (error) throw new Error(`Erro ao salvar header: ${error.message}`);
+  revalidatePath('/');
+  revalidatePath('/admin/tema');
+}
+
+// ─── FOOTER CONFIG ────────────────────────────────────────────────────────────
+
+export async function updateFooterConfig(footerConfig: unknown) {
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
+
+  const { error } = await supabase
+    .from('tenant_config')
+    .upsert(
+      { tenant_id: tenantId, footer_config: footerConfig, updated_at: new Date().toISOString() },
+      { onConflict: 'tenant_id' }
+    );
+
+  if (error) throw new Error(`Erro ao salvar footer: ${error.message}`);
+  revalidatePath('/');
+  revalidatePath('/admin/tema');
+}
+
 // ─── INTEGRAÇÕES ──────────────────────────────────────────────────────────────
 
 export type IntegrationProvider = 'mercadopago' | 'stripe' | 'meta_pixel' | 'kwai_pixel';
