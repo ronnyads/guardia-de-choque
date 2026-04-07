@@ -132,12 +132,12 @@
 
 /* Dark CTA — use on light/white backgrounds */
 .btn-primary {
-  background-color: #09090B;
+  background-color: var(--store-primary, #09090B);
   color: #FFFFFF;
   border: none;
 }
 .btn-primary:hover {
-  background-color: #18181B;
+  background-color: color-mix(in srgb, var(--store-primary, #09090B) 82%, black);
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(0,0,0,0.20);
 }

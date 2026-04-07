@@ -6,6 +6,7 @@ import KwaiPixel from "@/components/analytics/KwaiPixel";
 import ToastProvider from "@/components/ui/ToastProvider";
 import { getStoreConfig } from '@/lib/store-config';
 import { TenantProvider } from '@/components/providers/TenantProvider';
+import ThemePreviewBridge from '@/components/admin/ThemePreviewBridge';
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -60,8 +61,10 @@ export default async function RootLayout({
       lang="pt-BR"
       className={`${dmSans.variable} ${playfair.variable} h-full antialiased`}
       style={{
-        '--store-primary': config.primary_color ?? '#0F172A',
-        '--store-accent': config.accent_color ?? '#059669',
+        '--store-primary':      config.primary_color    ?? '#09090B',
+        '--store-accent':       config.accent_color     ?? '#16A34A',
+        '--store-font-heading': `'${config.font_heading ?? 'Playfair Display'}', serif`,
+        '--store-font-body':    `'${config.font_body    ?? 'DM Sans'}', sans-serif`,
       } as React.CSSProperties}
     >
       <head>
@@ -69,6 +72,14 @@ export default async function RootLayout({
         {kwaiInitScript && (
           <script dangerouslySetInnerHTML={{ __html: kwaiInitScript }} />
         )}
+
+        {/* Google Fonts dinâmico — carrega a fonte selecionada no tema */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href={`https://fonts.googleapis.com/css2?family=${(config.font_heading ?? 'Playfair+Display').replace(/ /g, '+')}:wght@400;700&family=${(config.font_body ?? 'DM+Sans').replace(/ /g, '+')}:wght@400;500;600;700&display=swap`}
+          rel="stylesheet"
+        />
 
         {/* Preconnect */}
         <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
@@ -90,6 +101,7 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${dmSans.className} min-h-full flex flex-col`}>
+        <ThemePreviewBridge />
         <MetaPixel />
         <KwaiPixel />
         <ToastProvider />

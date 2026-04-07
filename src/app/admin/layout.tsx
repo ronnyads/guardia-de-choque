@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, RefreshCw, ShoppingCart, Settings, LogOut, Users } from "lucide-react";
+import { LayoutDashboard, Package, RefreshCw, ShoppingCart, Settings, LogOut, Users, Palette } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -17,6 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { icon: RefreshCw,       label: "Funis (Upsell)",href: "/admin/funnels" },
     { icon: ShoppingCart,    label: "Pedidos",      href: "/admin/pedidos" },
     { icon: Users,           label: "Leads",        href: "/admin/leads" },
+    { icon: Palette,         label: "Editor de Tema",href: "/admin/tema" },
     { icon: Settings,        label: "Configurações",href: "/admin/settings" },
   ];
 

@@ -61,7 +61,7 @@ export default function Navbar() {
     <>
       {/* ── Announcement strip ────────────────────────────────── */}
       <div
-        style={{ background: "#09090B", color: "rgba(255,255,255,0.8)", fontSize: "11px" }}
+        style={{ background: "var(--store-primary, #09090B)", color: "rgba(255,255,255,0.8)", fontSize: "11px" }}
         className="py-2.5 overflow-hidden"
         aria-label="Informações de frete e pagamento"
       >
