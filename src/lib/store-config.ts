@@ -1,6 +1,32 @@
 import { createServiceSupabase } from '@/lib/supabase-server';
 import type { TenantConfig } from '@/types/tenant';
 
+export async function getPixelIds(slug?: string): Promise<{ metaPixelId: string; kwaiPixelId: string }> {
+  const tenantSlug = slug ?? process.env.STORE_SLUG ?? 'guardia-de-choque';
+  try {
+    const supabase = createServiceSupabase();
+    const { data: tenant } = await supabase
+      .from('tenants').select('id').eq('slug', tenantSlug).single();
+    if (!tenant) return { metaPixelId: '', kwaiPixelId: '' };
+
+    const { data: integrations } = await supabase
+      .from('tenant_integrations')
+      .select('provider, public_key')
+      .eq('tenant_id', tenant.id)
+      .eq('is_active', true)
+      .in('provider', ['meta_pixel', 'kwai_pixel']);
+
+    const meta = integrations?.find(i => i.provider === 'meta_pixel');
+    const kwai = integrations?.find(i => i.provider === 'kwai_pixel');
+    return {
+      metaPixelId: meta?.public_key ?? '',
+      kwaiPixelId: kwai?.public_key ?? '',
+    };
+  } catch {
+    return { metaPixelId: '', kwaiPixelId: '' };
+  }
+}
+
 const DEFAULT_CONFIG: TenantConfig = {
   id: '',
   tenant_id: '',

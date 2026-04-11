@@ -4,8 +4,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { useEffect, Suspense } from "react";
 
-export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1062080060323171";
-
 // Declare fbq globally for TS
 declare global {
   interface Window {
@@ -25,16 +23,15 @@ export const trackEvent = (name: string, options = {}) => {
   }
 };
 
-function MetaPixelContent() {
+function MetaPixelContent({ pixelId }: { pixelId: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Only fire on route changes (Base pixel fires on initial load)
     pageview();
   }, [pathname, searchParams]);
 
-  if (!FB_PIXEL_ID) return null;
+  if (!pixelId) return null;
 
   return (
     <Script
@@ -50,7 +47,7 @@ function MetaPixelContent() {
           t.src=v;s=b.getElementsByTagName(e)[0];
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${FB_PIXEL_ID}');
+          fbq('init', '${pixelId}');
           fbq('track', 'PageView');
         `,
       }}
@@ -58,10 +55,10 @@ function MetaPixelContent() {
   );
 }
 
-export default function MetaPixel() {
+export default function MetaPixel({ pixelId }: { pixelId: string }) {
   return (
     <Suspense fallback={null}>
-      <MetaPixelContent />
+      <MetaPixelContent pixelId={pixelId} />
     </Suspense>
   );
 }

@@ -229,4 +229,5 @@ export async function upsertIntegration(formData: FormData) {
   if (error) throw new Error(`Erro ao salvar integração: ${error.message}`);
 
   revalidatePath('/admin/settings');
+  revalidatePath('/');
 }
