@@ -28,6 +28,12 @@ interface DbProduct {
   rating: number | null;
   review_count: number | null;
   status: string;
+  bump_label: string | null;
+  bump_price: number | null;
+  upsell_label: string | null;
+  upsell_price: number | null;
+  downsell_label: string | null;
+  downsell_price: number | null;
 }
 
 interface RelatedVariant {
@@ -445,6 +451,51 @@ export default function ProductEditForm({ product, relatedVariants: initialVaria
                 )}
               </div>
             )}
+
+            {/* Funil de Vendas */}
+            <div className={sectionCls}>
+              <div className="px-6 py-4 border-b border-[#F1F5F9]">
+                <h2 className="font-semibold text-[#0F172A]">Funil de Vendas</h2>
+                <p className="text-xs text-[#94A3B8] mt-0.5">Order Bump, Upsell e Downsell aparecem no checkout.</p>
+              </div>
+              <div className="p-6 flex flex-col gap-5">
+
+                {/* Order Bump */}
+                <div>
+                  <p className="text-xs font-semibold text-[#0F172A] uppercase tracking-wide mb-2">Order Bump</p>
+                  <p className="text-xs text-[#94A3B8] mb-3">Oferta exibida antes do pagamento (ex: garantia estendida).</p>
+                  <div className="flex flex-col gap-2">
+                    <input type="text" name="bump_label" defaultValue={product?.bump_label ?? ''} className={inputCls} placeholder="Ex: Garantia Premium 1 ano" />
+                    <input type="number" step="0.01" min="0" name="bump_price" defaultValue={product?.bump_price ?? ''} className={inputCls} placeholder="Preço R$" />
+                  </div>
+                </div>
+
+                <div className="border-t border-[#F1F5F9]" />
+
+                {/* Upsell */}
+                <div>
+                  <p className="text-xs font-semibold text-[#0F172A] uppercase tracking-wide mb-2">Upsell</p>
+                  <p className="text-xs text-[#94A3B8] mb-3">Modal exibido após o pagamento (ex: produto complementar).</p>
+                  <div className="flex flex-col gap-2">
+                    <input type="text" name="upsell_label" defaultValue={product?.upsell_label ?? ''} className={inputCls} placeholder="Ex: Mini Taser 12.000KV" />
+                    <input type="number" step="0.01" min="0" name="upsell_price" defaultValue={product?.upsell_price ?? ''} className={inputCls} placeholder="Preço R$" />
+                  </div>
+                </div>
+
+                <div className="border-t border-[#F1F5F9]" />
+
+                {/* Downsell */}
+                <div>
+                  <p className="text-xs font-semibold text-[#0F172A] uppercase tracking-wide mb-2">Downsell</p>
+                  <p className="text-xs text-[#94A3B8] mb-3">Oferta alternativa se o upsell for recusado.</p>
+                  <div className="flex flex-col gap-2">
+                    <input type="text" name="downsell_label" defaultValue={product?.downsell_label ?? ''} className={inputCls} placeholder="Ex: Proteção Básica" />
+                    <input type="number" step="0.01" min="0" name="downsell_price" defaultValue={product?.downsell_price ?? ''} className={inputCls} placeholder="Preço R$" />
+                  </div>
+                </div>
+
+              </div>
+            </div>
 
           </div>
         </div>

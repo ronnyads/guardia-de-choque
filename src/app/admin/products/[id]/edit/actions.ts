@@ -56,6 +56,13 @@ export async function updateProduct(formData: FormData) {
   const rating = parseFloat((formData.get('rating') as string) || '0');
   const review_count = parseInt((formData.get('review_count') as string) || '0');
 
+  const bump_label     = (formData.get('bump_label') as string) || null;
+  const bump_price     = parseFloat((formData.get('bump_price') as string) || '0') || null;
+  const upsell_label   = (formData.get('upsell_label') as string) || null;
+  const upsell_price   = parseFloat((formData.get('upsell_price') as string) || '0') || null;
+  const downsell_label = (formData.get('downsell_label') as string) || null;
+  const downsell_price = parseFloat((formData.get('downsell_price') as string) || '0') || null;
+
   const { error } = await supabase
     .from('products')
     .update({
@@ -76,6 +83,12 @@ export async function updateProduct(formData: FormData) {
       specs,
       rating,
       review_count,
+      bump_label,
+      bump_price,
+      upsell_label,
+      upsell_price,
+      downsell_label,
+      downsell_price,
     })
     .eq('id', id)
     .eq('tenant_id', tenantId);
