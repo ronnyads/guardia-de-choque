@@ -25,6 +25,7 @@ export async function updateBrandConfig(formData: FormData) {
 
   if (error) throw new Error(`Erro ao salvar marca: ${error.message}`);
 
+  revalidatePath('/', 'layout');
   revalidatePath('/admin/settings');
 }
 
@@ -63,6 +64,7 @@ export async function updateContactConfig(formData: FormData) {
 
   if (error) throw new Error(`Erro ao salvar contato: ${error.message}`);
 
+  revalidatePath('/', 'layout');
   revalidatePath('/admin/settings');
 }
 
@@ -84,6 +86,7 @@ export async function updateSeoConfig(formData: FormData) {
 
   if (error) throw new Error(`Erro ao salvar SEO: ${error.message}`);
 
+  revalidatePath('/', 'layout');
   revalidatePath('/admin/settings');
 }
 
@@ -107,6 +110,7 @@ export async function updateCheckoutConfig(formData: FormData) {
     );
 
   if (error) throw new Error(`Erro ao salvar checkout: ${error.message}`);
+  revalidatePath('/', 'layout');
   revalidatePath('/admin/settings');
 }
 
