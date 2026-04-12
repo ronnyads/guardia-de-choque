@@ -8,6 +8,7 @@ import OrderSummary from "./OrderSummary";
 import CheckoutForm from "./CheckoutForm";
 import UpsellModal from "./UpsellModal";
 import { kwaiPurchase, kwaiCheckout } from "@/components/analytics/KwaiPixel";
+import { gaBeginCheckout, gaPurchase } from "@/components/analytics/GoogleAnalytics";
 
 interface CheckoutConfig {
   enableStripeFallback: boolean;
@@ -50,7 +51,8 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
       window.fbq("track", "InitiateCheckout", { content_name: kit.name, currency: "BRL", value: kit.promoPrice });
     }
     kwaiCheckout(kit.promoPrice);
-  }, [kit.name, kit.promoPrice]);
+    gaBeginCheckout({ id: kit.slug, name: kit.name, value: kit.promoPrice });
+  }, [kit.name, kit.promoPrice, kit.slug]);
 
   const [hasOrderBump, setHasOrderBump] = useState(false);
   const upsellPrice = checkoutConfig.upsellPrice;
@@ -137,6 +139,8 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
       }
       // Kwai Ads
       kwaiPurchase(value);
+      // GA4 — purchase
+      if (eventId) gaPurchase({ transactionId: eventId, value, itemName: kit.name });
     };
 
     const basePayload = {

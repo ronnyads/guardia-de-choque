@@ -100,6 +100,26 @@ const INTEGRATIONS: IntegrationMeta[] = [
     pubLabel: 'Pixel ID',
     pubPlaceholder: 'KWAI-xxxxxxxx',
   },
+  {
+    provider: 'google_analytics',
+    label: 'Google Analytics 4',
+    description: 'Rastreie eventos e conversões com GA4 no Google Ads e Search Console.',
+    category: 'analytics',
+    color: '#E37400',
+    initials: 'GA',
+    pubLabel: 'Measurement ID',
+    pubPlaceholder: 'G-XXXXXXXXXX',
+  },
+  {
+    provider: 'google_tag_manager',
+    label: 'Google Tag Manager',
+    description: 'Gerencie todas as suas tags e pixels em um único lugar sem código.',
+    category: 'analytics',
+    color: '#4285F4',
+    initials: 'GTM',
+    pubLabel: 'Container ID',
+    pubPlaceholder: 'GTM-XXXXXXXX',
+  },
 ];
 
 // ── Shared style helpers ──────────────────────────────────────────────────────

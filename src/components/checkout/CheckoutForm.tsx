@@ -85,6 +85,10 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
       if (typeof window !== "undefined" && window.fbq) {
         window.fbq("track", "AddPaymentInfo");
       }
+      // GA4 — add_payment_info
+      import("@/components/analytics/GoogleAnalytics").then(({ gaAddPaymentInfo }) => {
+        gaAddPaymentInfo({ paymentType: paymentMethod });
+      });
       setPaymentTracked(true);
     }
   };

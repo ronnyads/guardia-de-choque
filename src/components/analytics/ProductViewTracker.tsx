@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { kwaiViewContent } from "./KwaiPixel";
+import { gaViewItem } from "./GoogleAnalytics";
 
 interface Props {
   productId:   string;
@@ -13,6 +14,8 @@ export default function ProductViewTracker({ productId, productName, price }: Pr
   useEffect(() => {
     // Kwai — EVENT_CONTENT_VIEW com dados do produto
     kwaiViewContent(productId, productName, price);
+    // GA4 — view_item
+    gaViewItem({ id: productId, name: productName, value: price });
 
     // Meta Pixel — ViewContent com dados do produto
     if (typeof window !== "undefined" && window.fbq) {

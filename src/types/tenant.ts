@@ -52,7 +52,7 @@ export interface TenantConfig {
 export interface TenantIntegration {
   id: string;
   tenant_id: string;
-  provider: 'mercadopago' | 'stripe' | 'meta_pixel' | 'kwai_pixel';
+  provider: 'mercadopago' | 'stripe' | 'meta_pixel' | 'kwai_pixel' | 'google_analytics' | 'google_tag_manager';
   public_key: string | null;
   /** Nunca exposto no client — apenas no servidor */
   secret_key_encrypted: string | null;

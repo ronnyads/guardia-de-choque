@@ -6,7 +6,9 @@ import "./globals.css";
 import MetaPixel from "@/components/analytics/MetaPixel";
 import KwaiPixel from "@/components/analytics/KwaiPixel";
 import ToastProvider from "@/components/ui/ToastProvider";
-import { getStoreConfig, getPixelIds } from '@/lib/store-config';
+import { getStoreConfig, getPixelIds, getGoogleIds } from '@/lib/store-config';
+import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
+import { GoogleTagManagerHead, GoogleTagManagerBody } from '@/components/analytics/GoogleTagManager';
 import { TenantProvider } from '@/components/providers/TenantProvider';
 import ThemePreviewBridge from '@/components/admin/ThemePreviewBridge';
 
@@ -46,9 +48,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [config, { metaPixelId, kwaiPixelId }] = await Promise.all([
+  const [config, { metaPixelId, kwaiPixelId }, { gaId, gtmId }] = await Promise.all([
     getStoreConfig(),
     getPixelIds(),
+    getGoogleIds(),
   ]);
 
   const kwaiInitScript = kwaiPixelId
@@ -91,6 +94,15 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://www.facebook.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://s21-def.ap4r.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://s21-def.ap4r.com" />
+        {(gaId || gtmId) && (
+          <>
+            <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+          </>
+        )}
+
+        {/* Google Tag Manager — head snippet */}
+        <GoogleTagManagerHead gtmId={gtmId} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -105,9 +117,12 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${dmSans.className} min-h-full flex flex-col`}>
+        {/* Google Tag Manager — noscript fallback */}
+        <GoogleTagManagerBody gtmId={gtmId} />
         <ThemePreviewBridge />
         <MetaPixel pixelId={metaPixelId} />
         <KwaiPixel />
+        <GoogleAnalytics gaId={gaId} />
         <ToastProvider />
         <TenantProvider config={config}>
           {children}

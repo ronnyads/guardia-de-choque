@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartItem, StoreProduct } from "@/types";
 import { kwaiAddToCart } from "@/components/analytics/KwaiPixel";
+import { gaAddToCart } from "@/components/analytics/GoogleAnalytics";
 
 interface CartStore {
   items: CartItem[];
@@ -39,8 +40,10 @@ export const useCartStore = create<CartStore>()(
           }
           return { items: [...state.items, { product, qty }], isOpen: true };
         });
-        // Kwai Ads — EVENT_ADD_TO_CART (via código - CSS selector nao captura eventos React)
+        // Kwai Ads — EVENT_ADD_TO_CART
         kwaiAddToCart(product.price * qty);
+        // GA4 — add_to_cart
+        gaAddToCart({ id: product.id, name: product.name, price: product.price, quantity: qty });
         // Meta Pixel — AddToCart
         if (typeof window !== "undefined" && window.fbq) {
           window.fbq("track", "AddToCart", {

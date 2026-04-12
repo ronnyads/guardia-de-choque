@@ -20,6 +20,30 @@ export async function getMetaPixelConfig(tenantId: string): Promise<{ pixelId: s
   }
 }
 
+export async function getGoogleIds(slug?: string): Promise<{ gaId: string; gtmId: string }> {
+  const tenantSlug = slug ?? process.env.STORE_SLUG ?? 'guardia-de-choque';
+  try {
+    const supabase = createServiceSupabase();
+    const { data: tenant } = await supabase
+      .from('tenants').select('id').eq('slug', tenantSlug).single();
+    if (!tenant) return { gaId: '', gtmId: '' };
+
+    const { data: integrations } = await supabase
+      .from('tenant_integrations')
+      .select('provider, public_key')
+      .eq('tenant_id', tenant.id)
+      .eq('is_active', true)
+      .in('provider', ['google_analytics', 'google_tag_manager']);
+
+    return {
+      gaId:  integrations?.find(i => i.provider === 'google_analytics')?.public_key  ?? '',
+      gtmId: integrations?.find(i => i.provider === 'google_tag_manager')?.public_key ?? '',
+    };
+  } catch {
+    return { gaId: '', gtmId: '' };
+  }
+}
+
 export async function getPixelIds(slug?: string): Promise<{ metaPixelId: string; kwaiPixelId: string }> {
   const tenantSlug = slug ?? process.env.STORE_SLUG ?? 'guardia-de-choque';
   try {
