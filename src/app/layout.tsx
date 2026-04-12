@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import MetaPixel from "@/components/analytics/MetaPixel";
 import KwaiPixel from "@/components/analytics/KwaiPixel";
@@ -11,6 +12,11 @@ import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 import { GoogleTagManagerHead, GoogleTagManagerBody } from '@/components/analytics/GoogleTagManager';
 import { TenantProvider } from '@/components/providers/TenantProvider';
 import ThemePreviewBridge from '@/components/admin/ThemePreviewBridge';
+
+async function getTenantSlug(): Promise<string> {
+  const h = await headers();
+  return h.get('x-tenant-slug') ?? process.env.STORE_SLUG ?? 'guardia-de-choque';
+}
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -28,7 +34,8 @@ const playfair = Playfair_Display({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const config = await getStoreConfig();
+  const slug = await getTenantSlug();
+  const config = await getStoreConfig(slug);
   return {
     title: config.seo_title ?? "Minha Loja",
     description: config.seo_description ?? "A melhor loja online. Frete rápido, pagamento seguro.",
@@ -48,10 +55,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const slug = await getTenantSlug();
   const [config, { metaPixelId, kwaiPixelId }, { gaId, gtmId }] = await Promise.all([
-    getStoreConfig(),
-    getPixelIds(),
-    getGoogleIds(),
+    getStoreConfig(slug),
+    getPixelIds(slug),
+    getGoogleIds(slug),
   ]);
 
   const kwaiInitScript = kwaiPixelId
