@@ -17,10 +17,15 @@ export default async function AdminSettingsPage() {
       .single(),
     supabase
       .from('tenant_integrations')
-      .select('id, provider, public_key, is_active, updated_at')
-      // NUNCA selecionar secret_key_encrypted aqui
+      .select('id, provider, public_key, is_active, updated_at, secret_key_encrypted')
       .eq('tenant_id', tenantId),
   ]);
+
+  // Mascarar secret: substituir valor real por booleano antes de enviar ao cliente
+  const maskedIntegrations = (integrations ?? []).map(i => ({
+    ...i,
+    secret_key_encrypted: i.secret_key_encrypted ? '••••' : null,
+  }));
 
   return (
     <div className="flex flex-col gap-0 h-full">
@@ -33,7 +38,7 @@ export default async function AdminSettingsPage() {
 
       <SettingsTabs
         config={config as TenantConfig | null}
-        integrations={(integrations ?? []) as Omit<TenantIntegration, 'secret_key_encrypted' | 'tenant_id' | 'extra_config'>[]}
+        integrations={maskedIntegrations as Omit<TenantIntegration, 'tenant_id' | 'extra_config'>[]}
       />
     </div>
   );

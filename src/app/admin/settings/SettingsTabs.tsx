@@ -249,18 +249,31 @@ export default function SettingsTabs({ config, integrations }: Props) {
                   />
                 </div>
 
-                {/* Secret key (só para MP e Stripe) */}
+                {/* Secret key (só para MP e Stripe e CAPI) */}
                 {openIntegration.secretLabel && (
                   <div>
                     <label className={labelCls}>{openIntegration.secretLabel}</label>
-                    <input
-                      name="secret_key"
-                      type="password"
-                      className={inputCls}
-                      placeholder={existingOpen?.public_key ? '(deixe em branco para manter)' : openIntegration.secretPlaceholder}
-                    />
-                    {existingOpen?.public_key && (
-                      <p className="text-xs text-[#94A3B8] mt-1.5">Chave salva. Preencha só para atualizar.</p>
+                    {existingOpen?.secret_key_encrypted ? (
+                      <>
+                        <div className={`${inputCls} flex items-center gap-2 text-[#94A3B8] select-none`}>
+                          <span className="tracking-widest text-lg leading-none">••••••••••••••••</span>
+                          <span className="text-xs ml-auto text-emerald-600 font-semibold">✓ Salvo</span>
+                        </div>
+                        <p className="text-xs text-[#94A3B8] mt-1.5">Para atualizar, preencha o campo abaixo e salve.</p>
+                        <input
+                          name="secret_key"
+                          type="password"
+                          className={`${inputCls} mt-2`}
+                          placeholder={`Novo ${openIntegration.secretLabel.toLowerCase()}`}
+                        />
+                      </>
+                    ) : (
+                      <input
+                        name="secret_key"
+                        type="password"
+                        className={inputCls}
+                        placeholder={openIntegration.secretPlaceholder}
+                      />
                     )}
                   </div>
                 )}
