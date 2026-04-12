@@ -15,15 +15,19 @@ interface CheckoutConfig {
   retryDelayMs: number;
   pixPollingMs: number;
   upsellPrice: number;
+  upsellLabel?: string;
+  downsellPrice?: number;
+  downsellLabel?: string;
 }
 
 interface Props {
   kit: StoreProduct;
   orderBumpPrice: number;
+  orderBumpLabel?: string;
   checkoutConfig: CheckoutConfig;
 }
 
-export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checkoutConfig }: Props) {
+export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderBumpLabel, checkoutConfig }: Props) {
   const searchParams = useSearchParams();
 
   // Adapta StoreProduct para o shape que OrderSummary (Kit) espera
@@ -349,6 +353,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
       {showUpsell && (
         <UpsellModal
           upsellPrice={upsellPrice}
+          upsellLabel={checkoutConfig.upsellLabel}
           onDecision={handleCompleteAll}
         />
       )}

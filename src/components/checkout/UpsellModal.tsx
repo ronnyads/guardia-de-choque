@@ -5,10 +5,12 @@ import { Zap, Shield, X } from "lucide-react";
 
 interface Props {
   upsellPrice: number;
+  upsellLabel?: string;
   onDecision: (accepted: boolean) => void;
 }
 
-export default function UpsellModal({ upsellPrice, onDecision }: Props) {
+export default function UpsellModal({ upsellPrice, upsellLabel, onDecision }: Props) {
+  const label = upsellLabel ?? "Guardiã de Choque — Reserva";
   const [loading, setLoading] = useState(false);
 
   const handleAction = (accepted: boolean) => {
@@ -53,7 +55,7 @@ export default function UpsellModal({ upsellPrice, onDecision }: Props) {
               <Shield className="w-8 h-8 text-white" />
             </div>
             <div className="flex-1">
-              <p className="font-bold text-[#0F172A] text-[14px]">Guardiã de Choque — Reserva</p>
+              <p className="font-bold text-[#0F172A] text-[14px]">{label}</p>
               <p className="text-[12px] text-[#64748B] mt-0.5">Unidade extra + coldre + cabo de carga</p>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="text-[11px] text-[#94A3B8] line-through">R$ 97,90</span>

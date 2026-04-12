@@ -29,6 +29,12 @@ export interface StoreProduct {
   specs: Spec[];
   inStock: boolean;
   quantity?: number;         // if kit — units included
+  bumpLabel?: string;
+  bumpPrice?: number;
+  upsellLabel?: string;
+  upsellPrice?: number;
+  downsellLabel?: string;
+  downsellPrice?: number;
 }
 
 export interface StoreFeature {

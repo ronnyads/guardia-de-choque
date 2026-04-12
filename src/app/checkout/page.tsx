@@ -41,7 +41,11 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
     enableStripeFallback: storeConfig.checkout_enable_stripe_fallback ?? true,
     retryDelayMs:         storeConfig.checkout_retry_delay_ms ?? 900,
     pixPollingMs:         storeConfig.checkout_pix_polling_ms ?? 3000,
-    upsellPrice:          storeConfig.checkout_upsell_price ?? UPSELL_PRICE,
+    // Upsell: usa o valor do produto se configurado, senão cai no global do tenant
+    upsellPrice: resolvedKit?.upsellPrice ?? storeConfig.checkout_upsell_price ?? UPSELL_PRICE,
+    upsellLabel: resolvedKit?.upsellLabel,
+    downsellPrice: resolvedKit?.downsellPrice,
+    downsellLabel: resolvedKit?.downsellLabel,
   };
 
   return (
@@ -99,7 +103,8 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
           }>
             <ClientCheckout
                 kit={resolvedKit}
-                orderBumpPrice={storeConfig.checkout_order_bump_price ?? ORDER_BUMP_PRICE}
+                orderBumpPrice={resolvedKit.bumpPrice ?? storeConfig.checkout_order_bump_price ?? ORDER_BUMP_PRICE}
+                orderBumpLabel={resolvedKit.bumpLabel}
                 checkoutConfig={checkoutConfig}
               />
           </Suspense>

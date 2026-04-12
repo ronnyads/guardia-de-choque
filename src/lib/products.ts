@@ -38,6 +38,12 @@ function mapDbToStoreProduct(d: Record<string, unknown>): StoreProduct {
     features: Array.isArray(d.features) ? (d.features as StoreProduct["features"]) : [],
     specs: Array.isArray(d.specs) ? (d.specs as StoreProduct["specs"]) : [],
     quantity: d.quantity != null ? Number(d.quantity) : undefined,
+    bumpLabel:     d.bump_label     ? String(d.bump_label)     : undefined,
+    bumpPrice:     d.bump_price     ? Number(d.bump_price)     : undefined,
+    upsellLabel:   d.upsell_label   ? String(d.upsell_label)   : undefined,
+    upsellPrice:   d.upsell_price   ? Number(d.upsell_price)   : undefined,
+    downsellLabel: d.downsell_label ? String(d.downsell_label) : undefined,
+    downsellPrice: d.downsell_price ? Number(d.downsell_price) : undefined,
   };
 }
 
