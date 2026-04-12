@@ -1,6 +1,6 @@
 import { requireTenant } from '@/lib/tenant';
 import { createServerSupabase } from '@/lib/supabase-server';
-import { Users, ShoppingCart, TrendingUp, MessageCircle } from 'lucide-react';
+import { Users, ShoppingCart, TrendingUp, MessageCircle, CreditCard } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,9 +18,10 @@ function fmt(v: number) {
 }
 
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  checkout_started: { label: 'Abandonado',  cls: 'bg-[#FEF9C3] text-[#854D0E]' },
-  converted:        { label: 'Convertido',  cls: 'bg-[#DCFCE7] text-[#166534]' },
-  recovered:        { label: 'Recuperado',  cls: 'bg-[#DBEAFE] text-[#1E40AF]' },
+  checkout_started: { label: 'Abandonado',      cls: 'bg-[#FEF9C3] text-[#854D0E]' },
+  converted:        { label: 'Convertido',      cls: 'bg-[#DCFCE7] text-[#166534]' },
+  recovered:        { label: 'Recuperado',      cls: 'bg-[#DBEAFE] text-[#1E40AF]' },
+  card_declined:    { label: 'Cartão Recusado', cls: 'bg-[#FEE2E2] text-[#991B1B]' },
 };
 
 function buildWhatsAppLink(phone: string, name: string, product: string, template: string, slug: string) {
@@ -61,6 +62,7 @@ export default async function AdminLeads() {
   const abandoned  = leadList.filter(l => l.status === 'checkout_started').length;
   const converted  = leadList.filter(l => l.status === 'converted').length;
   const recovered  = leadList.filter(l => l.status === 'recovered').length;
+  const declined   = leadList.filter(l => l.status === 'card_declined').length;
   const convRate   = total > 0 ? ((converted + recovered) / total * 100).toFixed(1) : '0';
 
   return (
@@ -74,10 +76,11 @@ export default async function AdminLeads() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { icon: Users,         label: 'Total de Leads',   value: total,    color: 'text-[#0F172A]' },
-          { icon: ShoppingCart,  label: 'Abandonados',      value: abandoned, color: 'text-[#D97706]' },
-          { icon: MessageCircle, label: 'Recuperados',      value: recovered, color: 'text-[#2563EB]' },
-          { icon: TrendingUp,    label: 'Taxa de Conversão',value: `${convRate}%`, color: 'text-[#059669]' },
+          { icon: Users,         label: 'Total de Leads',    value: total,         color: 'text-[#0F172A]' },
+          { icon: ShoppingCart,  label: 'Abandonados',       value: abandoned,     color: 'text-[#D97706]' },
+          { icon: CreditCard,    label: 'Cartão Recusado',   value: declined,      color: 'text-[#DC2626]' },
+          { icon: MessageCircle, label: 'Recuperados',       value: recovered,     color: 'text-[#2563EB]' },
+          { icon: TrendingUp,    label: 'Taxa de Conversão', value: `${convRate}%`, color: 'text-[#059669]' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
@@ -119,7 +122,7 @@ export default async function AdminLeads() {
               <tbody className="divide-y divide-[#E2E8F0]">
                 {leadList.map((lead) => {
                   const status = STATUS_MAP[lead.status] ?? { label: lead.status, cls: 'bg-[#F1F5F9] text-[#475569]' };
-                  const isAbandoned = lead.status === 'checkout_started';
+                  const isAbandoned = lead.status === 'checkout_started' || lead.status === 'card_declined';
                   const waLink = lead.customer_phone
                     ? buildWhatsAppLink(
                         lead.customer_phone,
@@ -138,7 +141,12 @@ export default async function AdminLeads() {
                         <div className="text-xs text-[#94A3B8]">{lead.customer_phone ?? ''}</div>
                       </td>
                       <td className="px-6 py-4 text-sm text-[#475569]">
-                        {lead.product_name ?? lead.product_slug ?? '—'}
+                        <div>{lead.product_name ?? lead.product_slug ?? '—'}</div>
+                        {lead.status === 'card_declined' && lead.decline_reason && (
+                          <div className="text-xs text-[#DC2626] mt-0.5 max-w-[180px] truncate" title={lead.decline_reason}>
+                            {lead.decline_reason}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${status.cls}`}>

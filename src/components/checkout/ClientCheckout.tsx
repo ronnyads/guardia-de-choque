@@ -102,15 +102,30 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
     const amountWithDiscount = paymentData.paymentMethod === 'pix' ? finalItemsTotal * 0.95 : finalItemsTotal;
 
     const convertLead = (paymentId: string) => {
-    const leadId = typeof window !== 'undefined' ? localStorage.getItem('lead_id') : null;
-    if (!leadId) return;
-    fetch('/api/leads/convert', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ leadId, orderId: paymentId }),
-    }).catch(() => {});
-    localStorage.removeItem('lead_id');
-  };
+      const leadId = typeof window !== 'undefined' ? localStorage.getItem('lead_id') : null;
+      if (!leadId) return;
+      fetch('/api/leads/convert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId, orderId: paymentId }),
+      }).catch(() => {});
+      localStorage.removeItem('lead_id');
+    };
+
+    const recordDecline = (reason: string, amount: number) => {
+      fetch('/api/leads/decline', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:          paymentData.personalData.name,
+          email:         paymentData.personalData.email,
+          phone:         paymentData.personalData.phone,
+          productSlug:   kit.slug,
+          productPrice:  amount,
+          declineReason: reason,
+        }),
+      }).catch(() => {});
+    };
 
   const firePurchasePixel = (value: number) => {
       // Meta Pixel
@@ -175,6 +190,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
 
       // ── Gateway 2: Stripe (fallback automático) ───────────────
       if (!checkoutConfig.enableStripeFallback) {
+        recordDecline(mpResult.error || "Recusado MP (sem fallback)", amountWithDiscount);
         throw new Error(mpResult.error || "Pagamento recusado. Tente outro cartão.");
       }
 
@@ -204,6 +220,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
       }
 
       // Ambos falharam
+      recordDecline(stripeResult.error || "Recusado MP + Stripe", amountWithDiscount);
       throw new Error(stripeResult.error || "Pagamento recusado. Tente outro cartão.");
 
     } catch (err: unknown) {
