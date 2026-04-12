@@ -43,6 +43,8 @@ export const kwaiViewContent = (id: string, name: string, value: number) =>
 export const kwaiCheckout  = (v: number) => kwaiTrack("EVENT_INITIATED_CHECKOUT", { value: v, currency: "BRL" });
 export const kwaiPurchase  = (v: number, id = "") => kwaiTrack("EVENT_PURCHASE", { value: v, currency: "BRL", order_id: id });
 export const kwaiAddToCart = (v: number) => kwaiTrack("EVENT_ADD_TO_CART", { value: v, currency: "BRL" });
+export const kwaiAddPaymentInfo = (paymentType: 'pix' | 'card') =>
+  kwaiTrack("EVENT_BILLING_INFO", { payment_type: paymentType, currency: "BRL" });
 
 // ---------- Tracker de rotas (client-side navigation) ----------
 function KwaiPixelContent() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { StoreProduct } from "@/types";
 import { Kit } from "@/types";
 import OrderSummary from "./OrderSummary";
@@ -46,13 +46,17 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
     pixPrice: kitProduct.pixPrice,
   };
 
+  const checkoutFiredRef = useRef(false);
   useEffect(() => {
+    if (checkoutFiredRef.current) return;
+    checkoutFiredRef.current = true;
     if (typeof window !== "undefined" && window.fbq) {
       window.fbq("track", "InitiateCheckout", { content_name: kit.name, currency: "BRL", value: kit.promoPrice });
     }
     kwaiCheckout(kit.promoPrice);
     gaBeginCheckout({ id: kit.slug, name: kit.name, value: kit.promoPrice });
-  }, [kit.name, kit.promoPrice, kit.slug]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [hasOrderBump, setHasOrderBump] = useState(false);
   const upsellPrice = checkoutConfig.upsellPrice;
@@ -138,7 +142,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
         );
       }
       // Kwai Ads
-      kwaiPurchase(value);
+      kwaiPurchase(value, eventId ?? "");
       // GA4 — purchase
       if (eventId) gaPurchase({ transactionId: eventId, value, itemName: kit.name });
     };

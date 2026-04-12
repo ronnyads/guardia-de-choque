@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Lock, CreditCard, ShieldCheck, User, MapPin, CreditCard as PayIcon } from "lucide-react";
+import { gaAddPaymentInfo } from "@/components/analytics/GoogleAnalytics";
+import { kwaiAddPaymentInfo } from "@/components/analytics/KwaiPixel";
 
 // --- VALIDATION HELPERS ---
 const validateCPF = (cpf: string) => {
@@ -85,10 +87,8 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
       if (typeof window !== "undefined" && window.fbq) {
         window.fbq("track", "AddPaymentInfo");
       }
-      // GA4 — add_payment_info
-      import("@/components/analytics/GoogleAnalytics").then(({ gaAddPaymentInfo }) => {
-        gaAddPaymentInfo({ paymentType: paymentMethod });
-      });
+      gaAddPaymentInfo({ paymentType: paymentMethod });
+      kwaiAddPaymentInfo(paymentMethod === "pix" ? "pix" : "card");
       setPaymentTracked(true);
     }
   };
