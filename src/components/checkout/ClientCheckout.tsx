@@ -127,10 +127,13 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
       }).catch(() => {});
     };
 
-  const firePurchasePixel = (value: number) => {
-      // Meta Pixel
+  const firePurchasePixel = (value: number, eventId?: string) => {
+      // Meta Pixel — eventID para deduplicação com CAPI server-side
       if (typeof window !== "undefined" && window.fbq) {
-        window.fbq("track", "Purchase", { value: value.toFixed(2), currency: "BRL", content_name: kit.name });
+        window.fbq("track", "Purchase",
+          { value: value.toFixed(2), currency: "BRL", content_name: kit.name },
+          eventId ? { eventID: eventId } : undefined
+        );
       }
       // Kwai Ads
       kwaiPurchase(value);
@@ -159,7 +162,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
         });
         const result = await res.json();
         if (result.success) {
-          firePurchasePixel(amountWithDiscount);
+          firePurchasePixel(amountWithDiscount, result.paymentId);
           convertLead(result.paymentId);
           setPixData({ qrCodeBase64: result.qrCodeBase64, qrCode: result.qrCode, paymentId: result.paymentId });
           setCheckoutComplete(true);
@@ -182,7 +185,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
       const mpResult = await mpRes.json();
 
       if (mpResult.success) {
-        firePurchasePixel(amountWithDiscount);
+        firePurchasePixel(amountWithDiscount, String(mpResult.paymentId || ''));
         convertLead(String(mpResult.paymentId || ''));
         setCheckoutComplete(true);
         return;
@@ -213,7 +216,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, checko
       const stripeResult = await stripeRes.json();
 
       if (stripeResult.success) {
-        firePurchasePixel(amountWithDiscount);
+        firePurchasePixel(amountWithDiscount, String(stripeResult.paymentId || ''));
         convertLead(String(stripeResult.paymentId || ''));
         setCheckoutComplete(true);
         return;

@@ -1,6 +1,25 @@
 import { createServiceSupabase } from '@/lib/supabase-server';
 import type { TenantConfig } from '@/types/tenant';
 
+export async function getMetaPixelConfig(tenantId: string): Promise<{ pixelId: string; accessToken: string }> {
+  try {
+    const supabase = createServiceSupabase();
+    const { data } = await supabase
+      .from('tenant_integrations')
+      .select('public_key, secret_key_encrypted')
+      .eq('tenant_id', tenantId)
+      .eq('provider', 'meta_pixel')
+      .eq('is_active', true)
+      .single();
+    return {
+      pixelId:     data?.public_key           ?? '',
+      accessToken: data?.secret_key_encrypted ?? '',
+    };
+  } catch {
+    return { pixelId: '', accessToken: '' };
+  }
+}
+
 export async function getPixelIds(slug?: string): Promise<{ metaPixelId: string; kwaiPixelId: string }> {
   const tenantSlug = slug ?? process.env.STORE_SLUG ?? 'guardia-de-choque';
   try {

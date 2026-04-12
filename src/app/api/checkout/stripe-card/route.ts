@@ -2,6 +2,8 @@
 import Stripe from "stripe";
 import { validateAmount, sanitizeString, sanitizeEmail, sanitizeAmount } from "@/lib/pricing";
 import { createServiceSupabase } from "@/lib/supabase-server";
+import { getMetaPixelConfig } from "@/lib/store-config";
+import { sendCapiPurchase } from "@/lib/meta-capi";
 
 // Instância lazy — só criada quando a key existe (evita erro no build sem env)
 function getStripe(): Stripe {
@@ -92,6 +94,9 @@ export async function POST(request: Request) {
           if (insertErr) {
             console.error('[Stripe] Erro ao inserir pedido:', insertErr.message);
             orderSaveError = insertErr.message;
+          } else {
+            const meta = await getMetaPixelConfig(prod.tenant_id);
+            sendCapiPurchase({ ...meta, email, value: amount, eventId: paymentIntent.id });
           }
         } else {
           console.error('[Stripe] tenant_id não encontrado para slug:', body.kitId);

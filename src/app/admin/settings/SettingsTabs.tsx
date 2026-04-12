@@ -87,6 +87,8 @@ const INTEGRATIONS: IntegrationMeta[] = [
     initials: 'fb',
     pubLabel: 'Pixel ID',
     pubPlaceholder: '1234567890123456',
+    secretLabel: 'Access Token (Conversions API)',
+    secretPlaceholder: 'EAAxxxxxxxxxxxxxxx...',
   },
   {
     provider: 'kwai_pixel',

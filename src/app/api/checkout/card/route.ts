@@ -2,6 +2,8 @@
 import { MercadoPagoConfig, Payment } from "mercadopago";
 import { validateAmount, sanitizeString, sanitizeEmail, sanitizeDocument, sanitizeAmount } from "@/lib/pricing";
 import { createServiceSupabase } from "@/lib/supabase-server";
+import { getMetaPixelConfig } from "@/lib/store-config";
+import { sendCapiPurchase } from "@/lib/meta-capi";
 
 const client  = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || "" });
 const payment = new Payment(client);
@@ -105,6 +107,9 @@ export async function POST(request: Request) {
           if (insertErr) {
             console.error('[MP Card] Erro ao inserir pedido:', insertErr.message);
             orderSaveError = insertErr.message;
+          } else {
+            const meta = await getMetaPixelConfig(prod.tenant_id);
+            sendCapiPurchase({ ...meta, email, phone: body.phone, value: amount, eventId: String(result.id) });
           }
         } else {
           console.error('[MP Card] tenant_id não encontrado para slug:', body.kitId);
