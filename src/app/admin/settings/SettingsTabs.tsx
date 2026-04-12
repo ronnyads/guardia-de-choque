@@ -18,7 +18,9 @@ import {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type IntegrationRow = Omit<TenantIntegration, 'secret_key_encrypted' | 'tenant_id' | 'extra_config'>;
+type IntegrationRow = Omit<TenantIntegration, 'tenant_id' | 'extra_config'> & {
+  secret_key_encrypted?: string | null;
+};
 type Section = 'marca' | 'contato' | 'integracoes' | 'seo' | 'checkout' | 'recuperacao';
 type FilterId = 'todos' | 'pagamentos' | 'analytics' | 'instalado';
 
