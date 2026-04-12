@@ -45,15 +45,19 @@ export async function POST(request: Request) {
 
     if (result.status === "pending" && result.point_of_interaction) {
       // Salvar pedido pendente no banco
+      let orderSaveError: string | undefined;
       try {
         const supabase = createServiceSupabase();
-        const { data: prod } = await supabase
+        const { data: prod, error: prodErr } = await supabase
           .from('products')
           .select('tenant_id, name')
           .eq('slug', String(body.kitId || ''))
           .single();
-        if (prod?.tenant_id) {
-          await supabase.from('orders').insert({
+        if (prodErr) {
+          console.error('[PIX] Produto não encontrado:', prodErr.message, '| slug:', body.kitId);
+          orderSaveError = `Produto não encontrado: ${prodErr.message}`;
+        } else if (prod?.tenant_id) {
+          const { error: insertErr } = await supabase.from('orders').insert({
             tenant_id:           prod.tenant_id,
             customer_name:       name,
             customer_email:      email,
@@ -64,15 +68,24 @@ export async function POST(request: Request) {
             status:              'pending',
             items:               [{ slug: body.kitId, name: prod.name, price: amount }],
           });
+          if (insertErr) {
+            console.error('[PIX] Erro ao inserir pedido:', insertErr.message);
+            orderSaveError = insertErr.message;
+          }
+        } else {
+          console.error('[PIX] tenant_id não encontrado para slug:', body.kitId);
+          orderSaveError = 'tenant_id não encontrado';
         }
       } catch (saveErr) {
-        console.error('[PIX] Erro ao salvar pedido:', saveErr);
+        console.error('[PIX] Exceção ao salvar pedido:', saveErr);
+        orderSaveError = String(saveErr);
       }
       return NextResponse.json({
         success:      true,
         qrCode:       result.point_of_interaction.transaction_data?.qr_code,
         qrCodeBase64: result.point_of_interaction.transaction_data?.qr_code_base64,
         paymentId:    result.id,
+        ...(orderSaveError ? { orderSaveError } : {}),
       });
     }
 

@@ -1,6 +1,7 @@
 ﻿import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { validateAmount, sanitizeString, sanitizeEmail, sanitizeAmount } from "@/lib/pricing";
+import { createServiceSupabase } from "@/lib/supabase-server";
 
 // Instância lazy — só criada quando a key existe (evita erro no build sem env)
 function getStripe(): Stripe {
@@ -64,7 +65,43 @@ export async function POST(request: Request) {
     });
 
     if (paymentIntent.status === "succeeded" || paymentIntent.status === "processing") {
-      return NextResponse.json({ success: true, paymentId: paymentIntent.id, status: paymentIntent.status, gateway: "stripe" });
+      // Salvar pedido no banco
+      let orderSaveError: string | undefined;
+      try {
+        const supabase = createServiceSupabase();
+        const { data: prod, error: prodErr } = await supabase
+          .from('products')
+          .select('tenant_id, name')
+          .eq('slug', String(body.kitId || ''))
+          .single();
+        if (prodErr) {
+          console.error('[Stripe] Produto não encontrado:', prodErr.message, '| slug:', body.kitId);
+          orderSaveError = `Produto não encontrado: ${prodErr.message}`;
+        } else if (prod?.tenant_id) {
+          const { error: insertErr } = await supabase.from('orders').insert({
+            tenant_id:           prod.tenant_id,
+            customer_name:       name,
+            customer_email:      email,
+            total_amount:        amount,
+            payment_method:      'card',
+            payment_provider:    'stripe',
+            external_payment_id: paymentIntent.id,
+            status:              paymentIntent.status === 'succeeded' ? 'approved' : 'pending',
+            items:               [{ slug: body.kitId, name: prod.name, price: amount }],
+          });
+          if (insertErr) {
+            console.error('[Stripe] Erro ao inserir pedido:', insertErr.message);
+            orderSaveError = insertErr.message;
+          }
+        } else {
+          console.error('[Stripe] tenant_id não encontrado para slug:', body.kitId);
+          orderSaveError = 'tenant_id não encontrado';
+        }
+      } catch (saveErr) {
+        console.error('[Stripe] Exceção ao salvar pedido:', saveErr);
+        orderSaveError = String(saveErr);
+      }
+      return NextResponse.json({ success: true, paymentId: paymentIntent.id, status: paymentIntent.status, gateway: "stripe", ...(orderSaveError ? { orderSaveError } : {}) });
     }
 
     return NextResponse.json({ success: false, error: "Pagamento nao aprovado pelo gateway alternativo.", status: paymentIntent.status }, { status: 400 });

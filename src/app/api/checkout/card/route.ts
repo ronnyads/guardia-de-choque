@@ -79,15 +79,19 @@ export async function POST(request: Request) {
 
     if (result.status === "approved" || result.status === "in_process") {
       // Salvar pedido no banco
+      let orderSaveError: string | undefined;
       try {
         const supabase = createServiceSupabase();
-        const { data: prod } = await supabase
+        const { data: prod, error: prodErr } = await supabase
           .from('products')
           .select('tenant_id, name')
           .eq('slug', String(body.kitId || ''))
           .single();
-        if (prod?.tenant_id) {
-          await supabase.from('orders').insert({
+        if (prodErr) {
+          console.error('[MP Card] Produto não encontrado:', prodErr.message, '| slug:', body.kitId);
+          orderSaveError = `Produto não encontrado: ${prodErr.message}`;
+        } else if (prod?.tenant_id) {
+          const { error: insertErr } = await supabase.from('orders').insert({
             tenant_id:           prod.tenant_id,
             customer_name:       name,
             customer_email:      email,
@@ -98,11 +102,19 @@ export async function POST(request: Request) {
             status:              result.status === 'approved' ? 'approved' : 'pending',
             items:               [{ slug: body.kitId, name: prod.name, price: amount }],
           });
+          if (insertErr) {
+            console.error('[MP Card] Erro ao inserir pedido:', insertErr.message);
+            orderSaveError = insertErr.message;
+          }
+        } else {
+          console.error('[MP Card] tenant_id não encontrado para slug:', body.kitId);
+          orderSaveError = 'tenant_id não encontrado';
         }
       } catch (saveErr) {
-        console.error('[MP Card] Erro ao salvar pedido:', saveErr);
+        console.error('[MP Card] Exceção ao salvar pedido:', saveErr);
+        orderSaveError = String(saveErr);
       }
-      return NextResponse.json({ success: true, status: result.status, paymentId: result.id });
+      return NextResponse.json({ success: true, status: result.status, paymentId: result.id, ...(orderSaveError ? { orderSaveError } : {}) });
     }
 
     return NextResponse.json({ success: false, error: "Pagamento recusado pela operadora", status: result.status }, { status: 400 });
