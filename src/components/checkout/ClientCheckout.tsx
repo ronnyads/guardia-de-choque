@@ -62,6 +62,28 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderB
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const convertLead = (paymentId: string) => {
+    const leadId = typeof window !== 'undefined' ? localStorage.getItem('lead_id') : null;
+    if (!leadId) return;
+    fetch('/api/leads/convert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ leadId, orderId: paymentId }),
+    }).catch(() => {});
+    localStorage.removeItem('lead_id');
+  };
+
+  const firePurchasePixel = (value: number, eventId?: string) => {
+    if (typeof window !== "undefined" && window.fbq) {
+      window.fbq("track", "Purchase",
+        { value: value.toFixed(2), currency: "BRL", content_name: kit.name },
+        eventId ? { eventID: eventId } : undefined
+      );
+    }
+    kwaiPurchase(value, eventId ?? "");
+    if (eventId) gaPurchase({ transactionId: eventId, value, itemName: kit.name });
+  };
+
   const [hasOrderBump, setHasOrderBump] = useState(false);
   const upsellPrice = checkoutConfig.upsellPrice;
 
@@ -70,7 +92,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderB
   const [isProcessingFull, setIsProcessingFull] = useState(false);
 
   const [paymentData, setPaymentData] = useState<any>(null);
-  const [pixData, setPixData] = useState<{qrCodeBase64?: string, qrCode?: string, paymentId?: string} | null>(null);
+  const [pixData, setPixData] = useState<{qrCodeBase64?: string, qrCode?: string, paymentId?: string, amount?: number} | null>(null);
   const [gatewayStatus, setGatewayStatus] = useState<string>("");
 
   // Calcula subtotais
@@ -87,6 +109,9 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderB
           const res = await fetch(`/api/checkout/status?id=${pixData.paymentId}`);
           const data = await res.json();
           if (data.approved) {
+            // PIX pago — agora dispara pixel e converte lead
+            firePurchasePixel(pixData.amount ?? 0, pixData.paymentId);
+            convertLead(pixData.paymentId ?? '');
             setPixData(null); // Remove a tela do PIX para cair na tela de Sucesso padrão
           }
         } catch (e) {
@@ -111,17 +136,6 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderB
     const finalItemsTotal = itemsTotal + (hasOrderBump ? orderBumpPrice : 0) + (acceptedUpsell ? upsellPrice : 0);
     const amountWithDiscount = paymentData.paymentMethod === 'pix' ? finalItemsTotal * 0.95 : finalItemsTotal;
 
-    const convertLead = (paymentId: string) => {
-      const leadId = typeof window !== 'undefined' ? localStorage.getItem('lead_id') : null;
-      if (!leadId) return;
-      fetch('/api/leads/convert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leadId, orderId: paymentId }),
-      }).catch(() => {});
-      localStorage.removeItem('lead_id');
-    };
-
     const recordDecline = (reason: string, amount: number) => {
       fetch('/api/leads/decline', {
         method: 'POST',
@@ -137,19 +151,6 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderB
       }).catch(() => {});
     };
 
-  const firePurchasePixel = (value: number, eventId?: string) => {
-      // Meta Pixel — eventID para deduplicação com CAPI server-side
-      if (typeof window !== "undefined" && window.fbq) {
-        window.fbq("track", "Purchase",
-          { value: value.toFixed(2), currency: "BRL", content_name: kit.name },
-          eventId ? { eventID: eventId } : undefined
-        );
-      }
-      // Kwai Ads
-      kwaiPurchase(value, eventId ?? "");
-      // GA4 — purchase
-      if (eventId) gaPurchase({ transactionId: eventId, value, itemName: kit.name });
-    };
 
     const basePayload = {
       amount: amountWithDiscount,
@@ -174,9 +175,8 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderB
         });
         const result = await res.json();
         if (result.success) {
-          firePurchasePixel(amountWithDiscount, result.paymentId);
-          convertLead(result.paymentId);
-          setPixData({ qrCodeBase64: result.qrCodeBase64, qrCode: result.qrCode, paymentId: result.paymentId });
+          // PIX: não dispara pixel nem converte lead aqui — só quando o pagamento for confirmado (polling)
+          setPixData({ qrCodeBase64: result.qrCodeBase64, qrCode: result.qrCode, paymentId: result.paymentId, amount: amountWithDiscount });
           setCheckoutComplete(true);
           return;
         }
