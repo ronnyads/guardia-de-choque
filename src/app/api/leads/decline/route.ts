@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServiceSupabase } from '@/lib/supabase-server';
+import { resolveProductTenant } from '@/lib/checkout-helpers';
 
 export async function POST(request: Request) {
   try {
@@ -11,30 +12,30 @@ export async function POST(request: Request) {
     }
 
     const supabase = createServiceSupabase();
+    const prod = await resolveProductTenant(String(productSlug || ''));
 
-    const { data: product } = await supabase
-      .from('products')
-      .select('tenant_id, name')
-      .eq('slug', String(productSlug || ''))
-      .single();
-
-    if (!product?.tenant_id) {
+    if (!prod) {
       return NextResponse.json({ success: false, error: 'Produto não encontrado' }, { status: 400 });
     }
 
+    // Upsert — atualiza o status do lead existente para card_declined
     const { error } = await supabase
       .from('leads')
-      .insert({
-        tenant_id:      product.tenant_id,
-        customer_name:  name  || null,
-        customer_email: email || null,
-        customer_phone: phone || null,
-        product_slug:   productSlug   || null,
-        product_name:   product.name  || null,
-        product_price:  productPrice  || null,
-        status:         'card_declined',
-        decline_reason: declineReason || null,
-      });
+      .upsert(
+        {
+          tenant_id:      prod.tenantId,
+          customer_name:  name  || null,
+          customer_email: email || null,
+          customer_phone: phone || null,
+          product_slug:   productSlug    || null,
+          product_name:   prod.productName || null,
+          product_price:  productPrice   || null,
+          status:         'card_declined',
+          decline_reason: declineReason  || null,
+          updated_at:     new Date().toISOString(),
+        },
+        { onConflict: 'tenant_id,customer_email,product_slug', ignoreDuplicates: false }
+      );
 
     if (error) throw new Error(error.message);
 
