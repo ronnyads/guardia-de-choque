@@ -330,7 +330,18 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
           <div>
             <label className={labelClass}>Celular / WhatsApp</label>
             <input required type="tel" value={personalData.phone}
-              onChange={(e) => setPersonalData({ ...personalData, phone: e.target.value })}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, '').substring(0, 11);
+                let masked = digits;
+                if (digits.length > 6) {
+                  masked = `(${digits.substring(0,2)}) ${digits.substring(2,7)}-${digits.substring(7)}`;
+                } else if (digits.length > 2) {
+                  masked = `(${digits.substring(0,2)}) ${digits.substring(2)}`;
+                } else if (digits.length > 0) {
+                  masked = `(${digits}`;
+                }
+                setPersonalData({ ...personalData, phone: masked });
+              }}
               onBlur={(e) => captureLeadSilently(e.target.value)}
               placeholder="(11) 99999-9999" className={inputClass} />
           </div>
