@@ -668,6 +668,7 @@ function CheckoutSection({ config, saving, onSave }: {
   onSave: (action: (fd: FormData) => Promise<void>, fd: FormData) => Promise<void>;
 }) {
   const [stripeFallback, setStripeFallback] = useState(config?.checkout_enable_stripe_fallback ?? true);
+  const [shippingFree,   setShippingFree]   = useState((config as any)?.shipping_free !== false);
 
   return (
     <div>
@@ -679,6 +680,7 @@ function CheckoutSection({ config, saving, onSave }: {
           e.preventDefault();
           const fd = new FormData(e.currentTarget);
           fd.set('checkout_enable_stripe_fallback', String(stripeFallback));
+          fd.set('shipping_free', String(shippingFree));
           onSave(updateCheckoutConfig, fd);
         }}
         className="space-y-6"
@@ -768,6 +770,41 @@ function CheckoutSection({ config, saving, onSave }: {
               />
               <p className="text-xs text-[#94A3B8] mt-1">Exibido na oferta adicional do checkout.</p>
             </div>
+          </div>
+        </div>
+
+        {/* Configurações de Frete */}
+        <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 bg-[#F8FAFC] border-b border-[#E2E8F0]">
+            <p className="text-[13px] font-semibold text-[#0F172A]">Configurações de Frete</p>
+            <p className="text-xs text-[#64748B] mt-0.5">Configure o frete calculado via SuperFrete.</p>
+          </div>
+          <div className="p-5 space-y-5">
+            <div>
+              <label className={labelCls}>CEP de Origem</label>
+              <input
+                type="text"
+                name="shipping_origin_cep"
+                defaultValue={(config as any)?.shipping_origin_cep ?? ''}
+                maxLength={9}
+                className={inputCls}
+                placeholder="00000-000"
+              />
+              <p className="text-xs text-[#94A3B8] mt-1">CEP do seu armazém ou local de expedição.</p>
+            </div>
+            <label className="flex items-center justify-between cursor-pointer">
+              <div>
+                <p className="text-sm font-medium text-[#0F172A]">Frete Grátis</p>
+                <p className="text-xs text-[#64748B] mt-0.5">Quando ativo, o cliente não paga frete (SuperFrete usado só para gerar etiqueta).</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShippingFree(v => !v)}
+                className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ml-4 ${shippingFree ? 'bg-[#059669]' : 'bg-[#CBD5E1]'}`}
+              >
+                <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${shippingFree ? 'left-6' : 'left-1'}`} />
+              </button>
+            </label>
           </div>
         </div>
 

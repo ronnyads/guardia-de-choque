@@ -101,11 +101,13 @@ export async function updateCheckoutConfig(formData: FormData) {
   const checkout_pix_polling_ms         = Math.max(1000, parseInt((formData.get('checkout_pix_polling_ms')   as string) || '3000'));
   const checkout_upsell_price           = parseFloat((formData.get('checkout_upsell_price')       as string) || '69.90');
   const checkout_order_bump_price       = parseFloat((formData.get('checkout_order_bump_price')   as string) || '29.90');
+  const shipping_origin_cep             = (formData.get('shipping_origin_cep') as string | null)?.replace(/\D/g, '') || null;
+  const shipping_free                   = formData.get('shipping_free') !== 'false';
 
   const { error } = await supabase
     .from('tenant_config')
     .upsert(
-      { tenant_id: tenantId, checkout_enable_stripe_fallback, checkout_retry_delay_ms, checkout_pix_polling_ms, checkout_upsell_price, checkout_order_bump_price, updated_at: new Date().toISOString() },
+      { tenant_id: tenantId, checkout_enable_stripe_fallback, checkout_retry_delay_ms, checkout_pix_polling_ms, checkout_upsell_price, checkout_order_bump_price, shipping_origin_cep, shipping_free, updated_at: new Date().toISOString() },
       { onConflict: 'tenant_id' }
     );
 
