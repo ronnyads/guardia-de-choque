@@ -47,6 +47,18 @@ export async function updateOrderNotes(orderId: string, notes: string) {
   revalidatePath(`/admin/pedidos/${orderId}`);
 }
 
+export async function updateOrderAddress(orderId: string, address: Record<string, string>) {
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
+  const { error } = await supabase
+    .from("orders")
+    .update({ customer_address: address, updated_at: new Date().toISOString() })
+    .eq("id", orderId)
+    .eq("tenant_id", tenantId);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/admin/pedidos/${orderId}`);
+}
+
 export async function deleteOrder(orderId: string) {
   const { tenantId } = await requireTenant();
   const supabase = await createServerSupabase();
