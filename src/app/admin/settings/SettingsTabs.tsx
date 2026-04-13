@@ -122,6 +122,16 @@ const INTEGRATIONS: IntegrationMeta[] = [
     pubLabel: 'Container ID',
     pubPlaceholder: 'GTM-XXXXXXXX',
   },
+  {
+    provider: 'superfrete',
+    label: 'SuperFrete',
+    description: 'Calcule frete em tempo real e gere etiquetas de envio automaticamente.',
+    category: 'pagamentos',
+    color: '#FF6B00',
+    initials: 'SF',
+    pubLabel: 'Token da API',
+    pubPlaceholder: 'eyJ...',
+  },
 ];
 
 // ── Shared style helpers ──────────────────────────────────────────────────────

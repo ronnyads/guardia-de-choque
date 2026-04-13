@@ -41,7 +41,18 @@ export async function POST(request: Request) {
     const originCep = config?.shipping_origin_cep ?? '';
     const isFree    = config?.shipping_free !== false; // default true
 
-    if (!originCep || !process.env.SUPERFRETE_TOKEN) {
+    // Token: tenant_integrations tem prioridade sobre env var
+    const { data: sfIntegration } = await supabase
+      .from('tenant_integrations')
+      .select('secret_key_encrypted')
+      .eq('tenant_id', product.tenant_id)
+      .eq('provider', 'superfrete')
+      .eq('is_active', true)
+      .single();
+
+    const token = sfIntegration?.secret_key_encrypted || process.env.SUPERFRETE_TOKEN || '';
+
+    if (!originCep || !token) {
       return NextResponse.json({ options: FALLBACK, free: isFree }, {
         headers: { 'Cache-Control': 'public, max-age=3600' },
       });
@@ -55,7 +66,7 @@ export async function POST(request: Request) {
     };
 
     const packages = Array.from({ length: qty }, () => pkg);
-    const options  = await calculateShipping(originCep, cep, packages);
+    const options  = await calculateShipping(originCep, cep, packages, token);
 
     if (options.length === 0) {
       return NextResponse.json({ options: FALLBACK, free: isFree }, {

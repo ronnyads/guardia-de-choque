@@ -189,7 +189,7 @@ export async function updateFooterConfig(footerConfig: unknown) {
 
 // ─── INTEGRAÇÕES ──────────────────────────────────────────────────────────────
 
-export type IntegrationProvider = 'mercadopago' | 'stripe' | 'meta_pixel' | 'kwai_pixel' | 'google_analytics' | 'google_tag_manager';
+export type IntegrationProvider = 'mercadopago' | 'stripe' | 'meta_pixel' | 'kwai_pixel' | 'google_analytics' | 'google_tag_manager' | 'superfrete';
 
 export async function upsertIntegration(formData: FormData) {
   const { tenantId } = await requireTenant();

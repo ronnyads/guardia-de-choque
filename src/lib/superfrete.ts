@@ -23,9 +23,10 @@ export async function calculateShipping(
   fromCep: string,
   toCep: string,
   packages: { weightG: number; lengthCm: number; widthCm: number; heightCm: number }[],
+  token?: string,
 ): Promise<ShippingOption[]> {
-  const token = process.env.SUPERFRETE_TOKEN;
-  if (!token || !fromCep || !toCep) return [];
+  const resolvedToken = token || process.env.SUPERFRETE_TOKEN;
+  if (!resolvedToken || !fromCep || !toCep) return [];
 
   const clean = (c: string) => c.replace(/\D/g, '');
   if (clean(fromCep).length !== 8 || clean(toCep).length !== 8) return [];
@@ -41,7 +42,7 @@ export async function calculateShipping(
       method: 'POST',
       headers: {
         'Content-Type':  'application/json',
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${resolvedToken}`,
         'Accept':        'application/json',
       },
       body: JSON.stringify({
