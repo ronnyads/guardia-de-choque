@@ -6,8 +6,12 @@ import { useCartStore } from "@/lib/store";
 
 export default function CartSummary() {
   const total    = useCartStore((s) => s.total());
+  const items    = useCartStore((s) => s.items);
   const pixPrice = total * 0.95;
   const fmt      = (v: number) => v.toFixed(2).replace(".", ",");
+  const checkoutHref = items.length > 0
+    ? `/checkout?kit=${items[0].product.slug}`
+    : '/checkout';
 
   return (
     <div className="bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden sticky top-24">
@@ -40,7 +44,7 @@ export default function CartSummary() {
             </div>
           </div>
         </div>
-        <Link href="/checkout" className="mt-5 flex items-center justify-center gap-2.5 w-full bg-[#0F172A] hover:bg-[#1E293B] active:scale-[0.98] text-white font-bold text-[15px] py-4 rounded-xl transition-all">
+        <Link href={checkoutHref} className="mt-5 flex items-center justify-center gap-2.5 w-full bg-[#0F172A] hover:bg-[#1E293B] active:scale-[0.98] text-white font-bold text-[15px] py-4 rounded-xl transition-all">
           <Zap className="w-5 h-5" />
           Finalizar Compra Segura
         </Link>
