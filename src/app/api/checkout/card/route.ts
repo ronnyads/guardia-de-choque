@@ -4,6 +4,7 @@ import { validateAmount, sanitizeString, sanitizeEmail, sanitizeDocument, saniti
 import { createServiceSupabase } from "@/lib/supabase-server";
 import { getMetaPixelConfig } from "@/lib/store-config";
 import { sendCapiPurchase } from "@/lib/meta-capi";
+import { resolveProductTenant } from "@/lib/checkout-helpers";
 
 const client  = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || "" });
 const payment = new Payment(client);
@@ -84,18 +85,16 @@ export async function POST(request: Request) {
       // Salvar pedido no banco
       let orderSaveError: string | undefined;
       try {
-        const supabase = createServiceSupabase();
-        const { data: prod, error: prodErr } = await supabase
-          .from('products')
-          .select('tenant_id, name')
-          .eq('slug', String(body.kitId || ''))
-          .single();
-        if (prodErr) {
-          console.error('[MP Card] Produto não encontrado:', prodErr.message, '| slug:', body.kitId);
-          orderSaveError = `Produto não encontrado: ${prodErr.message}`;
-        } else if (prod?.tenant_id) {
+        const kitSlug = String(body.kitId || '');
+        const qty     = Math.max(1, parseInt(String(body.qty || '1'), 10) || 1);
+        const prod    = await resolveProductTenant(kitSlug);
+        if (!prod) {
+          console.error('[MP Card] Não foi possível resolver produto/tenant para slug:', kitSlug);
+          orderSaveError = 'Produto ou tenant não encontrado';
+        } else {
+          const supabase = createServiceSupabase();
           const { error: insertErr } = await supabase.from('orders').insert({
-            tenant_id:           prod.tenant_id,
+            tenant_id:           prod.tenantId,
             customer_name:       name,
             customer_email:      email,
             customer_phone:      sanitizeString(body.phone, 20) || null,
@@ -105,18 +104,15 @@ export async function POST(request: Request) {
             payment_provider:    'mercadopago',
             external_payment_id: String(result.id),
             status:              result.status === 'approved' ? 'approved' : 'pending',
-            items:               [{ slug: body.kitId, name: prod.name, price: amount, qty: Math.max(1, parseInt(String(body.qty || '1'), 10) || 1) }],
+            items:               [{ slug: kitSlug, name: prod.productName, price: amount, qty }],
           });
           if (insertErr) {
             console.error('[MP Card] Erro ao inserir pedido:', insertErr.message);
             orderSaveError = insertErr.message;
           } else {
-            const meta = await getMetaPixelConfig(prod.tenant_id);
+            const meta = await getMetaPixelConfig(prod.tenantId);
             sendCapiPurchase({ ...meta, email, phone: body.phone, value: amount, eventId: String(result.id) });
           }
-        } else {
-          console.error('[MP Card] tenant_id não encontrado para slug:', body.kitId);
-          orderSaveError = 'tenant_id não encontrado';
         }
       } catch (saveErr) {
         console.error('[MP Card] Exceção ao salvar pedido:', saveErr);
