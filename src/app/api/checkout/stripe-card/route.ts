@@ -59,13 +59,35 @@ export async function POST(request: Request) {
       billing_details: { name: cardName, email: email || undefined },
     });
 
+    // Criar/recuperar Customer para permitir retentativa off-session futura
+    let customerId: string | undefined;
+    try {
+      if (email) {
+        const existing = await stripe.customers.list({ email, limit: 1 });
+        if (existing.data.length > 0) {
+          customerId = existing.data[0].id;
+        } else {
+          const customer = await stripe.customers.create({ email, name: cardName || undefined });
+          customerId = customer.id;
+        }
+        await stripe.paymentMethods.attach(paymentMethod.id, { customer: customerId });
+        await stripe.customers.update(customerId, {
+          invoice_settings: { default_payment_method: paymentMethod.id },
+        });
+      }
+    } catch (custErr) {
+      console.warn('[Stripe] Erro ao criar Customer (não bloqueia pagamento):', custErr);
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount:         Math.round(amount * 100),
-      currency:       "brl",
-      payment_method: paymentMethod.id,
-      description:    sanitizeString(body.itemsDescription, 250) || "Guardia de Choque",
-      confirm:        true,
-      return_url:     `${process.env.NEXT_PUBLIC_APP_URL || "https://guardiadechoque.online"}/checkout`,
+      amount:              Math.round(amount * 100),
+      currency:            "brl",
+      payment_method:      paymentMethod.id,
+      ...(customerId ? { customer: customerId } : {}),
+      description:         sanitizeString(body.itemsDescription, 250) || "Guardia de Choque",
+      setup_future_usage:  "off_session", // salva cartão para retentativa sem cliente
+      confirm:             true,
+      return_url:          `${process.env.NEXT_PUBLIC_APP_URL || "https://guardiadechoque.online"}/checkout`,
     });
 
     if (paymentIntent.status === "succeeded" || paymentIntent.status === "processing") {
@@ -92,6 +114,10 @@ export async function POST(request: Request) {
             external_payment_id: paymentIntent.id,
             status:              paymentIntent.status === 'succeeded' ? 'approved' : 'pending',
             items:               [{ slug: kitSlug, name: prod.productName, price: amount, qty }],
+            metadata: {
+              stripe_customer_id:        customerId ?? null,
+              stripe_payment_method_id:  paymentMethod.id,
+            },
           });
           if (insertErr) {
             console.error('[Stripe] Erro ao inserir pedido:', insertErr.message);

@@ -72,6 +72,85 @@ export async function deleteOrder(orderId: string) {
 }
 
 /**
+ * Retenta o pagamento automaticamente usando o cartão já salvo no Stripe.
+ * Funciona sem ação do cliente (off_session).
+ * Só funciona se o pedido original passou pelo Stripe e o cartão foi salvo.
+ */
+export async function retryPaymentWithStripe(orderId: string): Promise<{ success: boolean; message: string }> {
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeKey) throw new Error("Stripe não configurado neste ambiente.");
+
+  const { tenantId } = await requireTenant();
+  const supabase = await createServerSupabase();
+
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("id", orderId)
+    .eq("tenant_id", tenantId)
+    .single();
+
+  if (error || !order) throw new Error("Pedido não encontrado.");
+
+  const meta = order.metadata as Record<string, string> | null;
+  const customerId       = meta?.stripe_customer_id;
+  const paymentMethodId  = meta?.stripe_payment_method_id;
+
+  if (!customerId || !paymentMethodId) {
+    throw new Error("Cartão não salvo para este pedido. Use 'Retentar via Stripe' para enviar link ao cliente.");
+  }
+
+  const stripe = new Stripe(stripeKey);
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount:         Math.round(Number(order.total_amount) * 100),
+      currency:       "brl",
+      customer:       customerId,
+      payment_method: paymentMethodId,
+      description:    `Retentativa pedido ${orderId.slice(0, 8).toUpperCase()}`,
+      confirm:        true,
+      off_session:    true,
+    });
+
+    if (paymentIntent.status === "succeeded" || paymentIntent.status === "processing") {
+      await supabase
+        .from("orders")
+        .update({
+          status:              "approved",
+          payment_provider:    "stripe",
+          external_payment_id: paymentIntent.id,
+          updated_at:          new Date().toISOString(),
+          internal_notes:      (order.internal_notes ?? "") +
+            `\n[${new Date().toLocaleString("pt-BR")}] Retentativa Stripe aprovada: ${paymentIntent.id}`,
+        })
+        .eq("id", orderId)
+        .eq("tenant_id", tenantId);
+
+      revalidatePath(`/admin/pedidos/${orderId}`);
+      revalidatePath("/admin/pedidos");
+      return { success: true, message: "Pagamento aprovado no Stripe!" };
+    }
+
+    return { success: false, message: `Status: ${paymentIntent.status}. Tente o link manual.` };
+  } catch (e: unknown) {
+    const err = e as { message?: string; code?: string };
+    // Cartão recusado — anota nas notas
+    await supabase
+      .from("orders")
+      .update({
+        internal_notes: (order.internal_notes ?? "") +
+          `\n[${new Date().toLocaleString("pt-BR")}] Retentativa Stripe falhou: ${err.message}`,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", orderId)
+      .eq("tenant_id", tenantId);
+    revalidatePath(`/admin/pedidos/${orderId}`);
+    throw new Error(err.message ?? "Cartão recusado na retentativa.");
+  }
+}
+
+/**
  * Gera um link de pagamento Stripe para retentar um pedido recusado/cancelado.
  * Admin copia o link e manda pro cliente via WhatsApp.
  */

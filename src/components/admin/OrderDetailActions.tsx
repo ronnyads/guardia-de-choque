@@ -12,6 +12,7 @@ import {
   updateOrderAddress,
   deleteOrder,
   generateStripeRetryLink,
+  retryPaymentWithStripe,
 } from "@/app/admin/pedidos/[id]/actions";
 
 const STATUS_OPTIONS = [
@@ -314,13 +315,30 @@ export function AddressForm({ orderId, currentAddress }: { orderId: string; curr
   );
 }
 
-export function StripeRetryButton({ orderId }: { orderId: string }) {
+export function StripeRetryButton({ orderId, hasStripeCard }: { orderId: string; hasStripeCard?: boolean }) {
   const [pending, startTransition] = useTransition();
   const [link, setLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoSuccess, setAutoSuccess] = useState<string | null>(null);
 
-  const generate = () => {
+  const retryAuto = () => {
+    setError(null);
+    startTransition(async () => {
+      try {
+        const result = await retryPaymentWithStripe(orderId);
+        if (result.success) {
+          setAutoSuccess(result.message);
+        } else {
+          setError(result.message);
+        }
+      } catch (e: unknown) {
+        setError((e as Error).message ?? "Cartão recusado.");
+      }
+    });
+  };
+
+  const generateLink = () => {
     setError(null);
     startTransition(async () => {
       try {
@@ -339,6 +357,14 @@ export function StripeRetryButton({ orderId }: { orderId: string }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  if (autoSuccess) {
+    return (
+      <div className="flex items-center gap-2 p-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl text-sm font-semibold text-[#15803D]">
+        <CheckCircle2 className="w-4 h-4" /> {autoSuccess}
+      </div>
+    );
+  }
+
   if (link) {
     return (
       <div className="flex flex-col gap-2 p-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl">
@@ -346,48 +372,48 @@ export function StripeRetryButton({ orderId }: { orderId: string }) {
           <CheckCircle2 className="w-3.5 h-3.5" /> Link Stripe gerado — válido por 24h
         </p>
         <div className="flex gap-2">
-          <input
-            readOnly
-            value={link}
-            className="flex-1 text-xs bg-white border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-[#475569] truncate"
-          />
-          <button
-            onClick={copy}
-            className="flex items-center gap-1 px-3 py-1.5 bg-[#0F172A] text-white text-xs font-semibold rounded-lg hover:bg-[#1E293B] transition-colors"
-          >
+          <input readOnly value={link}
+            className="flex-1 text-xs bg-white border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-[#475569] truncate" />
+          <button onClick={copy}
+            className="flex items-center gap-1 px-3 py-1.5 bg-[#0F172A] text-white text-xs font-semibold rounded-lg hover:bg-[#1E293B] transition-colors">
             {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-[#4ADE80]" /> : <Copy className="w-3.5 h-3.5" />}
             {copied ? "Copiado!" : "Copiar"}
           </button>
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 px-3 py-1.5 border border-[#E2E8F0] text-[#64748B] text-xs font-semibold rounded-lg hover:bg-[#F8FAFC] transition-colors"
-          >
+          <a href={link} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1 px-3 py-1.5 border border-[#E2E8F0] text-[#64748B] text-xs font-semibold rounded-lg hover:bg-[#F8FAFC] transition-colors">
             <ExternalLink className="w-3.5 h-3.5" /> Abrir
           </a>
         </div>
-        <p className="text-xs text-[#64748B]">Mande este link para o cliente via WhatsApp para retentar o pagamento no Stripe.</p>
+        <p className="text-xs text-[#64748B]">Mande este link para o cliente via WhatsApp.</p>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-1.5">
-      <button
-        onClick={generate}
-        disabled={pending}
-        className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
-      >
-        {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
-        {pending ? "Gerando link…" : "Retentar via Stripe"}
-      </button>
+      <div className="flex gap-2 flex-wrap">
+        {hasStripeCard && (
+          <button onClick={retryAuto} disabled={pending}
+            className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50">
+            {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
+            {pending ? "Retentando…" : "Retentar automaticamente"}
+          </button>
+        )}
+        <button onClick={generateLink} disabled={pending}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-[#6366F1] text-[#6366F1] hover:bg-[#EEF2FF] text-sm font-semibold rounded-lg transition-colors disabled:opacity-50">
+          {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+          Enviar link ao cliente
+        </button>
+      </div>
+      {!hasStripeCard && (
+        <p className="text-xs text-[#94A3B8]">Cartão não salvo neste pedido — somente link disponível.</p>
+      )}
       {error && <p className="text-xs text-[#DC2626]">{error}</p>}
     </div>
   );
 }
 
-export function QuickActions({ orderId, currentStatus }: { orderId: string; currentStatus: string }) {
+export function QuickActions({ orderId, currentStatus, hasStripeCard }: { orderId: string; currentStatus: string; hasStripeCard?: boolean }) {
   const [pending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -424,7 +450,7 @@ export function QuickActions({ orderId, currentStatus }: { orderId: string; curr
         </button>
       )}
       {(currentStatus === "cancelled" || currentStatus === "failed" || currentStatus === "pending") && (
-        <StripeRetryButton orderId={orderId} />
+        <StripeRetryButton orderId={orderId} hasStripeCard={hasStripeCard} />
       )}
 
       <div className="ml-auto">

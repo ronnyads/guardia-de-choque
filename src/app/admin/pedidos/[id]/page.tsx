@@ -67,6 +67,8 @@ export default async function PedidoDetailPage({ params }: PageProps) {
     Array.isArray(order.items) ? order.items : [];
   const addr = order.customer_address as Record<string, string> | null;
   const isPix = order.payment_method === "pix";
+  const meta = order.metadata as Record<string, string> | null;
+  const hasStripeCard = !!(meta?.stripe_customer_id && meta?.stripe_payment_method_id);
 
   // Subtotal = soma dos itens. total_amount já tem desconto PIX aplicado.
   const itemsSubtotal = items.reduce((s, i) => s + Number(i.price ?? 0), 0)
@@ -108,7 +110,7 @@ export default async function PedidoDetailPage({ params }: PageProps) {
 
       {/* ── Quick actions ── */}
       <div className="bg-white border border-[#E2E8F0] rounded-xl px-5 py-3.5 shadow-sm">
-        <QuickActions orderId={order.id} currentStatus={order.status} />
+        <QuickActions orderId={order.id} currentStatus={order.status} hasStripeCard={hasStripeCard} />
       </div>
 
       {/* ── Main grid ── */}
