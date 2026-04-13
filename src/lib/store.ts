@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 import { CartItem, StoreProduct } from "@/types";
 import { kwaiAddToCart } from "@/components/analytics/KwaiPixel";
 import { gaAddToCart } from "@/components/analytics/GoogleAnalytics";
+import { metaAddToCart } from "@/lib/meta-events";
 
 interface CartStore {
   items: CartItem[];
@@ -44,16 +45,8 @@ export const useCartStore = create<CartStore>()(
         kwaiAddToCart(product.price * qty);
         // GA4 — add_to_cart
         gaAddToCart({ id: product.id, name: product.name, price: product.price, quantity: qty });
-        // Meta Pixel — AddToCart com eventID único para deduplicação futura via CAPI
-        if (typeof window !== "undefined" && window.fbq) {
-          const eventId = `atc_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-          window.fbq("track", "AddToCart", {
-            content_ids:  [product.id],
-            content_name: product.name,
-            value:        (product.price * qty).toFixed(2),
-            currency:     "BRL",
-          }, { eventID: eventId });
-        }
+        // Meta Pixel + CAPI — AddToCart com deduplicação por eventID
+        metaAddToCart({ productSlug: product.id, productName: product.name, value: product.price * qty });
       },
 
       removeItem: (productId) => {

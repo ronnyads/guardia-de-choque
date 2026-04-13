@@ -9,6 +9,7 @@ import CheckoutForm from "./CheckoutForm";
 import UpsellModal from "./UpsellModal";
 import { kwaiPurchase, kwaiCheckout } from "@/components/analytics/KwaiPixel";
 import { gaBeginCheckout, gaPurchase } from "@/components/analytics/GoogleAnalytics";
+import { metaInitiateCheckout, metaPurchase } from "@/lib/meta-events";
 
 interface CheckoutConfig {
   enableStripeFallback: boolean;
@@ -56,9 +57,8 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
   useEffect(() => {
     if (checkoutFiredRef.current) return;
     checkoutFiredRef.current = true;
-    if (typeof window !== "undefined" && window.fbq) {
-      window.fbq("track", "InitiateCheckout", { content_name: kit.name, currency: "BRL", value: kit.promoPrice });
-    }
+    // Meta Pixel + CAPI — InitiateCheckout com deduplicação
+    metaInitiateCheckout({ productSlug: kit.slug, productName: kit.name, value: kit.promoPrice });
     kwaiCheckout(kit.promoPrice);
     gaBeginCheckout({ id: kit.slug, name: kit.name, value: kit.promoPrice });
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,12 +76,8 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
   };
 
   const firePurchasePixel = (value: number, eventId?: string) => {
-    if (typeof window !== "undefined" && window.fbq) {
-      window.fbq("track", "Purchase",
-        { value: value.toFixed(2), currency: "BRL", content_name: kit.name },
-        eventId ? { eventID: eventId } : undefined
-      );
-    }
+    // Meta Pixel + deduplicação com eventID do backend (CAPI já foi disparado pelo server)
+    metaPurchase({ value, productName: kit.name, eventId: eventId ?? `purchase_${Date.now()}` });
     kwaiPurchase(value, eventId ?? "");
     if (eventId) gaPurchase({ transactionId: eventId, value, itemName: kit.name });
   };
