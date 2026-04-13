@@ -39,8 +39,8 @@ export default function ProductCard({ product, index = 0 }: Props) {
       className="group flex flex-col bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden hover:border-[#94A3B8] hover:shadow-md transition-all duration-200 cursor-pointer"
     >
       {/* Name above image */}
-      <Link href={`/produto/${product.slug}`} tabIndex={-1} aria-hidden className="px-4 pt-4 pb-2">
-        <h3 className="text-[13px] font-semibold text-[#0F172A] leading-snug line-clamp-2 group-hover:underline underline-offset-2 decoration-[#CBD5E1]">
+      <Link href={`/produto/${product.slug}`} className="px-4 pt-4 pb-2 block">
+        <h3 className="text-[13px] font-semibold text-[#0F172A] leading-snug line-clamp-2">
           {product.name}
         </h3>
       </Link>
