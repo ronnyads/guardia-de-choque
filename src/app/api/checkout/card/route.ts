@@ -39,44 +39,75 @@ export async function POST(request: Request) {
     const firstName = nameParts[0];
     const lastName  = nameParts.slice(1).join(" ") || "Cliente";
     const addr      = body.address || {};
+    const deviceId  = sanitizeString(body.deviceId, 128) || undefined;
+    const clientIp  = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+                   ?? request.headers.get('x-real-ip')
+                   ?? undefined;
+
+    const zipCode      = String(addr.cep  || "").replace(/\D/g, "");
+    const streetName   = sanitizeString(addr.street, 100);
+    const streetNumber = sanitizeString(addr.number, 20);
+    const neighborhood = sanitizeString(addr.neighborhood, 100);
+    const city         = sanitizeString(addr.city, 100);
+    const federalUnit  = sanitizeString(addr.state, 2);
 
     const result = await payment.create({
       body: {
         transaction_amount: amount,
         token,
-        description:   sanitizeString(body.itemsDescription, 250) || "Compra Guardia de Choque",
+        description:        sanitizeString(body.itemsDescription, 250) || "Compra Guardia de Choque",
+        statement_descriptor: "GUARDIA CHOQUE",
         installments,
-        payment_method_id: brand,
+        payment_method_id:  brand,
+        ...(deviceId ? { device_id: deviceId } : {}),
         payer: {
           email,
           first_name: firstName,
           last_name:  lastName,
           identification: { type: docType, number: cleanDoc },
+          ...(clientIp ? { ip_address: clientIp } : {}),
           address: {
-            zip_code:      String(addr.cep  || "").replace(/\D/g, ""),
-            street_name:   sanitizeString(addr.street, 100),
-            street_number: sanitizeString(addr.number, 20),
-            neighborhood:  sanitizeString(addr.neighborhood, 100),
-            city:          sanitizeString(addr.city, 100),
-            federal_unit:  sanitizeString(addr.state, 2),
+            zip_code:      zipCode,
+            street_name:   streetName,
+            street_number: streetNumber,
+            neighborhood,
+            city,
+            federal_unit:  federalUnit,
           },
         },
         additional_info: {
+          ip_address: clientIp ?? "",
           payer: {
-            first_name: firstName,
-            last_name:  lastName,
+            first_name:        firstName,
+            last_name:         lastName,
+            registration_date: "2000-01-01T00:00:00.000-03:00", // cliente novo = data neutra
             phone: {
               area_code: body.phone ? String(body.phone).replace(/\D/g, "").substring(0, 2) : "",
               number:    body.phone ? String(body.phone).replace(/\D/g, "").substring(2) : "",
             },
+            address: {
+              zip_code:      zipCode,
+              street_name:   streetName,
+              street_number: streetNumber,
+            },
           },
           items: [{
-            id: "gd-choque-1",
-            title: sanitizeString(body.itemsDescription, 100) || "Guardia de Choque",
+            id:          String(body.kitId || "guardia-de-choque"),
+            title:       sanitizeString(body.itemsDescription, 100) || "Guardia de Choque",
             description: "Kit Defesa Pessoal",
-            quantity: 1,
-            unit_price: amount,
+            category_id: "others",
+            quantity:    Math.max(1, parseInt(String(body.qty || "1"), 10) || 1),
+            unit_price:  amount,
           }],
+          shipments: {
+            receiver_address: {
+              zip_code:      zipCode,
+              street_name:   streetName,
+              street_number: streetNumber,
+              floor:         sanitizeString(addr.complement, 50) || "",
+              apartment:     sanitizeString(addr.complement, 50) || "",
+            },
+          },
         },
       },
     });

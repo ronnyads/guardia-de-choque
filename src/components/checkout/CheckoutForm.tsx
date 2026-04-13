@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import Script from "next/script";
 import { Lock, CreditCard, ShieldCheck, User, MapPin, CreditCard as PayIcon } from "lucide-react";
 import { gaAddPaymentInfo } from "@/components/analytics/GoogleAnalytics";
 import { kwaiAddPaymentInfo } from "@/components/analytics/KwaiPixel";
 import { metaAddPaymentInfo, storeCheckoutUser } from "@/lib/meta-events";
+
+declare global {
+  interface Window {
+    MP_DEVICE_SESSION_ID?: string;
+  }
+}
 
 // --- VALIDATION HELPERS ---
 const validateCPF = (cpf: string) => {
@@ -288,10 +295,18 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
       if (cleanCard.startsWith("6")) detectedBrand = "elo";
     }
 
-    onFinish({ paymentMethod, token: finalToken, cardData: { ...cardData, brand: detectedBrand }, personalData, document: digits, address });
+    const deviceId = typeof window !== 'undefined' ? (window.MP_DEVICE_SESSION_ID ?? null) : null;
+    onFinish({ paymentMethod, token: finalToken, cardData: { ...cardData, brand: detectedBrand }, personalData, document: digits, address, deviceId });
   };
 
   return (
+    <>
+      {/* Script de device fingerprint do Mercado Pago — melhora aprovação */}
+      <Script
+        src="https://www.mercadopago.com/v2/security.js"
+        strategy="afterInteractive"
+        data-output="MP_DEVICE_SESSION_ID"
+      />
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
       {/* ── 1. Identificação ── */}
@@ -601,5 +616,6 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
         </span>
       </div>
     </form>
+    </>
   );
 }
