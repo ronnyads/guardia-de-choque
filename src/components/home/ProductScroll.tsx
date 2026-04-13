@@ -111,6 +111,15 @@ export default function ProductScroll({ title, subtitle, bg = "white", products 
                   (e.currentTarget as HTMLElement).style.boxShadow = "none";
                 }}
               >
+                {/* Name above image */}
+                <Link
+                  href={`/produto/${product.slug}`}
+                  className="px-4 pt-4 pb-2 block text-[13px] font-semibold line-clamp-2 leading-snug"
+                  style={{ color: "#09090B" }}
+                >
+                  {product.name}
+                </Link>
+
                 {/* Image */}
                 <div className="relative" style={{ aspectRatio: "1", background: "#F9FAFB" }}>
                   <Link href={`/produto/${product.slug}`} className="block w-full h-full">
@@ -164,16 +173,6 @@ export default function ProductScroll({ title, subtitle, bg = "white", products 
 
                 {/* Info */}
                 <div className="flex flex-col gap-2 p-4 flex-1">
-                  <Link
-                    href={`/produto/${product.slug}`}
-                    className="text-[13px] font-semibold line-clamp-2 leading-snug transition-colors"
-                    style={{ color: "#09090B" }}
-                    onMouseEnter={(e) => { (e.target as HTMLElement).style.color = "#52525B"; }}
-                    onMouseLeave={(e) => { (e.target as HTMLElement).style.color = "#09090B"; }}
-                  >
-                    {product.name}
-                  </Link>
-
                   {/* Stars */}
                   <div className="flex items-center gap-1.5">
                     <div className="flex" aria-label={`${product.rating} estrelas`}>
