@@ -18,6 +18,8 @@ export async function POST(request: Request) {
     if (!email)    return NextResponse.json({ success: false, error: "E-mail inválido." }, { status: 400 });
     if (!document) return NextResponse.json({ success: false, error: "Documento inválido." }, { status: 400 });
 
+    const shippingCost = Math.min(Math.max(Number(body.shippingCost ?? 0), 0), 200);
+
     // Valida o preco contra o catalogo do servidor
     await validateAmount(amount, {
       kitId:         String(body.kitId || ""),
@@ -25,6 +27,7 @@ export async function POST(request: Request) {
       hasBump:       Boolean(body.hasBump),
       hasUpsell:     Boolean(body.hasUpsell),
       paymentMethod: "pix",
+      shippingCost,
     });
 
     const cleanDoc  = document.replace(/\D/g, "");
@@ -70,6 +73,8 @@ export async function POST(request: Request) {
             external_payment_id: String(result.id),
             status:              'pending',
             items:               [{ slug: kitSlug, name: prod.productName, price: amount, qty }],
+            shipping_method:     sanitizeString(body.shippingMethod, 100) || null,
+            shipping_cost:       shippingCost,
           });
           if (insertErr) {
             console.error('[PIX] Erro ao inserir pedido:', insertErr.message);

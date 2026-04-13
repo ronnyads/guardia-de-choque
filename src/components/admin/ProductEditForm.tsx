@@ -34,6 +34,10 @@ interface DbProduct {
   upsell_price: number | null;
   downsell_label: string | null;
   downsell_price: number | null;
+  weight_g: number | null;
+  length_cm: number | null;
+  width_cm: number | null;
+  height_cm: number | null;
 }
 
 interface RelatedVariant {
@@ -451,6 +455,32 @@ export default function ProductEditForm({ product, relatedVariants: initialVaria
                 )}
               </div>
             )}
+
+            {/* Embalagem para envio */}
+            <div className={sectionCls}>
+              <div className="px-6 py-4 border-b border-[#F1F5F9]">
+                <h2 className="font-semibold text-[#0F172A]">Embalagem para Envio</h2>
+                <p className="text-xs text-[#94A3B8] mt-0.5">Usado para calcular o frete via SuperFrete.</p>
+              </div>
+              <div className="p-6 grid grid-cols-2 gap-4">
+                <div>
+                  <label className={labelCls}>Peso (g)</label>
+                  <input type="number" min="1" name="weight_g" defaultValue={product?.weight_g ?? 500} className={inputCls} placeholder="500" />
+                </div>
+                <div>
+                  <label className={labelCls}>Comprimento (cm)</label>
+                  <input type="number" min="1" name="length_cm" defaultValue={product?.length_cm ?? 20} className={inputCls} placeholder="20" />
+                </div>
+                <div>
+                  <label className={labelCls}>Largura (cm)</label>
+                  <input type="number" min="1" name="width_cm" defaultValue={product?.width_cm ?? 15} className={inputCls} placeholder="15" />
+                </div>
+                <div>
+                  <label className={labelCls}>Altura (cm)</label>
+                  <input type="number" min="1" name="height_cm" defaultValue={product?.height_cm ?? 5} className={inputCls} placeholder="5" />
+                </div>
+              </div>
+            </div>
 
             {/* Funil de Vendas */}
             <div className={sectionCls}>

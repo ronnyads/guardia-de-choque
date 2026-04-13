@@ -85,6 +85,8 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
   const [hasOrderBump, setHasOrderBump] = useState(false);
   const upsellPrice = checkoutConfig.upsellPrice;
 
+  const [shippingOption, setShippingOption] = useState<{ name: string; price: number; deliveryDays: number } | null>(null);
+
   const [showUpsell, setShowUpsell] = useState(false);
   const [checkoutComplete, setCheckoutComplete] = useState(false);
   const [isProcessingFull, setIsProcessingFull] = useState(false);
@@ -95,7 +97,8 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
 
   // Calcula subtotais
   const itemsTotal = kit.promoPrice * qty;
-  const total = itemsTotal + (hasOrderBump ? orderBumpPrice : 0);
+  const shippingCost = shippingOption?.price ?? 0;
+  const total = itemsTotal + (hasOrderBump ? orderBumpPrice : 0) + shippingCost;
 
   // Efeito Mágico de Polling do PIX
   useEffect(() => {
@@ -132,7 +135,10 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
     setGatewayStatus("Conectando operadora bancária\u2026");
 
     const finalItemsTotal = itemsTotal + (hasOrderBump ? orderBumpPrice : 0) + (acceptedUpsell ? upsellPrice : 0);
-    const amountWithDiscount = paymentData.paymentMethod === 'pix' ? finalItemsTotal * 0.95 : finalItemsTotal;
+    const finalShipping = paymentData.shippingCost ?? 0;
+    const amountWithDiscount = paymentData.paymentMethod === 'pix'
+      ? finalItemsTotal * 0.95 + finalShipping
+      : finalItemsTotal + finalShipping;
 
     const recordDecline = (reason: string, amount: number) => {
       fetch('/api/leads/decline', {
@@ -162,6 +168,8 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
       document: paymentData.document,
       address: paymentData.address,
       deviceId: paymentData.deviceId ?? null,
+      shippingCost:   finalShipping,
+      shippingMethod: paymentData.shippingMethod ?? null,
       itemsDescription: `${kit.name}${hasOrderBump ? ' + Garantia Premium' : ''}${acceptedUpsell ? ' + Mini Taser 12.000KV' : ''}`
     };
 
@@ -337,6 +345,7 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
             orderBumpPrice={orderBumpPrice}
             kitSlug={kit.slug}
             kitPrice={kit.promoPrice}
+            onShippingChange={setShippingOption}
           />
         </div>
 
@@ -346,6 +355,7 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
             hasOrderBump={hasOrderBump}
             orderBumpPrice={orderBumpPrice}
             total={total}
+            shippingOption={shippingOption}
           />
         </div>
       </div>

@@ -30,6 +30,8 @@ export async function POST(request: Request) {
 
     const stripe = getStripe();
 
+    const shippingCost = Math.min(Math.max(Number(body.shippingCost ?? 0), 0), 200);
+
     // Valida preco contra o catalogo do servidor
     await validateAmount(amount, {
       kitId:         String(body.kitId || ""),
@@ -37,6 +39,7 @@ export async function POST(request: Request) {
       hasBump:       Boolean(body.hasBump),
       hasUpsell:     Boolean(body.hasUpsell),
       paymentMethod: "cartao",
+      shippingCost,
     });
 
     const fullYear = Number(body.cardExpYear) < 100
@@ -114,6 +117,8 @@ export async function POST(request: Request) {
             external_payment_id: paymentIntent.id,
             status:              paymentIntent.status === 'succeeded' ? 'approved' : 'pending',
             items:               [{ slug: kitSlug, name: prod.productName, price: amount, qty }],
+            shipping_method:     sanitizeString(body.shippingMethod, 100) || null,
+            shipping_cost:       shippingCost,
             metadata: {
               stripe_customer_id:        customerId ?? null,
               stripe_payment_method_id:  paymentMethod.id,

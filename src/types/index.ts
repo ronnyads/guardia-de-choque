@@ -35,6 +35,10 @@ export interface StoreProduct {
   upsellPrice?: number;
   downsellLabel?: string;
   downsellPrice?: number;
+  weightG?: number;
+  lengthCm?: number;
+  widthCm?: number;
+  heightCm?: number;
 }
 
 export interface StoreFeature {

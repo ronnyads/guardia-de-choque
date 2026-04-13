@@ -77,6 +77,14 @@ const inputClass = "w-full bg-white border border-[#E2E8F0] rounded-xl px-4 py-3
 const inputError = "w-full bg-white border border-[#FCA5A5] rounded-xl px-4 py-3 text-[14px] text-[#0F172A] placeholder-[#CBD5E1] focus:outline-none focus:border-[#DC2626] focus:ring-1 focus:ring-[#DC2626] transition-all";
 const labelClass = "block text-[12px] font-semibold text-[#475569] mb-1.5 uppercase tracking-wide";
 
+interface ShippingOption {
+  id: number;
+  name: string;
+  price: number;
+  deliveryDays: number;
+  company: string;
+}
+
 interface Props {
   onFinish: (paymentData: unknown) => void;
   hasOrderBump: boolean;
@@ -84,9 +92,10 @@ interface Props {
   orderBumpPrice: number;
   kitSlug?: string;
   kitPrice?: number;
+  onShippingChange?: (option: ShippingOption | null) => void;
 }
 
-export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, orderBumpPrice, kitSlug, kitPrice }: Props) {
+export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, orderBumpPrice, kitSlug, kitPrice, onShippingChange }: Props) {
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "cartao">("cartao");
   const [paymentTracked, setPaymentTracked] = useState(false);
 
@@ -201,6 +210,37 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
   });
   const [loadingCep, setLoadingCep] = useState(false);
 
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
+  const [loadingShipping, setLoadingShipping] = useState(false);
+
+  const fetchShipping = async (cep: string) => {
+    if (!kitSlug) return;
+    setLoadingShipping(true);
+    try {
+      const res = await fetch('/api/shipping/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cep, slug: kitSlug, qty: 1 }),
+      });
+      const data = await res.json();
+      const opts: ShippingOption[] = data.options ?? [];
+      setShippingOptions(opts);
+      const first = opts[0] ?? null;
+      setSelectedShipping(first);
+      onShippingChange?.(first);
+    } catch {
+      // silent — não bloqueia checkout
+    } finally {
+      setLoadingShipping(false);
+    }
+  };
+
+  const handleSelectShipping = (opt: ShippingOption) => {
+    setSelectedShipping(opt);
+    onShippingChange?.(opt);
+  };
+
   const handleCepChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "");
     if (value.length > 5) value = value.replace(/^(\d{5})(\d)/, "$1-$2");
@@ -224,6 +264,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
       } finally {
         setLoadingCep(false);
       }
+      fetchShipping(value.replace("-", ""));
     }
   };
 
@@ -296,7 +337,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
     }
 
     const deviceId = typeof window !== 'undefined' ? (window.MP_DEVICE_SESSION_ID ?? null) : null;
-    onFinish({ paymentMethod, token: finalToken, cardData: { ...cardData, brand: detectedBrand }, personalData, document: digits, address, deviceId });
+    onFinish({ paymentMethod, token: finalToken, cardData: { ...cardData, brand: detectedBrand }, personalData, document: digits, address, deviceId, shippingMethod: selectedShipping?.name ?? null, shippingCost: selectedShipping?.price ?? 0 });
   };
 
   return (
@@ -426,6 +467,45 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
           </div>
         </div>
       </section>
+
+      {/* ── Frete ── */}
+      {(loadingShipping || shippingOptions.length > 0) && (
+        <section className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden">
+          <div className="flex items-center gap-3 px-6 py-4 border-b border-[#F1F5F9]">
+            <div className="w-7 h-7 rounded-full bg-[#0F172A] text-white text-[12px] font-bold flex items-center justify-center shrink-0">✓</div>
+            <h2 className="font-semibold text-[#0F172A] text-[15px]">Entrega</h2>
+            {loadingShipping && <span className="ml-auto text-[11px] text-[#059669] animate-pulse">Calculando opções…</span>}
+          </div>
+          <div className="p-4 flex flex-col gap-2">
+            {shippingOptions.map((opt) => {
+              const active = selectedShipping?.id === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => handleSelectShipping(opt)}
+                  className={`flex items-center justify-between w-full px-4 py-3 rounded-xl border-2 text-left transition-all ${
+                    active ? "border-[#0F172A] bg-[#F8FAFC]" : "border-[#E2E8F0] hover:border-[#94A3B8]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${active ? "border-[#0F172A]" : "border-[#CBD5E1]"}`}>
+                      {active && <div className="w-2 h-2 rounded-full bg-[#0F172A]" />}
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-semibold text-[#0F172A]">{opt.name}</p>
+                      <p className="text-[11px] text-[#94A3B8]">{opt.deliveryDays} dias úteis</p>
+                    </div>
+                  </div>
+                  <span className={`text-[14px] font-bold ${opt.price === 0 ? "text-[#059669]" : "text-[#0F172A]"}`}>
+                    {opt.price === 0 ? "GRÁTIS" : `R$ ${opt.price.toFixed(2).replace(".", ",")}`}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ── 3. Pagamento ── */}
       <section className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden">

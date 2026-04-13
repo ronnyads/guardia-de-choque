@@ -63,6 +63,11 @@ export async function updateProduct(formData: FormData) {
   const downsell_label = (formData.get('downsell_label') as string) || null;
   const downsell_price = parseFloat((formData.get('downsell_price') as string) || '0') || null;
 
+  const weight_g  = parseInt((formData.get('weight_g')  as string) || '500') || 500;
+  const length_cm = parseInt((formData.get('length_cm') as string) || '20')  || 20;
+  const width_cm  = parseInt((formData.get('width_cm')  as string) || '15')  || 15;
+  const height_cm = parseInt((formData.get('height_cm') as string) || '5')   || 5;
+
   const { error } = await supabase
     .from('products')
     .update({
@@ -89,6 +94,10 @@ export async function updateProduct(formData: FormData) {
       upsell_price,
       downsell_label,
       downsell_price,
+      weight_g,
+      length_cm,
+      width_cm,
+      height_cm,
     })
     .eq('id', id)
     .eq('tenant_id', tenantId);

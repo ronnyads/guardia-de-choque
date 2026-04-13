@@ -101,6 +101,23 @@ const DEFAULT_CONFIG: TenantConfig = {
   updated_at: new Date().toISOString(),
 };
 
+export async function getShippingConfig(tenantId: string): Promise<{ originCep: string; isFree: boolean }> {
+  try {
+    const supabase = createServiceSupabase();
+    const { data } = await supabase
+      .from('tenant_config')
+      .select('shipping_origin_cep, shipping_free')
+      .eq('tenant_id', tenantId)
+      .single();
+    return {
+      originCep: data?.shipping_origin_cep ?? '',
+      isFree:    data?.shipping_free !== false,
+    };
+  } catch {
+    return { originCep: '', isFree: true };
+  }
+}
+
 export async function getStoreConfig(slug?: string): Promise<TenantConfig> {
   const tenantSlug = slug ?? process.env.STORE_SLUG ?? 'guardia-de-choque';
 

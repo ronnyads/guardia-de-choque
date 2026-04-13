@@ -24,6 +24,8 @@ export async function POST(request: Request) {
     if (!document) return NextResponse.json({ success: false, error: "Documento invalido." }, { status: 400 });
     if (!token)    return NextResponse.json({ success: false, error: "Token de cartao ausente." }, { status: 400 });
 
+    const shippingCost = Math.min(Math.max(Number(body.shippingCost ?? 0), 0), 200);
+
     // Valida preco contra o catalogo do servidor
     await validateAmount(amount, {
       kitId:         String(body.kitId || ""),
@@ -31,6 +33,7 @@ export async function POST(request: Request) {
       hasBump:       Boolean(body.hasBump),
       hasUpsell:     Boolean(body.hasUpsell),
       paymentMethod: "cartao",
+      shippingCost,
     });
 
     const cleanDoc  = document.replace(/\D/g, "");
@@ -136,6 +139,8 @@ export async function POST(request: Request) {
             external_payment_id: String(result.id),
             status:              result.status === 'approved' ? 'approved' : 'pending',
             items:               [{ slug: kitSlug, name: prod.productName, price: amount, qty }],
+            shipping_method:     sanitizeString(body.shippingMethod, 100) || null,
+            shipping_cost:       shippingCost,
           });
           if (insertErr) {
             console.error('[MP Card] Erro ao inserir pedido:', insertErr.message);

@@ -17,6 +17,7 @@ export interface PriceParams {
   hasBump:       boolean;
   hasUpsell:     boolean;
   paymentMethod: "pix" | "cartao";
+  shippingCost?: number;
 }
 
 async function getProductData(slug: string): Promise<{ promo_price: number; bump_price: number | null; upsell_price: number | null }> {
@@ -51,6 +52,9 @@ export async function calculateExpectedAmount(p: PriceParams): Promise<number> {
   if (p.hasBump)   total += bumpPrice;
   if (p.hasUpsell) total += upsellPrice;
   if (p.paymentMethod === "pix") total = total * (1 - PIX_DISCOUNT);
+
+  const shipping = Math.min(Math.max(Number(p.shippingCost ?? 0), 0), 200);
+  total += shipping;
 
   return Math.round(total * 100) / 100;
 }

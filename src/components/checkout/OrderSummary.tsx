@@ -5,14 +5,21 @@ import { ShieldCheck, Truck, Lock, Clock, Star, Package } from "lucide-react";
 import { Kit } from "@/types";
 import { useEffect, useState } from "react";
 
+interface ShippingOption {
+  name: string;
+  price: number;
+  deliveryDays: number;
+}
+
 interface Props {
   kit: Kit;
   hasOrderBump: boolean;
   orderBumpPrice: number;
   total: number;
+  shippingOption?: ShippingOption | null;
 }
 
-export default function OrderSummary({ kit, hasOrderBump, orderBumpPrice, total }: Props) {
+export default function OrderSummary({ kit, hasOrderBump, orderBumpPrice, total, shippingOption }: Props) {
   const [timeLeft, setTimeLeft] = useState(15 * 60);
 
   useEffect(() => {
@@ -46,8 +53,20 @@ export default function OrderSummary({ kit, hasOrderBump, orderBumpPrice, total 
       <div className="bg-[#059669] rounded-xl px-4 py-3 flex items-center gap-2.5">
         <Truck className="w-5 h-5 text-white shrink-0" />
         <div>
-          <p className="text-white font-bold text-[13px]">FRETE GRATIS para todo o Brasil</p>
-          <p className="text-[#A7F3D0] text-[11px] mt-0.5">Entrega em 5-12 dias uteis via Correios</p>
+          {shippingOption ? (
+            <>
+              <p className="text-white font-bold text-[13px]">
+                {shippingOption.price === 0 ? 'FRETE GRÁTIS' : `Frete: R$ ${shippingOption.price.toFixed(2).replace('.', ',')}`}
+                {' — '}{shippingOption.name}
+              </p>
+              <p className="text-[#A7F3D0] text-[11px] mt-0.5">Entrega em {shippingOption.deliveryDays} dias úteis</p>
+            </>
+          ) : (
+            <>
+              <p className="text-white font-bold text-[13px]">FRETE GRATIS para todo o Brasil</p>
+              <p className="text-[#A7F3D0] text-[11px] mt-0.5">Entrega em 5-12 dias uteis via Correios</p>
+            </>
+          )}
         </div>
       </div>
 
@@ -94,9 +113,13 @@ export default function OrderSummary({ kit, hasOrderBump, orderBumpPrice, total 
           </div>
           <div className="flex justify-between text-[13px]">
             <span className="text-[#059669] font-semibold flex items-center gap-1.5">
-              <Truck className="w-3.5 h-3.5" />Frete Expresso BR
+              <Truck className="w-3.5 h-3.5" />{shippingOption?.name ?? 'Frete Expresso BR'}
             </span>
-            <span className="text-[#059669] font-bold">GRÁTIS</span>
+            <span className="text-[#059669] font-bold">
+              {shippingOption && shippingOption.price > 0
+                ? `R$ ${shippingOption.price.toFixed(2).replace('.', ',')}`
+                : 'GRÁTIS'}
+            </span>
           </div>
           <div className="flex justify-between items-center pt-3 border-t border-[#E2E8F0] mt-1">
             <span className="font-bold text-[#0F172A] text-[15px]">Total</span>
@@ -119,11 +142,11 @@ export default function OrderSummary({ kit, hasOrderBump, orderBumpPrice, total 
           <ul className="mt-1.5 space-y-1">
             <li className="text-[12px] text-[#475569] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#059669] shrink-0" />
-              Prazo: 5 a 12 dias uteis
+              {shippingOption ? `Prazo: ${shippingOption.deliveryDays} dias úteis` : 'Prazo: 5 a 12 dias uteis'}
             </li>
             <li className="text-[12px] text-[#475569] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#059669] shrink-0" />
-              Envio via Correios com rastreio
+              {shippingOption ? `Envio via ${shippingOption.name} com rastreio` : 'Envio via Correios com rastreio'}
             </li>
             <li className="text-[12px] text-[#475569] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#059669] shrink-0" />
