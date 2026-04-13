@@ -29,9 +29,10 @@ export async function POST(request: Request) {
     const docType   = cleanDoc.length > 11 ? "CNPJ" : "CPF";
     const nameParts = name.trim().split(" ");
 
+    const roundedAmount = Math.round(amount * 100) / 100;
     const result = await payment.create({
       body: {
-        transaction_amount: amount,
+        transaction_amount: roundedAmount,
         description: sanitizeString(body.itemsDescription, 250) || "Compra Guardia de Choque",
         payment_method_id: "pix",
         payer: {
