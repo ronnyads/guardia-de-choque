@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import {
   XCircle, CheckCircle2, RotateCcw,
-  ChevronDown, Loader2, Save, Trash2, Pencil, MapPin,
+  ChevronDown, Loader2, Save, Trash2, Pencil, MapPin, CreditCard, Copy, ExternalLink,
 } from "lucide-react";
 import {
   updateOrderStatus,
@@ -11,6 +11,7 @@ import {
   updateOrderNotes,
   updateOrderAddress,
   deleteOrder,
+  generateStripeRetryLink,
 } from "@/app/admin/pedidos/[id]/actions";
 
 const STATUS_OPTIONS = [
@@ -313,6 +314,79 @@ export function AddressForm({ orderId, currentAddress }: { orderId: string; curr
   );
 }
 
+export function StripeRetryButton({ orderId }: { orderId: string }) {
+  const [pending, startTransition] = useTransition();
+  const [link, setLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const generate = () => {
+    setError(null);
+    startTransition(async () => {
+      try {
+        const url = await generateStripeRetryLink(orderId);
+        setLink(url);
+      } catch (e: unknown) {
+        setError((e as Error).message ?? "Erro ao gerar link.");
+      }
+    });
+  };
+
+  const copy = () => {
+    if (!link) return;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (link) {
+    return (
+      <div className="flex flex-col gap-2 p-3 bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl">
+        <p className="text-xs font-semibold text-[#15803D] flex items-center gap-1.5">
+          <CheckCircle2 className="w-3.5 h-3.5" /> Link Stripe gerado — válido por 24h
+        </p>
+        <div className="flex gap-2">
+          <input
+            readOnly
+            value={link}
+            className="flex-1 text-xs bg-white border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-[#475569] truncate"
+          />
+          <button
+            onClick={copy}
+            className="flex items-center gap-1 px-3 py-1.5 bg-[#0F172A] text-white text-xs font-semibold rounded-lg hover:bg-[#1E293B] transition-colors"
+          >
+            {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-[#4ADE80]" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? "Copiado!" : "Copiar"}
+          </button>
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-3 py-1.5 border border-[#E2E8F0] text-[#64748B] text-xs font-semibold rounded-lg hover:bg-[#F8FAFC] transition-colors"
+          >
+            <ExternalLink className="w-3.5 h-3.5" /> Abrir
+          </a>
+        </div>
+        <p className="text-xs text-[#64748B]">Mande este link para o cliente via WhatsApp para retentar o pagamento no Stripe.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <button
+        onClick={generate}
+        disabled={pending}
+        className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] hover:bg-[#4F46E5] text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+      >
+        {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+        {pending ? "Gerando link…" : "Retentar via Stripe"}
+      </button>
+      {error && <p className="text-xs text-[#DC2626]">{error}</p>}
+    </div>
+  );
+}
+
 export function QuickActions({ orderId, currentStatus }: { orderId: string; currentStatus: string }) {
   const [pending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -348,6 +422,9 @@ export function QuickActions({ orderId, currentStatus }: { orderId: string; curr
         >
           <XCircle className="w-4 h-4" /> Cancelar
         </button>
+      )}
+      {(currentStatus === "cancelled" || currentStatus === "failed" || currentStatus === "pending") && (
+        <StripeRetryButton orderId={orderId} />
       )}
 
       <div className="ml-auto">
