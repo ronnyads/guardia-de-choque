@@ -22,7 +22,7 @@ type IntegrationRow = Omit<TenantIntegration, 'tenant_id' | 'extra_config'> & {
   secret_key_encrypted?: string | null;
 };
 type Section = 'marca' | 'contato' | 'integracoes' | 'seo' | 'checkout' | 'recuperacao';
-type FilterId = 'todos' | 'pagamentos' | 'analytics' | 'instalado';
+type FilterId = 'todos' | 'pagamentos' | 'analytics' | 'envio' | 'instalado';
 
 interface Props {
   config: TenantConfig | null;
@@ -126,7 +126,7 @@ const INTEGRATIONS: IntegrationMeta[] = [
     provider: 'superfrete',
     label: 'SuperFrete',
     description: 'Calcule frete em tempo real e gere etiquetas de envio automaticamente.',
-    category: 'pagamentos',
+    category: 'envio',
     color: '#FF6B00',
     initials: 'SF',
     pubLabel: 'Token da API',
@@ -524,6 +524,7 @@ function IntegrationsSection({ integrations, onOpen }: {
     { id: 'todos',      label: 'Todos' },
     { id: 'pagamentos', label: 'Pagamentos' },
     { id: 'analytics',  label: 'Analytics' },
+    { id: 'envio',      label: 'Envio' },
     { id: 'instalado',  label: 'Instalado' },
   ];
 
@@ -537,6 +538,7 @@ function IntegrationsSection({ integrations, onOpen }: {
 
   const pagamentos = filtered.filter(i => i.category === 'pagamentos');
   const analytics  = filtered.filter(i => i.category === 'analytics');
+  const envio      = filtered.filter(i => i.category === 'envio');
 
   return (
     <div>
@@ -587,6 +589,18 @@ function IntegrationsSection({ integrations, onOpen }: {
           <p className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-widest mb-3">Analytics & Pixels</p>
           <div className="grid grid-cols-2 gap-4">
             {analytics.map(i => (
+              <IntegrationCard key={i.provider} meta={i} existing={getExisting(i.provider)} onOpen={onOpen} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Grupo Envio */}
+      {envio.length > 0 && (
+        <div className="mb-7">
+          <p className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-widest mb-3">Envio & Logística</p>
+          <div className="grid grid-cols-2 gap-4">
+            {envio.map(i => (
               <IntegrationCard key={i.provider} meta={i} existing={getExisting(i.provider)} onOpen={onOpen} />
             ))}
           </div>
