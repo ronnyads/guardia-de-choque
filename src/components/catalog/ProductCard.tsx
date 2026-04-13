@@ -38,6 +38,13 @@ export default function ProductCard({ product, index = 0 }: Props) {
       transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.2) }}
       className="group flex flex-col bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden hover:border-[#94A3B8] hover:shadow-md transition-all duration-200 cursor-pointer"
     >
+      {/* Name above image */}
+      <Link href={`/produto/${product.slug}`} tabIndex={-1} aria-hidden className="px-4 pt-4 pb-2">
+        <h3 className="text-[13px] font-semibold text-[#0F172A] leading-snug line-clamp-2 group-hover:underline underline-offset-2 decoration-[#CBD5E1]">
+          {product.name}
+        </h3>
+      </Link>
+
       {/* Image zone */}
       <Link
         href={`/produto/${product.slug}`}
@@ -79,12 +86,6 @@ export default function ProductCard({ product, index = 0 }: Props) {
 
       {/* Info */}
       <div className="flex flex-col gap-2 p-4 flex-1">
-        <Link href={`/produto/${product.slug}`} tabIndex={-1} aria-hidden>
-          <h3 className="text-[13px] font-semibold text-[#0F172A] leading-snug line-clamp-2 group-hover:underline underline-offset-2 decoration-[#CBD5E1]">
-            {product.name}
-          </h3>
-        </Link>
-
         {/* Rating */}
         <div className="flex items-center gap-1.5" aria-label={`${product.rating} de 5 estrelas, ${product.reviewCount} avaliações`}>
           <div className="flex" aria-hidden>
