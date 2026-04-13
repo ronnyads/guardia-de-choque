@@ -18,28 +18,36 @@ export interface PriceParams {
   paymentMethod: "pix" | "cartao";
 }
 
-async function getProductPrice(slug: string): Promise<number> {
+async function getProductData(slug: string): Promise<{ promo_price: number; bump_price: number | null; upsell_price: number | null }> {
   const supabase = createServiceSupabase();
   const { data, error } = await supabase
     .from('products')
-    .select('promo_price')
+    .select('promo_price, bump_price, upsell_price')
     .eq('slug', slug)
     .eq('status', 'active')
     .single();
 
   if (error || !data) throw new Error(`Produto não encontrado: ${slug}`);
-  return Number(data.promo_price);
+  return {
+    promo_price:  Number(data.promo_price),
+    bump_price:   data.bump_price   ? Number(data.bump_price)   : null,
+    upsell_price: data.upsell_price ? Number(data.upsell_price) : null,
+  };
 }
 
 /**
  * Calculates the expected total amount server-side, fetching price from DB.
+ * Uses per-product bump/upsell prices when configured, falls back to global constants.
  */
 export async function calculateExpectedAmount(p: PriceParams): Promise<number> {
-  const basePrice = await getProductPrice(p.kitId);
+  const product = await getProductData(p.kitId);
 
-  let total = basePrice;
-  if (p.hasBump)   total += ORDER_BUMP_PRICE;
-  if (p.hasUpsell) total += UPSELL_PRICE;
+  const bumpPrice   = product.bump_price   ?? ORDER_BUMP_PRICE;
+  const upsellPrice = product.upsell_price ?? UPSELL_PRICE;
+
+  let total = product.promo_price;
+  if (p.hasBump)   total += bumpPrice;
+  if (p.hasUpsell) total += upsellPrice;
   if (p.paymentMethod === "pix") total = total * (1 - PIX_DISCOUNT);
 
   return Math.round(total * 100) / 100;
