@@ -13,6 +13,7 @@ export const AMOUNT_TOLERANCE = 0.05; // R$0,05 de tolerância (arredondamentos)
 
 export interface PriceParams {
   kitId:         string;
+  qty?:          number;
   hasBump:       boolean;
   hasUpsell:     boolean;
   paymentMethod: "pix" | "cartao";
@@ -41,11 +42,12 @@ async function getProductData(slug: string): Promise<{ promo_price: number; bump
  */
 export async function calculateExpectedAmount(p: PriceParams): Promise<number> {
   const product = await getProductData(p.kitId);
+  const qty = Math.max(1, p.qty ?? 1);
 
   const bumpPrice   = product.bump_price   ?? ORDER_BUMP_PRICE;
   const upsellPrice = product.upsell_price ?? UPSELL_PRICE;
 
-  let total = product.promo_price;
+  let total = product.promo_price * qty;
   if (p.hasBump)   total += bumpPrice;
   if (p.hasUpsell) total += upsellPrice;
   if (p.paymentMethod === "pix") total = total * (1 - PIX_DISCOUNT);

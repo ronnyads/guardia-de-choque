@@ -20,7 +20,7 @@ const slugToKit: Record<string, string> = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ kit?: string; produto?: string }>;
+  searchParams: Promise<{ kit?: string; produto?: string; qty?: string }>;
 }
 
 export default async function CheckoutPage({ searchParams }: PageProps) {
@@ -28,6 +28,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
   const rawKit     = params.kit;
   const rawProduto = params.produto;
   const kitSlug    = rawKit || (rawProduto ? slugToKit[rawProduto] : null) || "guardia-de-choque";
+  const qty        = Math.max(1, parseInt(params.qty ?? "1", 10) || 1);
 
   const [kitProduct, storeConfig] = await Promise.all([
     getProductBySlug(kitSlug),
@@ -103,6 +104,7 @@ export default async function CheckoutPage({ searchParams }: PageProps) {
           }>
             <ClientCheckout
                 kit={resolvedKit}
+                qty={qty}
                 orderBumpPrice={resolvedKit.bumpPrice ?? storeConfig.checkout_order_bump_price ?? ORDER_BUMP_PRICE}
                 orderBumpLabel={resolvedKit.bumpLabel}
                 checkoutConfig={checkoutConfig}

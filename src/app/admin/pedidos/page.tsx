@@ -1,6 +1,7 @@
+import Link from 'next/link';
 import { requireTenant } from '@/lib/tenant';
 import { createServerSupabase } from '@/lib/supabase-server';
-import { ShoppingCart, TrendingUp, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import { ShoppingCart, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -100,9 +101,10 @@ export default async function AdminPedidos() {
                 {orderList.map((order) => {
                   const status = STATUS_MAP[order.status] ?? { label: order.status ?? '—', cls: 'bg-[#F1F5F9] text-[#475569]' };
                   return (
-                    <tr key={order.id} className="hover:bg-[#F8FAFC] transition-colors">
-                      <td className="px-6 py-4 font-mono text-xs text-[#94A3B8]">
-                        #{order.id?.slice(0, 8)}
+                    <tr key={order.id} className="hover:bg-[#F8FAFC] transition-colors cursor-pointer group">
+                      <td className="px-6 py-4 font-mono text-xs text-[#94A3B8] relative">
+                        <Link href={`/admin/pedidos/${order.id}`} className="absolute inset-0" aria-label="Ver pedido" />
+                        <span className="text-[#0F172A] font-semibold group-hover:text-[#6366F1]">#{order.id?.slice(0, 8)}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm font-medium text-[#0F172A]">{order.customer_name ?? '—'}</div>

@@ -10,7 +10,7 @@ export default function CartSummary() {
   const pixPrice = total * 0.95;
   const fmt      = (v: number) => v.toFixed(2).replace(".", ",");
   const checkoutHref = items.length > 0
-    ? `/checkout?kit=${items[0].product.slug}`
+    ? `/checkout?kit=${items[0].product.slug}&qty=${items[0].qty}`
     : '/checkout';
 
   return (

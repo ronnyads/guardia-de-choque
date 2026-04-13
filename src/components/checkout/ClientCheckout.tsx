@@ -22,12 +22,14 @@ interface CheckoutConfig {
 
 interface Props {
   kit: StoreProduct;
+  qty?: number;
   orderBumpPrice: number;
   orderBumpLabel?: string;
   checkoutConfig: CheckoutConfig;
 }
 
-export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderBumpLabel, checkoutConfig }: Props) {
+export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orderBumpPrice, orderBumpLabel, checkoutConfig }: Props) {
+  const qty = Math.max(1, qtyProp);
   const searchParams = useSearchParams();
 
   // Adapta StoreProduct para o shape que OrderSummary (Kit) espera
@@ -96,7 +98,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderB
   const [gatewayStatus, setGatewayStatus] = useState<string>("");
 
   // Calcula subtotais
-  const itemsTotal = kit.promoPrice;
+  const itemsTotal = kit.promoPrice * qty;
   const total = itemsTotal + (hasOrderBump ? orderBumpPrice : 0);
 
   // Efeito Mágico de Polling do PIX
@@ -155,6 +157,7 @@ export default function ClientCheckout({ kit: kitProduct, orderBumpPrice, orderB
     const basePayload = {
       amount: amountWithDiscount,
       kitId:     kit.slug,
+      qty,
       hasBump:   hasOrderBump,
       hasUpsell: acceptedUpsell,
       email: paymentData.personalData.email,

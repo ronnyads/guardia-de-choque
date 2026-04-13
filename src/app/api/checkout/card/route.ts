@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     // Valida preco contra o catalogo do servidor
     await validateAmount(amount, {
       kitId:         String(body.kitId || ""),
+      qty:           Math.max(1, parseInt(String(body.qty || "1"), 10) || 1),
       hasBump:       Boolean(body.hasBump),
       hasUpsell:     Boolean(body.hasUpsell),
       paymentMethod: "cartao",
@@ -97,12 +98,14 @@ export async function POST(request: Request) {
             tenant_id:           prod.tenant_id,
             customer_name:       name,
             customer_email:      email,
+            customer_phone:      sanitizeString(body.phone, 20) || null,
+            customer_address:    body.address || null,
             total_amount:        amount,
             payment_method:      'card',
             payment_provider:    'mercadopago',
             external_payment_id: String(result.id),
             status:              result.status === 'approved' ? 'approved' : 'pending',
-            items:               [{ slug: body.kitId, name: prod.name, price: amount }],
+            items:               [{ slug: body.kitId, name: prod.name, price: amount, qty: Math.max(1, parseInt(String(body.qty || '1'), 10) || 1) }],
           });
           if (insertErr) {
             console.error('[MP Card] Erro ao inserir pedido:', insertErr.message);
