@@ -46,7 +46,7 @@ type IntegrationMeta = {
   provider: IntegrationProvider;
   label: string;
   description: string;
-  category: 'pagamentos' | 'analytics';
+  category: 'pagamentos' | 'analytics' | 'envio';
   color: string;
   initials: string;
   pubLabel: string;
