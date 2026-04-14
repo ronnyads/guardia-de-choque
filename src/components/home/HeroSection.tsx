@@ -190,7 +190,9 @@ export default function HeroSection({ highlightPixPrice, config }: Props) {
                 src="/images/product/kit-dupla-foto.png"
                 alt="Produto em destaque — Kit mais vendido"
                 fill
-                priority
+                preload
+                fetchPriority="high"
+                loading="eager"
                 className="object-contain animate-float drop-shadow-2xl"
                 sizes="(max-width:768px) 90vw, 480px"
               />
