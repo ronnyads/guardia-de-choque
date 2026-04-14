@@ -187,11 +187,10 @@ export default function HeroSection({ highlightPixPrice, config }: Props) {
                 aria-hidden
               />
               <Image
-                src="/images/product/kit-dupla-foto.png"
+                src="/images/product/kit-dupla-foto.webp"
                 alt="Produto em destaque — Kit mais vendido"
                 fill
                 preload
-                fetchPriority="high"
                 loading="eager"
                 className="object-contain animate-float drop-shadow-2xl"
                 sizes="(max-width:768px) 90vw, 480px"
