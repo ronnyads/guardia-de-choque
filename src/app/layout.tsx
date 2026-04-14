@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import { headers } from "next/headers";
+import Script from "next/script";
 import "./globals.css";
 import MetaPixel from "@/components/analytics/MetaPixel";
 import KwaiPixel from "@/components/analytics/KwaiPixel";
@@ -83,19 +84,6 @@ export default async function RootLayout({
       } as React.CSSProperties}
     >
       <head>
-        {/* Kwai Ads SDK — roda antes do React, garante window.kwaiq disponível em qualquer useEffect */}
-        {kwaiInitScript && (
-          <script dangerouslySetInnerHTML={{ __html: kwaiInitScript }} />
-        )}
-
-        {/* Google Fonts dinâmico — carrega a fonte selecionada no tema */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href={`https://fonts.googleapis.com/css2?family=${(config.font_heading ?? 'Playfair+Display').replace(/ /g, '+')}:wght@400;700&family=${(config.font_body ?? 'DM+Sans').replace(/ /g, '+')}:wght@400;500;600;700&display=swap`}
-          rel="stylesheet"
-        />
-
         {/* Preconnect */}
         <link rel="preconnect" href="https://connect.facebook.net" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
@@ -129,8 +117,27 @@ export default async function RootLayout({
         <GoogleTagManagerBody gtmId={gtmId} />
         <ThemePreviewBridge />
         <MetaPixel pixelId={metaPixelId} />
+        {/* Kwai SDK — afterInteractive para não bloquear o parse do HTML */}
+        {kwaiInitScript && (
+          <Script
+            id="kwai-sdk"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: kwaiInitScript }}
+          />
+        )}
         <KwaiPixel />
         <GoogleAnalytics gaId={gaId} />
+        {/* Google Fonts customizadas — só carrega se o admin escolheu fontes não-padrão */}
+        {(config.font_heading && config.font_heading !== 'Playfair Display') ||
+         (config.font_body    && config.font_body    !== 'DM Sans') ? (
+          <Script
+            id="custom-fonts"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=${(config.font_heading ?? 'Playfair+Display').replace(/ /g,'+')}:wght@400;700&family=${(config.font_body ?? 'DM+Sans').replace(/ /g,'+')}:wght@400;500;600;700&display=swap';document.head.appendChild(l);`,
+            }}
+          />
+        ) : null}
         <ToastProvider />
         <TenantProvider config={config}>
           {children}
