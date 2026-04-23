@@ -8,17 +8,15 @@ export default function SavedToast() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(searchParams.get("saved") === "1");
 
   useEffect(() => {
-    if (searchParams.get('saved') === '1') {
-      setVisible(true);
-      // Remove ?saved=1 da URL sem reload
+    if (visible) {
       router.replace(pathname, { scroll: false });
       const t = setTimeout(() => setVisible(false), 3000);
       return () => clearTimeout(t);
     }
-  }, [searchParams, router, pathname]);
+  }, [visible, router, pathname]);
 
   if (!visible) return null;
 

@@ -33,6 +33,14 @@ export default function CarrinhoPage() {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 flex flex-col gap-3">
+                <div className="rounded-2xl border border-[#E2E8F0] bg-white p-4">
+                  <p className="text-[13px] font-semibold text-[#0F172A]">
+                    O checkout finaliza um produto por vez.
+                  </p>
+                  <p className="mt-1 text-[12px] text-[#64748B]">
+                    Ajuste a quantidade aqui e conclua este item. Para comprar outro produto, faça um novo checkout em seguida.
+                  </p>
+                </div>
                 {items.map((item) => (
                   <CartItem key={item.product.id} item={item} />
                 ))}

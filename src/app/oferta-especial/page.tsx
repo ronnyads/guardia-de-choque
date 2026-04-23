@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Zap,
   Minimize2,
-  Flashlight,
   BatteryCharging,
   ShieldCheck,
   Award,
@@ -36,10 +36,10 @@ export default function OfertaEspecial() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="px-6 py-4">
-        <a href="/" className="inline-flex items-center gap-2 text-text-muted text-sm hover:text-white transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 text-text-muted text-sm hover:text-white transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Voltar
-        </a>
+        </Link>
       </header>
 
       <main className="px-6 md:px-12 lg:px-24 py-12 max-w-3xl mx-auto">

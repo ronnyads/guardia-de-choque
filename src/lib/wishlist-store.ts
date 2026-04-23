@@ -29,7 +29,11 @@ export const useWishlistStore = create<WishlistState>()(
 
       toggle: (product) => {
         const { has, add, remove } = get();
-        has(product.id) ? remove(product.id) : add(product);
+        if (has(product.id)) {
+          remove(product.id);
+          return;
+        }
+        add(product);
       },
 
       has: (id) => get().items.some((i) => i.id === id),

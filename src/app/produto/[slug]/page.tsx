@@ -98,9 +98,8 @@ export default async function ProdutoPage({ params }: Props) {
       highlight: p.badge === "Kit" || p.slug === "kit-dupla",
     }));
 
-  const reviews          = staticReviews[slug] ?? staticReviews['guardia-de-choque'] ?? [];
-  const fmt              = (v: number) => v.toFixed(2).replace(".", ",");
-  const lifestyleImages  = product.images.slice(1);
+  const reviews = staticReviews[slug] ?? staticReviews['guardia-de-choque'] ?? [];
+  const lifestyleImages = product.images.slice(1);
 
   return (
     <>
@@ -109,7 +108,7 @@ export default async function ProdutoPage({ params }: Props) {
       <main className="bg-white">
         {/* Tracker de ViewContent enriquecido — Kwai + Meta Pixel */}
         <ProductViewTracker
-          productId={product.id}
+          productSlug={product.slug}
           productName={product.name}
           price={product.price}
         />

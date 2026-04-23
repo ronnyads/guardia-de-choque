@@ -1,7 +1,7 @@
 import { createServiceSupabase } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { createServerSupabase } from "@/lib/supabase-server";
-import { Store, Users, CheckCircle, Clock } from "lucide-react";
+import { Store, CheckCircle, Clock } from "lucide-react";
 
 async function requireSuperAdmin() {
   const supabase = await createServerSupabase();
@@ -26,7 +26,7 @@ export default async function SuperAdminPage() {
 
   const [
     { data: tenants },
-    { count: totalUsers },
+    {},
   ] = await Promise.all([
     service.from("tenants").select("id, slug, name, status, plan, created_at").order("created_at"),
     service.from("tenant_users").select("*", { count: "exact", head: true }),

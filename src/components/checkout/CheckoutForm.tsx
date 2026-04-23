@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Script from "next/script";
 import { Lock, CreditCard, ShieldCheck, User, MapPin, CreditCard as PayIcon } from "lucide-react";
@@ -153,7 +153,7 @@ export default function CheckoutForm({ onFinish, hasOrderBump, setHasOrderBump, 
   const formatCardNumber = (val: string) =>
     val.replace(/\D/g, "").substring(0, 16).replace(/(\d{4})(?=\d)/g, "$1 ").trim();
   const formatExpiry = (val: string) => {
-    let raw = val.replace(/\D/g, "").substring(0, 4);
+    const raw = val.replace(/\D/g, "").substring(0, 4);
     if (raw.length > 2) return `${raw.substring(0, 2)}/${raw.substring(2, 4)}`;
     return raw;
   };

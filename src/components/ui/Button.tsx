@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import Link from "next/link";
 
 interface Props {
   children: ReactNode;
@@ -39,10 +40,10 @@ export default function Button({
     lg: "px-8 py-4 text-sm",
   };
 
-  const classes = [base, variants[variant], sizes[size], className].filter(Boolean).join(" ");
+  const classes = [base, variants[variant], sizes[size], className, pulse ? "animate-pulse" : ""].filter(Boolean).join(" ");
 
   if (href && !disabled) {
-    return <a href={href} className={classes} onClick={onClick}>{children}</a>;
+    return <Link href={href} className={classes} onClick={onClick}>{children}</Link>;
   }
 
   return (

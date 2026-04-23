@@ -34,7 +34,10 @@ export default function Navbar() {
   const wishCount  = useWishlistStore((s) => s.count());
 
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setMounted(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   const isHero = pathname === "/";
 

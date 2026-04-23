@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Zap } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import Button from "@/components/ui/Button";
 
 export default function Header() {

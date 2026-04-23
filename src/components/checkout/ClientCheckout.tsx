@@ -1,7 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { StoreProduct } from "@/types";
 import { Kit } from "@/types";
 import OrderSummary from "./OrderSummary";
@@ -29,9 +28,31 @@ interface Props {
   checkoutConfig: CheckoutConfig;
 }
 
-export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orderBumpPrice, orderBumpLabel, checkoutConfig }: Props) {
+interface CheckoutPaymentData {
+  paymentMethod: "pix" | "cartao";
+  token?: string | null;
+  cardData?: {
+    brand?: string;
+    installments?: string;
+    expiry?: string;
+    number?: string;
+    cvv?: string;
+    name?: string;
+  };
+  personalData: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  document: string;
+  address: unknown;
+  deviceId?: string | null;
+  shippingMethod?: string | null;
+  shippingCost?: number;
+}
+
+export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orderBumpPrice, checkoutConfig }: Props) {
   const qty = Math.max(1, qtyProp);
-  const searchParams = useSearchParams();
 
   // Adapta StoreProduct para o shape que OrderSummary (Kit) espera
   const kit: Kit = {
@@ -64,7 +85,7 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const convertLead = (paymentId: string) => {
+  const convertLead = useCallback((paymentId: string) => {
     const leadId = typeof window !== 'undefined' ? localStorage.getItem('lead_id') : null;
     if (!leadId) return;
     fetch('/api/leads/convert', {
@@ -73,14 +94,14 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
       body: JSON.stringify({ leadId, orderId: paymentId }),
     }).catch(() => {});
     localStorage.removeItem('lead_id');
-  };
+  }, []);
 
-  const firePurchasePixel = (value: number, eventId?: string) => {
+  const firePurchasePixel = useCallback((value: number, eventId?: string) => {
     // Meta Pixel + deduplicação com eventID do backend (CAPI já foi disparado pelo server)
     metaPurchase({ value, productName: kit.name, eventId: eventId ?? `purchase_${Date.now()}` });
     kwaiPurchase(value, eventId ?? "");
     if (eventId) gaPurchase({ transactionId: eventId, value, itemName: kit.name });
-  };
+  }, [kit.name]);
 
   const [hasOrderBump, setHasOrderBump] = useState(false);
   const upsellPrice = checkoutConfig.upsellPrice;
@@ -91,7 +112,7 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
   const [checkoutComplete, setCheckoutComplete] = useState(false);
   const [isProcessingFull, setIsProcessingFull] = useState(false);
 
-  const [paymentData, setPaymentData] = useState<any>(null);
+  const [paymentData, setPaymentData] = useState<CheckoutPaymentData | null>(null);
   const [pixData, setPixData] = useState<{qrCodeBase64?: string, qrCode?: string, paymentId?: string, amount?: number} | null>(null);
   const [gatewayStatus, setGatewayStatus] = useState<string>("");
 
@@ -122,14 +143,15 @@ export default function ClientCheckout({ kit: kitProduct, qty: qtyProp = 1, orde
     }
 
     return () => clearInterval(intervalId);
-  }, [checkoutComplete, pixData?.paymentId]);
+  }, [checkoutComplete, pixData?.amount, pixData?.paymentId, checkoutConfig.pixPollingMs, convertLead, firePurchasePixel]);
 
   const handleFinishCheckout = (data: unknown) => {
-    setPaymentData(data);
+    setPaymentData(data as CheckoutPaymentData);
     setShowUpsell(true);
   };
 
   const handleCompleteAll = async (acceptedUpsell: boolean) => {
+    if (!paymentData) return;
     setShowUpsell(false);
     setIsProcessingFull(true);
     setGatewayStatus("Conectando operadora bancária\u2026");

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import {
   Palette, Phone, Plug, Search, X, Settings, CheckCircle,
-  Plus, Trash2, ChevronRight, CreditCard, MessageCircle,
+  Plus, Trash2, CreditCard, MessageCircle,
 } from 'lucide-react';
 import type { TenantConfig, TenantIntegration } from '@/types/tenant';
 import {
@@ -28,6 +28,11 @@ interface Props {
   config: TenantConfig | null;
   integrations: IntegrationRow[];
 }
+
+type CheckoutSettingsConfig = TenantConfig & {
+  shipping_free?: boolean | null;
+  shipping_origin_cep?: string | null;
+};
 
 // ── Sub-nav items ─────────────────────────────────────────────────────────────
 
@@ -681,8 +686,9 @@ function CheckoutSection({ config, saving, onSave }: {
   saving: boolean;
   onSave: (action: (fd: FormData) => Promise<void>, fd: FormData) => Promise<void>;
 }) {
+  const checkoutConfig = config as CheckoutSettingsConfig | null;
   const [stripeFallback, setStripeFallback] = useState(config?.checkout_enable_stripe_fallback ?? true);
-  const [shippingFree,   setShippingFree]   = useState((config as any)?.shipping_free !== false);
+  const [shippingFree, setShippingFree] = useState(checkoutConfig?.shipping_free !== false);
 
   return (
     <div>
@@ -799,7 +805,7 @@ function CheckoutSection({ config, saving, onSave }: {
               <input
                 type="text"
                 name="shipping_origin_cep"
-                defaultValue={(config as any)?.shipping_origin_cep ?? ''}
+                defaultValue={checkoutConfig?.shipping_origin_cep ?? ''}
                 maxLength={9}
                 className={inputCls}
                 placeholder="00000-000"

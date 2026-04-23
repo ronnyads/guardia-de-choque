@@ -6,11 +6,12 @@ import { resolveProductTenant } from '@/lib/checkout-helpers';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { productSlug, productName, value, eventId, email, phone, fbp, fbc } = body;
+    const { productSlug: rawProductSlug, productName, value, eventId, email, phone, fbp, fbc } = body;
+    const productSlug = String(rawProductSlug ?? '').trim();
 
-    if (!eventId) return NextResponse.json({ ok: false }, { status: 400 });
+    if (!productSlug || !eventId) return NextResponse.json({ ok: false }, { status: 400 });
 
-    const prod = productSlug ? await resolveProductTenant(String(productSlug)) : null;
+    const prod = await resolveProductTenant(productSlug);
     if (!prod) return NextResponse.json({ ok: false }, { status: 200 });
 
     const meta        = await getMetaPixelConfig(prod.tenantId);

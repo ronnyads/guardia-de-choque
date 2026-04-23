@@ -12,13 +12,13 @@ interface Props {
 }
 
 export default function PreviewWrapper({ children, products, highlightPixPrice }: Props) {
-  const [previewSections, setPreviewSections] = useState<PageSection[] | null>(null);
+  const [previewSections, setPreviewSections] = useState<PageSection[] | null>(() => {
+    if (typeof window === "undefined") return null;
+    const existing = (window as unknown as Record<string, unknown>).__previewSections;
+    return Array.isArray(existing) ? (existing as PageSection[]) : null;
+  });
 
   useEffect(() => {
-    // Pick up any sections already pushed before this component mounted
-    const existing = (window as unknown as Record<string, unknown>).__previewSections as PageSection[] | undefined;
-    if (existing) setPreviewSections(existing);
-
     const handler = (e: Event) => {
       setPreviewSections((e as CustomEvent<PageSection[]>).detail);
     };

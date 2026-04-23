@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Save, ArrowRight, Plus, X } from 'lucide-react';
+import { ArrowRight, Plus, X } from 'lucide-react';
 import ImageUploader from './ImageUploader';
 import RichTextEditor from './RichTextEditor';
 import FeaturesEditor from './FeaturesEditor';

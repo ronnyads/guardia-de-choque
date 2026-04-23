@@ -7,6 +7,35 @@ import { kwaiAddToCart } from "@/components/analytics/KwaiPixel";
 import { gaAddToCart } from "@/components/analytics/GoogleAnalytics";
 import { metaAddToCart } from "@/lib/meta-events";
 
+function normalizeCartItems(items: unknown): CartItem[] {
+  if (!Array.isArray(items) || items.length === 0) {
+    return [];
+  }
+
+  const validItems = items.filter(
+    (item): item is CartItem =>
+      Boolean(
+        item &&
+        typeof item === "object" &&
+        "product" in item &&
+        item.product &&
+        typeof item.product === "object" &&
+        "id" in item.product
+      )
+  );
+
+  if (validItems.length === 0) {
+    return [];
+  }
+
+  const primaryProductId = validItems[0].product.id;
+  const qty = validItems
+    .filter((item) => item.product.id === primaryProductId)
+    .reduce((sum, item) => sum + Math.max(1, Number(item.qty) || 1), 0);
+
+  return [{ product: validItems[0].product, qty }];
+}
+
 interface CartStore {
   items: CartItem[];
   isOpen: boolean;
@@ -39,14 +68,17 @@ export const useCartStore = create<CartStore>()(
               isOpen: true,
             };
           }
-          return { items: [...state.items, { product, qty }], isOpen: true };
+          return {
+            items: [{ product, qty: Math.max(1, qty) }],
+            isOpen: true,
+          };
         });
         // Kwai Ads — EVENT_ADD_TO_CART
         kwaiAddToCart(product.price * qty);
         // GA4 — add_to_cart
         gaAddToCart({ id: product.id, name: product.name, price: product.price, quantity: qty });
         // Meta Pixel + CAPI — AddToCart com deduplicação por eventID
-        metaAddToCart({ productSlug: product.id, productName: product.name, value: product.price * qty });
+        metaAddToCart({ productSlug: product.slug, productName: product.name, value: product.price * qty });
       },
 
       removeItem: (productId) => {
@@ -79,6 +111,15 @@ export const useCartStore = create<CartStore>()(
     {
       name: "os-oliveiras-cart",
       partialize: (state) => ({ items: state.items }),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<CartStore> | undefined;
+
+        return {
+          ...currentState,
+          ...persisted,
+          items: normalizeCartItems(persisted?.items),
+        };
+      },
     }
   )
 );

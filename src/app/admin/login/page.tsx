@@ -34,7 +34,7 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
 
-    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError("Credenciais inválidas. Verifique e tente novamente.");
