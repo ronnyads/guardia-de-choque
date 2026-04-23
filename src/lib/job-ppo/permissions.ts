@@ -1,0 +1,60 @@
+import type { PermissionRow } from '@/lib/job-ppo/types'
+
+export const permissionMatrix: PermissionRow[] = [
+  {
+    capability: 'Explorar perfis e visualizar teasers',
+    visitor: true,
+    subscriber: true,
+    creator: true,
+    admin: true,
+    superAdmin: true,
+  },
+  {
+    capability: 'Favoritar criadoras e receber recomendacoes',
+    visitor: false,
+    subscriber: true,
+    creator: false,
+    admin: true,
+    superAdmin: true,
+  },
+  {
+    capability: 'Consumir conteudo premium via assinatura ativa',
+    visitor: false,
+    subscriber: true,
+    creator: false,
+    admin: true,
+    superAdmin: true,
+  },
+  {
+    capability: 'Criar perfil artistico e publicar conteudo',
+    visitor: false,
+    subscriber: false,
+    creator: true,
+    admin: false,
+    superAdmin: true,
+  },
+  {
+    capability: 'Gerenciar planos, ganhos e assinantes',
+    visitor: false,
+    subscriber: false,
+    creator: true,
+    admin: false,
+    superAdmin: true,
+  },
+  {
+    capability: 'Moderar conteudo, aprovar criadoras e operar pagamentos',
+    visitor: false,
+    subscriber: false,
+    creator: false,
+    admin: true,
+    superAdmin: true,
+  },
+  {
+    capability: 'Alterar permissoes globais, logs e configuracoes criticas',
+    visitor: false,
+    subscriber: false,
+    creator: false,
+    admin: false,
+    superAdmin: true,
+  },
+]
